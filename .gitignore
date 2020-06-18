@@ -1,3 +1,7 @@
+__pycache__
+.ipynb_checkpoints
+.vscode
 data/*
+!data/*/
 shapes/*
 cleaned_data/*
