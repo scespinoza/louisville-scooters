@@ -1,0 +1,78 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://d3js.org/d3-queue.v3.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+    integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+    crossorigin=""></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.css' rel='stylesheet' />    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="animation.css">
+    <title>Louisville Sharing Simulation</title>
+</head>
+<body>
+    
+    <div id="mapwrapper">
+        <div id="map"></div>
+    </div>
+    <div class="user-interface">
+        <h1 id="title">Scooter Sharing System Simulation</h1>
+        <h2 id="subtitle"> Louisville - Kentucky</h2>
+       
+            
+       <div id="sidebar">
+        <div id="top-right-display">
+                <span id="time-label" class="control-panel-text big">Time</span>
+                <h3 class="control-panel-text" id="timer">00:00</h3>
+                <div id="stats">
+                    <h4>Service Level</h4>
+                    <svg class="bi bi-question-circle icon" id="graph-info" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M5.25 6.033h1.32c0-.781.458-1.384 1.36-1.384.685 0 1.313.343 1.313 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.007.463h1.307v-.355c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.326 0-2.786.647-2.754 2.533zm1.562 5.516c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+                      </svg>
+                    <div id="stats-chart"></div>
+                </div>
+               
+        </div>
+        <div id='legend'>
+            <h4>Legend</h4>
+        </div>
+        <div id='control-panel'>
+            <button id="play-controller" class="control-panel-text control-panel-button" onclick="animateAllTrips()">
+                <svg class="bi bi-play" width="1.4em" height="1.4em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M10.804 8L5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/>
+                    </svg>
+                </button>
+            <button id="pause-controller" class="control-panel-text control-panel-button" onclick="pause()">
+            <svg class="bi bi-pause" width="1.4em" height="1.4em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V4a.5.5 0 0 1 .5-.5zm4 0a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V4a.5.5 0 0 1 .5-.5z"/>
+            </svg>
+            </button>
+            <button id="restart-controller" class="control-panel-text control-panel-button" onclick="restart();">
+            <svg class="bi bi-arrow-counterclockwise" width="1.4em" height="1.4em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M12.83 6.706a5 5 0 0 0-7.103-3.16.5.5 0 1 1-.454-.892A6 6 0 1 1 2.545 5.5a.5.5 0 1 1 .91.417 5 5 0 1 0 9.375.789z"/>
+            <path fill-rule="evenodd" d="M7.854.146a.5.5 0 0 0-.708 0l-2.5 2.5a.5.5 0 0 0 0 .708l2.5 2.5a.5.5 0 1 0 .708-.708L5.707 3 7.854.854a.5.5 0 0 0 0-.708z"/>
+            </svg>
+            </button>
+            <br>
+            <span id="velocity-label" class="control-panel-text">VELOCITY</span>
+            
+            <input type="range" min="1" max="26" value="10" step="5" class="slider-light" id="simratio-slider"
+                     onchange="adjustVelocity()" autocomplete="off">
+
+            <span  id="velocity-display" class="control-panel-text">x1000</span>
+            
+        </div>
+    </div>
+    </div>
+    
+    <script src="main.js"></script>
+    
+</body>
+</html>

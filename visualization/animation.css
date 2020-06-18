@@ -1,0 +1,65 @@
+
+.street {
+    stroke: yellow;
+    stroke-width: 5px;
+    fill: none;
+    opacity: 0.7;
+}
+.walk {
+    stroke: none;
+    fill: none;
+}
+
+.boundary {
+    stroke: #7BD389;
+    stroke-width:2px;
+    fill: none;
+}
+
+.grid {
+    stroke: #343E3D;
+    stroke-width: 1px;
+    fill: none;
+    display:none;
+}
+.ride {
+    stroke: none;
+    fill: none;
+}
+
+.user {
+    fill: rgb(255, 196, 0);
+    stroke: rgba(238, 255, 0, 0.6);
+    stroke-width: 5px;
+}
+
+.scooter {
+    fill: rgb(0, 4, 255);
+    stroke: rgba(0, 255, 234, 0.6);
+    stroke-width: 5px;
+}
+
+.static-scooter {
+    stroke: rgba(25, 253, 4, 0.644);
+    stroke-width: 3px;
+    opacity: 0.3;
+    cursor: pointer;
+}
+
+.static-scooter:hover {
+    stroke: rgba(25, 253, 4, 1);
+    opacity: 1;
+    cursor: pointer;
+}
+
+.unsatisfied-request {
+    fill: rgb(168, 1, 1);
+    stroke: rgba(255, 145, 0, 0.7);
+    stroke-width: 5px;
+}
+
+.chart-line {
+    stroke: #38E4AE;
+    stroke-width: 2px;
+    fill: None;
+}
