@@ -126,6 +126,8 @@ class HRP(models.Model):
             self.target_network = HRP(regions=regions, name=name + '-Target', target=True)
 
     def call(self, state):
+        print(state.shape)
+        print(state)
         p = self.actor_network(state)
         q = self.critic_network([state, p])
         return q
