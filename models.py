@@ -205,7 +205,6 @@ class Agent:
     def act(self, environment):
         state  = environment.get_state()
         action = self.get_action(state)
-        print(action)
         next_state, reward = environment.perform_action(action)
         self.store_transition((state, action, reward, next_state))
         return reward
