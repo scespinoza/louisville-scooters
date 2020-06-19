@@ -1,10 +1,9 @@
 geopandas==0.7.0
 ipykernel==5.2.1
-ipython @ file:///D:/bld/ipython_1588363073263/work
 ModestMaps==1.4.7
 networkx==2.4
-numpy @ file:///D:/bld/numpy_1588605187257/work
-osmnx @ file:///home/conda/feedstock_root/build_artifacts/osmnx_1588358517935/work
+numpy==1.18.4
+osmnx==0.12.1
 pandas==1.0.3
 python-igraph==0.8.2
 Rtree==0.9.4
