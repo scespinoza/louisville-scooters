@@ -8,8 +8,10 @@ from tensorflow.keras import models, layers, optimizers
 import matplotlib.pyplot as plt
 
 
-physical_devices = tf.config.list_physical_devices('GPU') 
-tf.config.experimental.set_memory_growth(physical_devices[0], True)
+tf_config = tf.ConfigProto()
+tf_config.gpu_options.allow_growth = True
+tf_config.gpu_options.per_process_gpu_memory_fraction = 0.9
+tf_config.allow_soft_placement = True
 
 class SubActor(layers.Layer):
     def __init__(self, n_neurons=8, n_hidden=2, name='SubActor'):
