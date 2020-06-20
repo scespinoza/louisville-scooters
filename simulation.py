@@ -754,7 +754,7 @@ if __name__ == '__main__':
         agent.train(environment, warmup_iterations=1, episodes=2)
         agent.save_target_model()
         plt.plot(agent.rewards)
-        plt.show()
+        plt.savefig('rewards.png')
         
     if args.test_grid:
         replicas = ['data/replicas/stkde_nhpp_{}.csv'.format(i) for i in range(1)]
