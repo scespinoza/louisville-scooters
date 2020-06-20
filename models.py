@@ -234,7 +234,8 @@ class Agent:
             episode_rewards = []
             for t in range(environment.timesteps):
                 print('Episode {}, timestep {}'.format(e + 1, t + 1))
-                reward = self.act(environment)   
+                reward = self.act(environment)
+                print('Reward: {:.2f}'.format(reward))  
                 episode_rewards.append(reward)         
                 self.train_minibatch()
             self.rewards.append(np.mean(episode_rewards))

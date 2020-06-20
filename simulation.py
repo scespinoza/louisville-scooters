@@ -143,8 +143,6 @@ class Grid:
         sr = np.array(self.satisfied_requests_history).sum(0)
         sr[demands == 0] = 1
         stats['unsatisfied_ratio'] = 1 - sr/demands
-        for col in ['supply', 'demand', 'arrival', 'expense', 'remaining_budget', 'unsatisfied_ratio', 'satisfied_requests']:
-            print('Total {}: {}'.format(col, stats[col].sum()))
         state_array = stats.loc[:, ['supply', 'demand', 'arrival', 'expense', 'remaining_budget', 'unsatisfied_ratio']].values.reshape(1, 10, 10, 1, stats.shape[1] - 2).astype(np.float32)
         return state_array
 
@@ -754,7 +752,7 @@ if __name__ == '__main__':
         environment = ScooterSharingSimulator(graph, grid, days=1, initial_supply=80, pricing=True)
         environment.set_replicas_for_training(replicas)
         agent.train(environment, warmup_iterations=1, episodes=2)
-        agent.save_trained()
+        agent.save_target_model()
         plt.plot(agent.rewards)
         plt.show()
         
