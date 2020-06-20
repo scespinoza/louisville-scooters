@@ -135,6 +135,7 @@ class Grid:
         stats['remaining_budget'] = simulator.service_provider.budget
         self.unsatisfied_service_ratio_history.append((1 - stats['satisfied_requests'].astype(np.float32) / stats['demand'].astype(np.float32)).fillna(0))
         stats['unsatisfied_ratio'] = np.stack(self.unsatisfied_service_ratio_history).mean(0)
+        print(self.unsatisfied_service_ratio_history)
         for col in ['supply', 'demand', 'arrival', 'expense', 'remaining_budget', 'unsatisfied_ratio']:
             print('Total {}: {}'.format(col, stats[col].sum()))
         state_array = stats.loc[:, ['supply', 'demand', 'arrival', 'expense', 'remaining_budget', 'unsatisfied_ratio']].values.reshape(1, 10, 10, 1, stats.shape[1] - 2).astype(np.float32)
