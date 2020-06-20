@@ -194,7 +194,7 @@ class ServiceProvider(Agent):
         self.budget -= value
 
     def restore_budget(self):
-        self.budget = total_budget
+        self.budget = self.total_budget
 
         
 class User:
