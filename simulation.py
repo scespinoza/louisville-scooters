@@ -187,6 +187,9 @@ class ServiceProvider(Agent):
     def __init__(self, budget=20000, model=HRP(), buffer_length=100, name='HRP'):
         super(ServiceProvider, self).__init__(name=name, model=model, buffer_length=buffer_length)
         self.budget = 1000
+
+    def expend(self, value):
+        self.budget -= value
         
 class User:
     count = 0
@@ -319,12 +322,17 @@ class UserRequest(Event):
                             for scooter in available_scooters]
             if np.any(np.array(user_utility) > 0):
                 max_utility = np.argmax(user_utility)
-                if simulator.verbose:
-                    print('User recives an incentive of {:.2f}$.'.format(user_utility[max_utility]))
                 nearest_scooter = available_scooters[max_utility]
+                incentive = nearest_scooter.get_price_incentive(simulator.grid)
+                if simulator.verbose:
+                    print('User recives an incentive of {:.2f}$.'.format(incentive))
+                
+                
                 distance = simulator.graph.shortest_path_distance(self.user.origin,nearest_scooter.location)
                 walking_time = distance / self.user.velocity
                 pickup = PickUp(simulator.time + walking_time, self.user, nearest_scooter)
+                simulator.grid.update_stats(nearest_scooter.location, 'expense', value=incentive)
+                simulator.grid.service_provider.expend(incentive)
                 self.user.trip['pickup_node'] = nearest_scooter.location
                 self.user.trip['walk'] = simulator.graph.shortest_path_edges(self.user.origin, nearest_scooter.location)
                 simulator.insert(pickup)
