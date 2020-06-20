@@ -751,7 +751,7 @@ if __name__ == '__main__':
         agent = ServiceProvider()
         environment = ScooterSharingSimulator(graph, grid, days=1, initial_supply=100, pricing=True)
         environment.set_replicas_for_training(replicas)
-        agent.train(environment, warmup_iterations=5, episodes=20)
+        agent.train(environment, warmup_iterations=20, episodes=100)
         agent.save_target_model()
         plt.plot(agent.rewards)
         plt.savefig('rewards.png')
