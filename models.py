@@ -171,12 +171,12 @@ class HRP(models.Model):
         self.target_network.actor_network.set_weights(target_actor_new_weights)
 
     def save_target_model(self):
-        self.target_network.critic_network.save_weights('weights/critic_network.h5')
-        self.target_network.actor_network.save_weights('weights/actor_network.h5')
+        self.target_network.critic_network.save_weights('weights/critic_network.tf')
+        self.target_network.actor_network.save_weights('weights/actor_network.tf')
     
     def load_trained(self):
-        self.critic_network.load_weights('weights/critic_network.h5')
-        self.target_network.load_weights('weights/target_network.h5')
+        self.critic_network.load_weights('weights/critic_network.tf')
+        self.target_network.load_weights('weights/target_network.tf')
 
 
 class Agent:
