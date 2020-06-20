@@ -57,7 +57,7 @@ class Grid:
         self.shape = shape
         self.nodes_in_boxes = nodes_in_boxes
         self.demand_history = deque(maxlen=8)
-        self.satisified_requests_history = deque(maxlen=8)
+        self.satisfied_requests_history = deque(maxlen=8)
         self.prices = None
         self.stats =  {
             'demand': np.zeros_like(boxes),
@@ -136,7 +136,7 @@ class Grid:
         stats = gpd.GeoDataFrame(self.get_stats(), geometry=self.boxes)
         stats['remaining_budget'] = simulator.service_provider.budget
         self.demand_history.append(self.stats['demand'])
-        self.satisified_requests_history.append(self.stats['satisfied_requests'])
+        self.satisfied_requests_history.append(self.stats['satisfied_requests'])
         stats['unsatisfied_ratio'] = 1 - np.array(self.satisfied_requests_history).sum(0)/np.array(self.demand_history).sum(0)
         for col in ['supply', 'demand', 'arrival', 'expense', 'remaining_budget', 'unsatisfied_ratio']:
             print('Total {}: {}'.format(col, stats[col].sum()))
