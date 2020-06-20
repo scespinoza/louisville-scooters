@@ -749,9 +749,9 @@ if __name__ == '__main__':
 
         model = HRP()
         agent = ServiceProvider()
-        environment = ScooterSharingSimulator(graph, grid, days=1, initial_supply=80, pricing=True)
+        environment = ScooterSharingSimulator(graph, grid, days=1, initial_supply=100, pricing=True)
         environment.set_replicas_for_training(replicas)
-        agent.train(environment, warmup_iterations=1, episodes=2)
+        agent.train(environment, warmup_iterations=5, episodes=20)
         agent.save_target_model()
         plt.plot(agent.rewards)
         plt.savefig('rewards.png')
