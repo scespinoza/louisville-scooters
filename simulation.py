@@ -107,6 +107,7 @@ class Grid:
         return [k * 10 + l for k, l in neighbors if (k >= 0 and k < n) and (l >= 0 and l < m)]
 
     def compute_supply(self):
+        self.stats['supply'] = np.zeros_like(self.boxes)
         locations = [scooter.location for scooter in Scooter.scooters]
         for loc in locations:
             idx = self.get_area(loc)
@@ -142,7 +143,7 @@ class Grid:
         sr = np.array(self.satisfied_requests_history).sum(0)
         sr[demands == 0] = 1
         stats['unsatisfied_ratio'] = 1 - sr/demands
-        for col in ['supply', 'demand', 'arrival', 'expense', 'remaining_budget', 'unsatisfied_ratio']:
+        for col in ['supply', 'demand', 'arrival', 'expense', 'remaining_budget', 'unsatisfied_ratio', 'satisfied_requests']:
             print('Total {}: {}'.format(col, stats[col].sum()))
         state_array = stats.loc[:, ['supply', 'demand', 'arrival', 'expense', 'remaining_budget', 'unsatisfied_ratio']].values.reshape(1, 10, 10, 1, stats.shape[1] - 2).astype(np.float32)
         return state_array
@@ -186,10 +187,15 @@ class ServiceProvider(Agent):
     
     def __init__(self, budget=20000, model=HRP(), buffer_length=100, name='HRP'):
         super(ServiceProvider, self).__init__(name=name, model=model, buffer_length=buffer_length)
-        self.budget = 1000
+        self.total_budget = budget
+        self.budget = budget
 
     def expend(self, value):
         self.budget -= value
+
+    def restore_budget(self):
+        self.budget = total_budget
+
         
 class User:
     count = 0
@@ -690,6 +696,7 @@ class ScooterSharingSimulator:
         Scooter.init_supply(self.graph, n=self.initial_supply)
         #UserRequest.init_user_requests(self)
         RunPricing.init_stats(self)
+        self.service_provider.restore_budget()
         replica = self.replicas[self.current_replica]
         self.current_replica = (self.current_replica + 1) % self.n_replicas
         print('Replica: ', replica)
