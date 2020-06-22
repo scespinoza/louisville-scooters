@@ -322,7 +322,7 @@ class UserRequest(Event):
 
         reachable_nodes = self.user.reachable_nodes(simulator)
         available_scooters = [scooter for scooter in Scooter.available_scooters() 
-                                if scooter.location in nodes_within_area and scooter.battery_level > 0]
+                                if scooter.location in reachable_nodes and scooter.battery_level > 0]
         available_locations =  [s.location for s in available_scooters]
         if len(available_scooters) == 0 and simulator.pricing:
             # No available scooters and pricing.
@@ -736,7 +736,7 @@ if __name__ == '__main__':
         study_area = gpd.read_file(study_area_filename).to_crs('epsg:4326')
         
         study_area_polygon = study_area.iloc[0]['geometry']
-        graph = MultiModalNetwork.from_polygon(study_area_polygon, speeds={'walk': 1.5, 'bike':3.})
+        graph = MultiModalNetwork.from_polygon(study_area_polygon, speeds={'walk': 1.5, 'bike':2.16})
         grid_gdf = gpd.read_file('shapes/grid/grid_500m.shp').to_crs('epsg:4326')
         
         grid = Grid.from_gdf(grid_gdf, (10,10))
@@ -751,7 +751,7 @@ if __name__ == '__main__':
         study_area = gpd.read_file(study_area_filename).to_crs('epsg:4326')
         
         study_area_polygon = study_area.iloc[0]['geometry']
-        graph = MultiModalNetwork.from_polygon(study_area_polygon, speeds={'walk': 1.5, 'bike':3.})
+        graph = MultiModalNetwork.from_polygon(study_area_polygon, speeds={'walk': 1.5, 'bike':2.16})
         grid_gdf = gpd.read_file('shapes/grid/grid_500m.shp').to_crs('epsg:4326')
         
         grid = Grid.from_gdf(grid_gdf, (10,10))
