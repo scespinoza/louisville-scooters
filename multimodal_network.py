@@ -46,6 +46,7 @@ class MultiModalNetwork:
         for layer in layers.keys():
             self.layers[layer]['nodes']['transfer'] = self.layers[layer]['nodes']['osmid'].apply(lambda osmid: str(osmid) in self.transfer_nodes)
         self.speeds = speeds
+        self.directed = directed
         self.shortest_paths = {}
         self.assign_velocities()
         self.create_graph()
