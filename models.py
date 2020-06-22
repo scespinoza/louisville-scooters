@@ -245,6 +245,10 @@ class Agent:
     def save_target_model(self):
         self.model.save_target_model()
 
+    def load_trained(self):
+        self.model.load_trained()
+        return self
+
 
 class Environment:
     def __init__(self, name='Environment'):

@@ -206,6 +206,9 @@ class User:
         self.user_id = self.__class__.count
         self.origin = str(trip[0])
         self.destination = str(trip[1])
+        self.reachable_method = 'distance'
+        self.max_walking_distance = 1000 # km
+
         self.velocity = 1.5 # m/s
         self.alpha = 9.0083e-7
         self.trip = {
@@ -229,6 +232,13 @@ class User:
         return "User {}, at {}, wanting to go to {}.".format(self.user_id,
                                                             self.origin,
                                                             self.destination)
+
+    def reachable_nodes(self, simulator):
+        if self.reachable_method == 'grid':
+            return list(simulator.grid.nodes_within_area(self.origin))
+        elif self.reachable_method == 'distance':
+            sp = simulator.graph.shortest_paths['walk'].loc[self.origin]
+            return list(sp[sp < self.max_walking_distance / self.velocity].index)
     def cost_function(self, scooter, simulator):        
         return self.alpha * simulator.graph.shortest_path_distance(self.origin, scooter.location, layer='walk') ** 2
 
@@ -310,7 +320,7 @@ class UserRequest(Event):
         origin = simulator.graph.find_node(osmid=self.user.origin, layer='walk')
         simulator.grid.update_stat(self.user.origin, 'request')
 
-        nodes_within_area = list(simulator.grid.nodes_within_area(self.user.origin))
+        reachable_nodes = self.user.reachable_nodes(simulator)
         available_scooters = [scooter for scooter in Scooter.available_scooters() 
                                 if scooter.location in nodes_within_area and scooter.battery_level > 0]
         available_locations =  [s.location for s in available_scooters]
@@ -602,7 +612,7 @@ class ScooterSharingSimulator:
         self.trip_saver = trip_saver
         self.time_window = 3600
         self.timesteps = self.simulation_time // self.time_window
-        self.service_provider = ServiceProvider()
+        self.service_provider = ServiceProvider().load_trained()
         self.initial_supply = initial_supply
         Scooter.init_supply(self.graph, n=initial_supply)
         #UserRequest.init_user_requests(self)
