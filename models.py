@@ -176,7 +176,7 @@ class HRP(models.Model):
     
     def load_trained(self):
         self.critic_network.load_weights('weights/critic_network.tf')
-        self.target_network.load_weights('weights/target_network.tf')
+        self.actor_network.load_weights('weights/actor_network.tf')
 
 
 class Agent:
