@@ -207,7 +207,7 @@ class User:
         self.origin = str(trip[0])
         self.destination = str(trip[1])
         self.reachable_method = 'distance'
-        self.max_walking_distance = 1000 # km
+        self.max_walking_distance = 500 # km
 
         self.velocity = 1.5 # m/s
         self.alpha = 9.0083e-7
@@ -736,12 +736,12 @@ if __name__ == '__main__':
         study_area = gpd.read_file(study_area_filename).to_crs('epsg:4326')
         
         study_area_polygon = study_area.iloc[0]['geometry']
-        graph = MultiModalNetwork.from_polygon(study_area_polygon, speeds={'walk': 1.5, 'bike':2.16})
+        graph = MultiModalNetwork.from_polygon(study_area_polygon, speeds={'walk': 1.4, 'bike':2.16})
         grid_gdf = gpd.read_file('shapes/grid/grid_500m.shp').to_crs('epsg:4326')
         
         grid = Grid.from_gdf(grid_gdf, (10,10))
         grid.create_nodes_dict(graph.layers['walk']['nodes'])
-        simulator = ScooterSharingSimulator(graph, grid, trip_saver=trip_saver, initial_supply=80, pricing=args.pricing)
+        simulator = ScooterSharingSimulator(graph, grid, trip_saver=trip_saver, initial_supply=100, pricing=args.pricing)
         simulator.simulate(replicas, verbose=True)
         simulator.save_trips()
     if args.train:
@@ -751,7 +751,7 @@ if __name__ == '__main__':
         study_area = gpd.read_file(study_area_filename).to_crs('epsg:4326')
         
         study_area_polygon = study_area.iloc[0]['geometry']
-        graph = MultiModalNetwork.from_polygon(study_area_polygon, speeds={'walk': 1.5, 'bike':2.16})
+        graph = MultiModalNetwork.from_polygon(study_area_polygon, speeds={'walk': 1.4, 'bike':2.16})
         grid_gdf = gpd.read_file('shapes/grid/grid_500m.shp').to_crs('epsg:4326')
         
         grid = Grid.from_gdf(grid_gdf, (10,10))
@@ -761,7 +761,7 @@ if __name__ == '__main__':
         agent = ServiceProvider()
         environment = ScooterSharingSimulator(graph, grid, days=1, initial_supply=100, pricing=True)
         environment.set_replicas_for_training(replicas)
-        agent.train(environment, warmup_iterations=20, episodes=100)
+        agent.train(environment, warmup_iterations=5, episodes=20)
         agent.save_target_model()
         plt.plot(agent.rewards)
         plt.savefig('rewards.png')
