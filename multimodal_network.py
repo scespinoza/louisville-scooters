@@ -15,6 +15,12 @@ def fix_duplicated_ids(edges):
     print('Fixing duplicates')
     edges['osmid'] = edges[['u', 'v', 'osmid']].apply(lambda x: str(x[0]) + '-' + str(x[1]) + '-' + str(x[2]), axis=1)
     return edges
+    
+def fix_isolated(edges, nodes):
+    node_counts = edges['u'].append(edges['v']).value_counts()
+    isolated_nodes = list(node_counts[node_counts == 1].index)
+    filter_isolated = edges['u'].isin(isolated_nodes) | edges['v'].isin(isolated_nodes)
+    return edges['edges'][~filter_isolated], nodes[nodes['osmid'].isin(isolated_nodes)]
 
 
 def get_nearest(src_points, candidates, k_neighbors=1):
@@ -135,7 +141,7 @@ class MultiModalNetwork:
         transfer_nodes = self.layers['bike']['nodes'][self.layers['bike']['nodes']['osmid'].apply(lambda osmid: osmid in self.transfer_nodes)]
         transfer_nodes.plot(ax=ax, c='yellow', alpha=0.3, markersize=5)
     @classmethod
-    def from_polygon(cls, polygon, layers=['walk', 'bike'], save=True, speeds={'walk': 1., 'bike': 1.}, directed={'walk':False, 'bike': 'True'}):
+    def from_polygon(cls, polygon, layers=['walk', 'bike'], save=True, speeds={'walk': 1., 'bike': 1.}, directed={'walk':False, 'bike':True}):
         layers_graph = {}
         for layer in layers:
             
@@ -149,6 +155,7 @@ class MultiModalNetwork:
                 print('Files not found. Downloading...')
                 nodes, edges = ox.graph_to_gdfs(ox.graph_from_polygon(polygon, network_type=layer, simplify=False))
                 edges = fix_duplicated_ids(edges)
+                edges, nodes = fix_isolated(edges, nodes)
 
                 if save:
                     nodes.to_file('shapes/{}/nodes.shp'.format(layer))
