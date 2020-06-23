@@ -236,9 +236,9 @@ class Agent:
                 print('Episode {}, timestep {}'.format(e + 1, t + 1))
                 reward = self.act(environment)
                 print('Reward: {:.2f}'.format(reward))  
-                episode_rewards.append(reward)         
+                episode_rewards.append(self.model.discount_rate*reward)         
                 self.train_minibatch()
-            self.rewards.append(np.mean(episode_rewards))
+            self.rewards.append(np.sum(episode_rewards))
         self.model.target_network.save_weights('weights/test_model.h5')
         print('Finishing Training: {:.2f}s'.format(time.time() - training_start))
 

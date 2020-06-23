@@ -146,12 +146,8 @@ class Grid:
         state_array = stats.loc[:, ['supply', 'demand', 'arrival', 'expense', 'remaining_budget', 'unsatisfied_ratio']].values.reshape(1, 10, 10, 1, stats.shape[1] - 2).astype(np.float32)
         return state_array
 
-    def get_last_service_level(self):
-        try:
-            service_level = (self.stats['satisfied_requests'].sum() / self.stats['demand'].sum())
-            return service_level
-        except:
-            return 1
+    def get_last_satisfied_requests(self):
+        return self.stats['satisfied_requests'].sum()
         
             
     
@@ -648,7 +644,7 @@ class ScooterSharingSimulator:
         self.grid.set_price(action)
         self.run_timestep(training=True, verbose=verbose)
         state = self.grid.get_state(self)
-        reward = self.grid.get_last_service_level()
+        reward = self.grid.get_last_satisfied_requests()
         self.grid.reset_stats()
         return state, reward
         
@@ -670,7 +666,7 @@ class ScooterSharingSimulator:
                 print(event)
             if result and training:
                 print('Break Loop')
-                return self.grid.get_last_service_level()
+                return self.grid.get_last_satisfied_requests()
 
     def run_timestep(self, verbose=0, training=True):
         starting_time = self.time
