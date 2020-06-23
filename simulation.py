@@ -613,7 +613,10 @@ class ScooterSharingSimulator:
         self.time_window = 3600
         self.timesteps = self.simulation_time // self.time_window
         if self.pricing:
-            self.service_provider = ServiceProvider().load_trained()
+            try:
+                self.service_provider = ServiceProvider().load_trained()
+            except:
+                self.service_provider = ServiceProvider()
         self.initial_supply = initial_supply
         Scooter.init_supply(self.graph, n=initial_supply)
         #UserRequest.init_user_requests(self)
