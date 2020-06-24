@@ -348,12 +348,13 @@ class UserRequest(Event):
 
             user_utility = [scooter.get_price_incentive(simulator.grid) - self.user.cost_function(scooter, simulator)
                             for scooter in available_scooters]
+            
             if np.any(np.array(user_utility) > 0):
                 max_utility = np.argmax(user_utility)
                 nearest_scooter = available_scooters[max_utility]
                 incentive = nearest_scooter.get_price_incentive(simulator.grid)
-                if simulator.verbose:
-                    print('User recives an incentive of {:.2f}$.'.format(incentive))
+                
+                print('User recives an incentive of {:.2f}$.'.format(incentive))
                 
                 
                 distance = simulator.graph.shortest_path_distance(self.user.origin,nearest_scooter.location)

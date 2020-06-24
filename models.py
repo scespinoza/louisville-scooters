@@ -112,13 +112,13 @@ class CriticNetwork(models.Model):
         
 
 class HRP(models.Model):
-    def __init__(self, regions=(10, 10), name='HRP', target=False):
+    def __init__(self, regions=(10, 10), name='HRP', target=False, learning_rate=1e-4):
         super(HRP, self).__init__(name=name)
         self.regions = regions
         self.n_regions = regions[0] * regions[1]
         self.actor_network = ActorNetwork(n_regions=100)
         self.critic_network = CriticNetwork(n_regions=100)
-        self.optimizer = optimizers.Adam(0.001)
+        self.optimizer = optimizers.Adam(learning_rate)
         self.discount_rate = 0.99
         self.theta = 0.2
         self.tau = 0.2
@@ -171,12 +171,12 @@ class HRP(models.Model):
         self.target_network.actor_network.set_weights(target_actor_new_weights)
 
     def save_target_model(self):
-        self.target_network.critic_network.save_weights('weights/critic/weights.tf')
-        self.target_network.actor_network.save_weights('weights/actor/weights.tf')
+        self.target_network.critic_network.save_weights('weights/critic/')
+        self.target_network.actor_network.save_weights('weights/actor/')
     
     def load_trained(self):
-        self.critic_network.load_weights('weights/critic/weights.tf')
-        self.actor_network.load_weights('weights/actor/weights.tf')
+        self.critic_network.load_weights('weights/critic/')
+        self.actor_network.load_weights('weights/actor/')
 
 
 class Agent:
