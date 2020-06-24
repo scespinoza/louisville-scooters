@@ -190,6 +190,24 @@ class ServiceProvider(Agent):
     def restore_budget(self):
         self.budget = self.total_budget
 
+    def plot_history(self):
+        fig, ax = plt.subplots(1, 2, figsize=(14, 6))
+        ax[0].plot(self.history['rewards'], color='green', label='Observed Rewards')
+        ax[0].set_xlabel('Episode')
+        ax[0].set_xticks(range(0, len(self.history['rewards']) + 1, 10))
+        ax[0].set_ylabel('Reward (N° Satisfied Requests)')
+        ax[0].set_title('Rewards')
+        ax[0].axvline(2, linestyle='--', label='Finish Warmup Stage')
+        ax[0].legend()
+
+        ax[1].plot(self.history['dqn_loss'], color='orange')
+        ax[1].set_xlabel('Episode')
+        ax[1].set_xticks(range(0, len(self.history['dqn_loss']) + 1, 10))
+        ax[1].set_ylabel('Loss')
+        ax[1].set_title('DQN Training Loss')
+        return fig
+
+
         
 class User:
     count = 0
@@ -763,8 +781,8 @@ if __name__ == '__main__':
         environment.set_replicas_for_training(replicas)
         agent.train(environment, warmup_iterations=5, episodes=20)
         agent.save_target_model()
-        plt.plot(agent.rewards)
-        plt.savefig('rewards.png')
+        fig = agent.plot_history()
+        fig.savefig('training-history.png')
         
     if args.test_grid:
         replicas = ['data/replicas/stkde_nhpp_{}.csv'.format(i) for i in range(1)]

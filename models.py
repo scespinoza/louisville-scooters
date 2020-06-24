@@ -186,7 +186,10 @@ class Agent:
         self.model = model
         self.experience_buffer = deque(maxlen=buffer_length)
         self.random_exploration_process = np.random.rand
-        self.rewards = []
+        self.history = {
+            'rewards': [],
+            'dqn_loss': []
+        }
 
     def store_transition(self, transition):
         self.experience_buffer.append(transition)
@@ -197,7 +200,9 @@ class Agent:
 
     def train_minibatch(self, batch_size=16):
         state, action, reward, next_state = self.sample_minibatch(batch_size)
-        self.model.train_step([np.concatenate(state), np.concatenate(action), np.array(reward), np.concatenate(next_state)])
+        x = [np.concatenate(state), np.concatenate(action), np.array(reward), np.concatenate(next_state)]
+        self.model.train_step(x)
+        return self.model.dqn_loss(x)
 
     def get_action(self, state):
         return self.model.actor_network(state).numpy()
@@ -218,11 +223,12 @@ class Agent:
                 print('Warmup Iteration {}/{}, timestep {}'.format(i + 1, iterations, t + 1))
                 reward = self.act(environment)
                 print('Reward: {:.2f}'.format(reward))
-                episode_rewards.append(reward)
-            self.rewards.append(np.array(episode_rewards).mean())
+                episode_rewards.append(self.model.discount_rate*reward)
+            self.history['rewards'].append(np.sum(episode_rewards))
 
     def train(self, environment, episodes=100, warmup_iterations=1):
-
+        self.episodes = episodes
+        self.warmup_iterations = warmup_iterations
         print('Starting Warmup Phase')
         warmup_start = time.time()
         self.warmup_phase(environment, iterations=warmup_iterations)
@@ -235,13 +241,18 @@ class Agent:
             for t in range(environment.timesteps):
                 print('Episode {}, timestep {}'.format(e + 1, t + 1))
                 reward = self.act(environment)
-                print('Reward: {:.2f}'.format(reward))  
+                print('Reward: {:.2f}, '.format(reward), end='')  
                 episode_rewards.append(self.model.discount_rate*reward)         
-                self.train_minibatch()
-            self.rewards.append(np.sum(episode_rewards))
+                batch_loss = self.train_minibatch()
+                print('Batch Loss: {:.2f}'.format(batch_loss))
+            self.history['rewards'].append(np.sum(episode_rewards))
+            self.history['dqn_loss'].append(self.get_q_loss())
         self.model.target_network.save_weights('weights/test_model.h5')
         print('Finishing Training: {:.2f}s'.format(time.time() - training_start))
 
+    def get_q_loss(self):
+        experience_buffer = [sample[i] for sample in self.experience_buffer] for i in range(4)]
+        return self.model.dqn_loss([np.concatenate(state), np.concatenate(action), np.array(reward), np.concatenate(next_state)])
     def save_target_model(self):
         self.model.save_target_model()
 
