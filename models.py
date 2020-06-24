@@ -251,7 +251,7 @@ class Agent:
         print('Finishing Training: {:.2f}s'.format(time.time() - training_start))
 
     def get_q_loss(self):
-        experience_buffer = [[sample[i] for sample in self.experience_buffer] for i in range(4)]
+        state, action, reward, next_state = [[sample[i] for sample in self.experience_buffer] for i in range(4)]
         return self.model.dqn_loss([np.concatenate(state), np.concatenate(action), np.array(reward), np.concatenate(next_state)])
     def save_target_model(self):
         self.model.save_target_model()
