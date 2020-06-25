@@ -129,21 +129,21 @@ class HRP(models.Model):
         p = self.actor_network(state)
         q = self.critic_network([state, p])
         return q
-
+    
     def dqn_loss(self, x):
         state, action, reward, next_state = x
         q_next_state = self.target_network(next_state)
         y = reward + self.discount_rate * q_next_state
         return -1 *  tf.reduce_mean(tf.square(y - self.critic_network([state, action])))
 
-    @tf.function
+    
     def critic_gradients(self, batch):
         state, action, reward, next_state = batch
         with tf.GradientTape() as tape:
             loss = self.dqn_loss(batch)
             return tape.gradient(loss, self.critic_network.trainable_variables)
 
-    @tf.function
+    
     def actor_gradients(self, batch):
         state, action, reward, next_state = batch
         with tf.GradientTape() as tape:
