@@ -146,8 +146,8 @@ class HRP(models.Model):
         state, action, reward, next_state = batch
         with tf.GradientTape() as tape:
             action = self.actor_network(state)
-            q = self.critic_network([state, action])
-            return tape.gradient(-q, self.actor_network.trainable_variables)
+            q_sum = -1 * tf.reduce_sum(self.critic_network([state, action]))
+            return tape.gradient(q, self.actor_network.trainable_variables)
 
     def train_step(self, batch):
         actor_gradients = self.actor_gradients(batch)
