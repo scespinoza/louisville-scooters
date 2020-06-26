@@ -151,6 +151,7 @@ class HRP(models.Model):
             action_gradient = self.action_gradient([state, action])
             return tape.gradient(action, self.actor_network.trainable_variables,-action_gradiend)
     def action_gradient(self, x):
+        state, action = x
         with tf.GradientTape() as tape:
             q_value = self.critic_network(x)
             return tape.gradient(q_value, action)
