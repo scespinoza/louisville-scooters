@@ -134,7 +134,7 @@ class HRP(models.Model):
         state, action, reward, next_state = x
         q_next_state = self.target_network(next_state)
         y = reward + self.discount_rate * q_next_state
-        return -1 *  tf.reduce_mean(tf.square(y - self.critic_network([state, action])))
+        return tf.reduce_mean(tf.square(y - self.critic_network([state, action])))
 
     
     def critic_gradients(self, batch):
