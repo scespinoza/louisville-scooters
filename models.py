@@ -197,7 +197,8 @@ class Agent:
         self.random_exploration_process = np.random.rand
         self.history = {
             'rewards': [],
-            'dqn_loss': []
+            'dqn_loss': [],
+            'batch_loss': []
         }
 
     def store_transition(self, transition):
@@ -254,6 +255,7 @@ class Agent:
                 episode_rewards.append(self.model.discount_rate*reward)         
                 batch_loss = self.train_minibatch()
                 print('Batch Loss: {:.2f}'.format(batch_loss))
+                self.history['batch_loss'].append(batch_loss)
             self.history['rewards'].append(np.sum(episode_rewards))
             self.history['dqn_loss'].append(self.get_q_loss())
         self.model.target_network.save_weights('weights/test_model.h5')

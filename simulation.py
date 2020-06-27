@@ -784,6 +784,14 @@ if __name__ == '__main__':
         agent.save_target_model()
         fig = agent.plot_history()
         fig.savefig('training-history.png')
+
+        fig, ax = plt.subplots()
+        ax.plot(agent.history['batch_loss'])
+        ax.set_title('Batch Loss')
+        ax.set_xlabel('Episode')
+        ax.set_ylabel('Loss')
+        ax.set_xticks(list(range(0, 20*24 + 1, 48)))
+        ax.set_xticklabels(list(range(0, 24, 2)))
         
     if args.test_grid:
         replicas = ['data/replicas/stkde_nhpp_{}.csv'.format(i) for i in range(1)]
