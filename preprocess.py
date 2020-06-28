@@ -189,7 +189,7 @@ if __name__ == '__main__':
     study_area_filename = 'shapes/study_area/study_area.shp'
     study_area = gpd.read_file(study_area_filename).to_crs('EPSG:4326')
     study_area_polygon = study_area.iloc[0]['geometry']
-    network = MultiModalNetwork.from_polygon(study_area_polygon, speeds={'walk': 1.5, 'bike':3.})
+    network = MultiModalNetwork.from_polygon(study_area_polygon, speeds={'walk': 1.4, 'bike':2.16})
 
     data = pd.read_csv('data/data_2019.csv')
     data['date'] = pd.to_datetime(data['date'])

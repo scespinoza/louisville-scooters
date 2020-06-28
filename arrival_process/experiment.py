@@ -389,11 +389,11 @@ if __name__ == '__main__':
     temporal_methods, spatial_methods = DataProcessor.process(data, save_dir=dicts_save_dir)
     sampler = Sampler(temporal_methods, spatial_methods)
     start = '25 of May, 2020'
-    sim_duration = 24 #hours
-    n_reps = 5
+    sim_duration = 24 * 7 #hours
+    n_reps = 15
     temporal_method = ['nhpp']
     spatial_method = ['stkde']
-    save_dir = '../shapes/replicas_bw_test/'
+    save_dir = '../shapes/replicas/'
     for t_meth, s_meth in product(temporal_method, spatial_method):
         sampler.sample(start, sim_duration, n_reps, temporal_method=t_meth, spatial_method=s_meth, save_dir=save_dir, crs=data.crs)
     
