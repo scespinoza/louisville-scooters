@@ -112,7 +112,7 @@ class CriticNetwork(models.Model):
         
 
 class HRP(models.Model):
-    def __init__(self, regions=(10, 10), name='HRP', target=False, learning_rate=1e-5):
+    def __init__(self, regions=(10, 10), name='HRP', target=False, learning_rate=1e-7):
         super(HRP, self).__init__(name=name)
         self.regions = regions
         self.n_regions = regions[0] * regions[1]
