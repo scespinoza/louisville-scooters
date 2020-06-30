@@ -678,13 +678,13 @@ class ScooterSharingSimulator:
         
         for replica in replicas:
             print('Replica: ', replica)
+            self.events.reset()
             Scooter.init_supply(self.graph, n=self.initial_supply)
             RunPricing.init_pricing(self)
             self.service_provider.restore_budget()
             self.trip_reader = TripReader(replica)
             self.trip_saver = TripsSaver(name=replica.split('.')[0].split('/')[-1])
             arrivals = self.trip_reader.construct_events(self)
-            self.events.reset()
             self.insert_events(arrivals)
             self.do_all_events(verbose=verbose)
             self.save_trips()
