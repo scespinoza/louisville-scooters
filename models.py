@@ -179,13 +179,12 @@ class HRP(models.Model):
         self.target_network.critic_network.set_weights(target_critic_new_weights)
         self.target_network.actor_network.set_weights(target_actor_new_weights)
 
-    def save_target_model(self):
-        self.target_network.critic_network.save_weights('weights/critic/')
-        self.target_network.actor_network.save_weights('weights/actor/')
+    def save_target_model(self, name='test_model'):
+        self.save_weights('weights/{}.h5'.format(name))
     
-    def load_trained(self):
-        self.critic_network.load_weights('weights/critic/')
-        self.actor_network.load_weights('weights/actor/')
+    def load_trained(self, name='test_model'):
+        self(Environment().get_state())
+        self.load_weights('weights/{}.h5'.format(name))
 
 
 class Agent:
@@ -258,7 +257,7 @@ class Agent:
                 self.history['batch_loss'].append(batch_loss)
             self.history['rewards'].append(np.sum(episode_rewards))
             self.history['dqn_loss'].append(self.get_q_loss())
-        self.model.target_network.save_weights('weights/test_model.h5')
+        self.model.save_target_model('test_model')
         print('Finishing Training: {:.2f}s'.format(time.time() - training_start))
 
     def get_q_loss(self):
