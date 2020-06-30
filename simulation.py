@@ -349,7 +349,7 @@ class UserRequest(Event):
 
             user_utility = [scooter.get_price_incentive(simulator.grid) - self.user.cost_function(scooter, simulator)
                             for scooter in available_scooters]
-            
+            print(user_utility)
             if np.any(np.array(user_utility) > 0):
                 max_utility = np.argmax(user_utility)
                 nearest_scooter = available_scooters[max_utility]
@@ -515,40 +515,17 @@ class RunPricing(Event):
     inter_status_time = 3600 # 1 hour
     memory = deque(maxlen=8)
 
-    def __init__(self, time, plot=False, save=False, train=False, batch_size=16, warmup_iterations=100):
+    def __init__(self, time):
         super(RunPricing, self).__init__(time=time)
-        self.plot = plot
-        self.save = save
-        self.train = train
-        self.batch_size = batch_size
-        self.warmup_iterations = warmup_iterations
 
     def execute(self, simulator):
-        print('State!')
-        state = self.get_state_from_grid(simulator)
-        if self.plot:
-            fig, ax = plt.subplots(figsize=(10, 10))
-            sns.heatmap(self.region_service_level.values.reshape(10, 10),
-                        square=True, annot=True, fmt='.2f', cmap='Greens', ax=ax)
-            fig.savefig('figures/service_level_{}_{}.png'.format(simulator.day, simulator.hour))
-        
-        RunPricing.memory.append(state)
-        if self.save:
-            np.save('output/stats_{}_{}.npy'.format(simulator.day, simulator.hour),
-                                             state)
-        if len(RunPricing.memory) >= 3:
-            if self.train and self.warmup_iterations > 0:
-                simulator.service_provider.train_minibatch(self.batch_size)
-        new_pricing = RunPricing(self.time + RunPricing.inter_status_time, self.warmup_iterations - 1)
-        simulator.insert(new_pricing)
-        return True
-
+        state = simulator.get_state()
+        action = simulator.service_provider.get_action(state)
+        self.reward = simulator.grid.get_last_satisfied_requests()
+        simulator.grid.set_price(action)
+        simulator.insert(RunPricing(self.time + RunPricing.inter_status_time))
     def __str__(self):
-        return 'Getting stats:\n Service level: {:.2f} %'.format(self.service_level * 100)
-
-    def get_state_from_grid(self, simulator):
-        # get status per grid region
-        return simulator.grid.get_state(simulator)        
+        return 'Getting stats:\n Satisfied Demand: {:.2f} %'.format(self.reward)      
 
     @classmethod
     def init_stats(cls, simulator):
@@ -686,9 +663,6 @@ class ScooterSharingSimulator:
             if (verbose == 2) or (verbose == 1 and isinstance(event, RunPricing)):
                 print("\nTime: {}".format(self.clock()))
                 print(event)
-            if result and training:
-                print('Break Loop')
-                return self.grid.get_last_satisfied_requests()
 
     def run_timestep(self, verbose=0, training=True):
         starting_time = self.time
@@ -711,7 +685,7 @@ class ScooterSharingSimulator:
             RunPricing.init_stats(self)
             self.service_provider.restore_budget()
             self.trip_reader = TripReader(replica)
-            self.trip_saver = TripsSaver(name=replica.split('.')[0])
+            self.trip_saver = TripsSaver(name=replica.split('.')[0].split('/')[-1])
             arrivals = self.trip_reader.construct_events(self)
             self.events.reset()
             self.insert_events(arrivals)
