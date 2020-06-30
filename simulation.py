@@ -338,6 +338,7 @@ class UserRequest(Event):
         available_scooters = [scooter for scooter in Scooter.available_scooters() 
                                 if scooter.location in reachable_nodes and scooter.battery_level > 0]
         available_locations =  [s.location for s in available_scooters]
+        print(len(available_scooters))
         if len(available_scooters) == 0 and simulator.pricing:
             # No available scooters and pricing.
             if simulator.verbose == 2:
@@ -629,8 +630,10 @@ class ScooterSharingSimulator:
         self.timesteps = self.simulation_time // self.time_window
         if self.pricing:
             try:
+                print('Loading Trained Model')
                 self.service_provider = ServiceProvider().load_trained()
             except:
+                print("Warning: couldn't load trained model")
                 self.service_provider = ServiceProvider()
         self.initial_supply = initial_supply
         Scooter.init_supply(self.graph, n=initial_supply)
