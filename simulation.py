@@ -518,6 +518,7 @@ class RunPricing(Event):
         super(RunPricing, self).__init__(time=time)
 
     def execute(self, simulator):
+        print('Running Pricing')
         state = simulator.get_state()
         action = simulator.service_provider.get_action(state)
         self.reward = simulator.grid.get_last_satisfied_requests()
@@ -612,9 +613,6 @@ class ScooterSharingSimulator:
                 print("Warning: couldn't load trained model")
                 self.service_provider = ServiceProvider()
         self.initial_supply = initial_supply
-        Scooter.init_supply(self.graph, n=initial_supply)
-        #UserRequest.init_user_requests(self)
-        RunPricing.init_stats(self)
 
     @property
     def day(self):
@@ -681,7 +679,7 @@ class ScooterSharingSimulator:
         for replica in replicas:
             print('Replica: ', replica)
             Scooter.init_supply(self.graph, n=self.initial_supply)
-            RunPricing.init_stats(self)
+            RunPricing.init_pricing(self)
             self.service_provider.restore_budget()
             self.trip_reader = TripReader(replica)
             self.trip_saver = TripsSaver(name=replica.split('.')[0].split('/')[-1])
@@ -704,7 +702,7 @@ class ScooterSharingSimulator:
     def reset(self):
         Scooter.init_supply(self.graph, n=self.initial_supply)
         #UserRequest.init_user_requests(self)
-        RunPricing.init_stats(self)
+        RunPricing.init_pricing(self)
         self.service_provider.restore_budget()
         replica = self.replicas[self.current_replica]
         self.current_replica = (self.current_replica + 1) % self.n_replicas
