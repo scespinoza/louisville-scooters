@@ -513,7 +513,6 @@ class ReleaseScooter(Event):
 class RunPricing(Event):
 
     inter_status_time = 3600 # 1 hour
-    memory = deque(maxlen=8)
 
     def __init__(self, time):
         super(RunPricing, self).__init__(time=time)
@@ -528,8 +527,8 @@ class RunPricing(Event):
         return 'Getting stats:\n Satisfied Demand: {:.2f} %'.format(self.reward)      
 
     @classmethod
-    def init_stats(cls, simulator):
-        simulator.insert(cls(3600))
+    def init_pricing(cls, simulator):
+        simulator.insert(cls(cls.inter_status_time))
 
 class ListQueue:
 
@@ -677,7 +676,7 @@ class ScooterSharingSimulator:
                 print(event)
         self.time = ending_time
 
-    def simulate(self, replicas, verbose=0):
+    def simulate(self, replicas, verbose=1):
         
         for replica in replicas:
             print('Replica: ', replica)
@@ -689,7 +688,7 @@ class ScooterSharingSimulator:
             arrivals = self.trip_reader.construct_events(self)
             self.events.reset()
             self.insert_events(arrivals)
-            self.do_all_events(verbose=2)
+            self.do_all_events(verbose=verbose)
             self.save_trips()
 
     def set_replicas_for_training(self, replicas):
@@ -744,7 +743,7 @@ if __name__ == '__main__':
         grid = Grid.from_gdf(grid_gdf, (10,10))
         grid.create_nodes_dict(graph.layers['walk']['nodes'])
         simulator = ScooterSharingSimulator(graph, grid, initial_supply=100, pricing=args.pricing)
-        simulator.simulate(replicas, verbose=True)
+        simulator.simulate(replicas, verbose=1)
     if args.train:
         replicas = ['data/replicas/stkde_nhpp_{}.csv'.format(i) for i in range(2)]
         trip_saver = TripsSaver(name='test')
