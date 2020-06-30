@@ -704,13 +704,19 @@ class ScooterSharingSimulator:
         self.time = ending_time
 
     def simulate(self, replicas, verbose=0):
+        
         for replica in replicas:
             print('Replica: ', replica)
+            Scooter.init_supply(self.graph, n=self.initial_supply)
+            RunPricing.init_stats(self)
+            self.service_provider.restore_budget()
             self.trip_reader = TripReader(replica)
+            self.trip_saver = TripsSaver(name=replica.split('.')[0])
             arrivals = self.trip_reader.construct_events(self)
             self.events.reset()
             self.insert_events(arrivals)
             self.do_all_events(verbose=2)
+            self.save_trips()
 
     def set_replicas_for_training(self, replicas):
         self.replicas = replicas
@@ -753,7 +759,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if args.simulate:
         replicas = ['data/replicas/stkde_nhpp_{}.csv'.format(i) for i in range(1)]
-        trip_saver = TripsSaver(name='test')
+        
         study_area_filename = 'shapes/study_area/study_area.shp'
         study_area = gpd.read_file(study_area_filename).to_crs('epsg:4326')
         
@@ -763,9 +769,8 @@ if __name__ == '__main__':
         
         grid = Grid.from_gdf(grid_gdf, (10,10))
         grid.create_nodes_dict(graph.layers['walk']['nodes'])
-        simulator = ScooterSharingSimulator(graph, grid, trip_saver=trip_saver, initial_supply=100, pricing=args.pricing)
+        simulator = ScooterSharingSimulator(graph, grid, initial_supply=100, pricing=args.pricing)
         simulator.simulate(replicas, verbose=True)
-        simulator.save_trips()
     if args.train:
         replicas = ['data/replicas/stkde_nhpp_{}.csv'.format(i) for i in range(2)]
         trip_saver = TripsSaver(name='test')
