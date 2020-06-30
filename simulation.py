@@ -338,7 +338,6 @@ class UserRequest(Event):
         available_scooters = [scooter for scooter in Scooter.available_scooters() 
                                 if scooter.location in reachable_nodes and scooter.battery_level > 0]
         available_locations =  [s.location for s in available_scooters]
-        print(len(available_scooters))
         if len(available_scooters) == 0 and simulator.pricing:
             # No available scooters and pricing.
             if simulator.verbose == 2:
@@ -349,7 +348,6 @@ class UserRequest(Event):
 
             user_utility = [scooter.get_price_incentive(simulator.grid) - self.user.cost_function(scooter, simulator)
                             for scooter in available_scooters]
-            print(user_utility)
             if np.any(np.array(user_utility) > 0):
                 max_utility = np.argmax(user_utility)
                 nearest_scooter = available_scooters[max_utility]
@@ -518,14 +516,13 @@ class RunPricing(Event):
         super(RunPricing, self).__init__(time=time)
 
     def execute(self, simulator):
-        print('Running Pricing')
         state = simulator.get_state()
         action = simulator.service_provider.get_action(state)
         self.reward = simulator.grid.get_last_satisfied_requests()
         simulator.grid.set_price(action)
         simulator.insert(RunPricing(self.time + RunPricing.inter_status_time))
     def __str__(self):
-        return 'Getting stats:\n Satisfied Demand: {:.2f} %'.format(self.reward)      
+        return 'Getting stats:\n Satisfied Demand: {:.0f} '.format(self.reward)      
 
     @classmethod
     def init_pricing(cls, simulator):
@@ -726,6 +723,7 @@ if __name__ == '__main__':
     parser.add_argument('--train', action='store_true')
     parser.add_argument('--test_grid', action='store_true')
     parser.add_argument('--pricing', action='store_true')
+    parser.add_argument('--verbose', type=int, help='verbosity value')
 
     args = parser.parse_args()
     if args.simulate:
