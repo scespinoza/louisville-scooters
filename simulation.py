@@ -303,7 +303,7 @@ class Scooter:
 
     @classmethod
     def store_history(cls, history_saver):
-        for scooter in scooters:
+        for scooter in cls.scooters:
             history_saver.store_recharge({'id': scooter.scooter_id,
                                           'recharge_history': scooter.recharge_history})
 
@@ -602,7 +602,7 @@ class HistorySaver:
         self.history['recharge'].append(recharge)
 
     def save(self):
-        Scooters.store_history(self)
+        Scooter.store_history(self)
         print('Saving history to JSON')
         with open('visualization/data/' + self.name + '.json', 'w') as file:
             json.dump(self.history, file)
