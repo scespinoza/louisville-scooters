@@ -276,7 +276,7 @@ class Scooter:
         return [scooter for scooter in cls.scooters if scooter.available]
 
     @classmethod
-    def init_supply(cls, network, n=200, strategy='demand'):
+    def init_supply(cls, network, n=200, strategy='demand', random_state=0):
         """with open('data/poisson_params.pickle', 'br') as file:
             tract_counts = {tract: sum(list(probs.values())) 
                             for tract, probs in pickle.load(file).items()}"""
@@ -287,7 +287,7 @@ class Scooter:
             demand = gpd.GeoDataFrame(demand, crs='EPSG:4326')
             demand = demand[demand.within(bounds)]
             Scooter.demand = demand
-            points = demand['geometry'].sample(n=n, weights=demand['Count'])
+            points = demand['geometry'].sample(n=n, weights=demand['Count'], random_state=random_state)
             locations = list(network.get_nearest_osmids(points, transfer=True).astype(str))
         else:
             locations = choices(list(network.transfer_nodes), k=n)
@@ -673,10 +673,10 @@ class ScooterSharingSimulator:
 
     def simulate(self, replicas, verbose=1):
         
-        for replica in replicas:
+        for i, replica in enumerate(replicas):
             print('Replica: ', replica)
             self.events.reset()
-            Scooter.init_supply(self.graph, n=self.initial_supply)
+            Scooter.init_supply(self.graph, n=self.initial_supply, random_state=i)
             RunPricing.init_pricing(self)
             self.service_provider.restore_budget()
             self.trip_reader = TripReader(replica)
