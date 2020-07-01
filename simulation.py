@@ -621,13 +621,13 @@ class ScooterSharingSimulator:
         self.history_saver = history_saver
         self.time_window = 3600
         self.timesteps = self.simulation_time // self.time_window
-        if self.pricing:
-            try:
-                print('Loading Trained Model')
-                self.service_provider = ServiceProvider().load_trained()
-            except:
-                print("Warning: couldn't load trained model")
-                self.service_provider = ServiceProvider()
+        
+        try:
+            print('Loading Trained Model')
+            self.service_provider = ServiceProvider().load_trained()
+        except:
+            print("Warning: couldn't load trained model")
+            self.service_provider = ServiceProvider()
         self.initial_supply = initial_supply
 
     @property
