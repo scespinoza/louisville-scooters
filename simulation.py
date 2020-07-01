@@ -698,7 +698,8 @@ class ScooterSharingSimulator:
             self.events.reset()
             Scooter.init_supply(self.graph, n=self.initial_supply, random_state=i)
             RunPricing.init_pricing(self)
-            self.service_provider.restore_budget()
+            if self.pricing:
+                self.service_provider.restore_budget()
             self.trip_reader = TripReader(replica)
             self.history_saver = HistorySaver(name=replica.split('.')[0].split('/')[-1] + self.pricing * '_pricing')
             arrivals = self.trip_reader.construct_events(self)
