@@ -270,6 +270,7 @@ class Scooter:
         self.location = location
         self.battery_level = 100
         self.price_incentive = 10
+        self.recharge_history = []
         
 
     @classmethod
