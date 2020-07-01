@@ -694,6 +694,7 @@ class ScooterSharingSimulator:
         
         for i, replica in enumerate(replicas):
             print('Replica: ', replica)
+            self.time = 0
             self.events.reset()
             Scooter.init_supply(self.graph, n=self.initial_supply, random_state=i)
             RunPricing.init_pricing(self)
