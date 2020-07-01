@@ -294,7 +294,7 @@ class Scooter:
             locations = choices(list(network.transfer_nodes), k=n)
                 
         Scooter.scooters = [cls(loc) for loc in locations]
-        with open('visualization/data/scooter_locations.json', 'w') as file:
+        with open('visualization/data/scooter_locations_{}.json'.format(random_state), 'w') as file:
             json.dump(locations, file)
 
     def get_price_incentive(self, grid):
