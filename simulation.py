@@ -236,7 +236,7 @@ class User:
                 'ride_duration': None,
                 'pickup_time': None,
                 'pickup_node': None,
-                'pricing'; None
+                'pricing': None
                 'scooter': {
                     'id': None,
                     'battery_level_pickup': None,
@@ -745,7 +745,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     if args.simulate:
-        replicas = ['data/replicas/stkde_nhpp_{}.csv'.format(i) for i in range(1)]
+        replicas = ['data/replicas/stkde_nhpp_{}.csv'.format(i) for i in range(20)]
         
         study_area_filename = 'shapes/study_area/study_area.shp'
         study_area = gpd.read_file(study_area_filename).to_crs('epsg:4326')
@@ -759,7 +759,7 @@ if __name__ == '__main__':
         simulator = ScooterSharingSimulator(graph, grid, initial_supply=100, pricing=args.pricing)
         simulator.simulate(replicas, verbose=1)
     if args.train:
-        replicas = ['data/replicas/stkde_nhpp_{}.csv'.format(i) for i in range(2)]
+        replicas = ['data/replicas/stkde_nhpp_{}.csv'.format(i) for i in range(20)]
         history_saver = HistorySaver(name='test')
         study_area_filename = 'shapes/study_area/study_area.shp'
         study_area = gpd.read_file(study_area_filename).to_crs('epsg:4326')
