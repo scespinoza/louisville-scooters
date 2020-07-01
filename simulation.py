@@ -236,7 +236,7 @@ class User:
                 'ride_duration': None,
                 'pickup_time': None,
                 'pickup_node': None,
-                'pricing': None
+                'pricing': None,
                 'scooter': {
                     'id': None,
                     'battery_level_pickup': None,
