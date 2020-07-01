@@ -236,6 +236,7 @@ class User:
                 'ride_duration': None,
                 'pickup_time': None,
                 'pickup_node': None,
+                'pricing'; None
                 'scooter': {
                     'id': None,
                     'battery_level_pickup': None,
@@ -299,6 +300,12 @@ class Scooter:
     def get_price_incentive(self, grid):
         self.price_incentive = grid.get_scooter_price(self)
         return self.price_incentive
+
+    @classmethod
+    def store_history(cls, history_saver):
+        for scooter in scooters:
+            history_saver.store_recharge({'id': scooter.scooter_id,
+                                          'recharge_history': scooter.recharge_history})
 
 class Event(ABC):
 
@@ -420,6 +427,7 @@ class PickUp(Event):
             if self.incentive:
                 simulator.service_provider.budget -= self.scooter.price_incentive
                 simulator.grid.update_stat(origin['osmid'], 'pricing', expense=self.scooter.price_incentive)
+                self.user.trip['pricing'] = self.scooter.price_incentive
             self.satisfied = True
             self.__class__.satisfied_requests += 1
             self.scooter.available = False
@@ -487,6 +495,10 @@ class ChargeScooter(Event):
         self.scooter.available = False
         current_day = self.time // (24 * 3600)
         release_time = current_day + ((24 + 7) * 3600) # 7am of next day
+        self.scooter.recharge_history.append({'recharge_time': self.time, 
+                                              'release_time': relase_time, 
+                                              'recharge_location': self.scooter.location,
+                                              'release_location': None})
         release_event = ReleaseScooter(self.scooter, release_time)
         simulator.insert(release_event)
 
@@ -504,6 +516,8 @@ class ReleaseScooter(Event):
         self.scooter.location = self.new_location
         self.scooter.battery_level = np.random.uniform(95, 100)
         self.scooter.available = True
+        self.scooter.recharge_history[-1]['release_location'] = self.scooter.location
+        self.scooter.recharge_history[-1]['battery_on_release'] = self.scooter.battery_level
     
     def __str__(self):
         return "Releasing scooter {} at {}".format(self.scooter.scooter_id, self.new_location)
@@ -569,29 +583,32 @@ class UserLeavesSystem(Event):
         self.user = user
 
     def execute(self, simulator):
-        if simulator.trip_saver:
-            simulator.trip_saver.store_trip(self.user.trip)
+        if simulator.history_saver:
+            simulator.history_saver.store_trip(self.user.trip)
     def __str__(self):
         return 'User {} leaving the system.'.format(self.user.user_id)
 
-class TripsSaver:
+class HistorySaver:
     def __init__(self, name='austin'):
         self.name = name
-        self.trips = {
+        self.history = {
             'name': name,
-            'trips': []
+            'trips': [],
+            'recharge': []
         }
     def store_trip(self, trip):
-        self.trips['trips'].append(trip)
+        self.history['trips'].append(trip)
+    def store_recharge(self, recharge):
+        self.history['recharge'].append(recharge)
 
     def save(self):
-        print('Saving Trips to JSON')
+        print('Saving history to JSON')
         with open('visualization/data/' + self.name + '.json', 'w') as file:
-            json.dump(self.trips, file)
+            json.dump(self.history, file)
 
 class ScooterSharingSimulator:
 
-    def __init__(self, graph, grid, initial_supply=200, days=7, month='march', year=2019, trip_saver=None, pricing=False):
+    def __init__(self, graph, grid, initial_supply=200, days=7, month='march', year=2019, history_saver=None, pricing=False):
         self.pricing = pricing
         self.replicas = replicas
         self.events = ListQueue()
@@ -599,7 +616,7 @@ class ScooterSharingSimulator:
         self.simulation_time = days * 24 * 3600
         self.graph = graph
         self.grid = grid
-        self.trip_saver = trip_saver
+        self.history_saver = history_saver
         self.time_window = 3600
         self.timesteps = self.simulation_time // self.time_window
         if self.pricing:
@@ -680,7 +697,7 @@ class ScooterSharingSimulator:
             RunPricing.init_pricing(self)
             self.service_provider.restore_budget()
             self.trip_reader = TripReader(replica)
-            self.trip_saver = TripsSaver(name=replica.split('.')[0].split('/')[-1])
+            self.history_saver = HistorySaver(name=replica.split('.')[0].split('/')[-1] + self.pricing * '_pricing')
             arrivals = self.trip_reader.construct_events(self)
             self.insert_events(arrivals)
             self.do_all_events(verbose=verbose)
@@ -712,7 +729,7 @@ class ScooterSharingSimulator:
 
 
     def save_trips(self):
-        self.trip_saver.save()
+        self.history_saver.save()
 
     def get_state(self):
         return self.grid.get_state(self)
@@ -742,7 +759,7 @@ if __name__ == '__main__':
         simulator.simulate(replicas, verbose=1)
     if args.train:
         replicas = ['data/replicas/stkde_nhpp_{}.csv'.format(i) for i in range(2)]
-        trip_saver = TripsSaver(name='test')
+        history_saver = HistorySaver(name='test')
         study_area_filename = 'shapes/study_area/study_area.shp'
         study_area = gpd.read_file(study_area_filename).to_crs('epsg:4326')
         
@@ -773,7 +790,7 @@ if __name__ == '__main__':
         
     if args.test_grid:
         replicas = ['data/replicas/stkde_nhpp_{}.csv'.format(i) for i in range(1)]
-        trip_saver = TripsSaver(name='test')
+        history_saver = HistorySaver(name='test')
         study_area_filename = 'shapes/study_area/study_area.shp'
         study_area = gpd.read_file(study_area_filename).to_crs('epsg:4326')
         print(study_area.crs)
