@@ -17,7 +17,9 @@ let bikeEdgesCollection,
     tripsCollection,
     bikeNodesCollection,
     walkNodesCollection,
-    scooterLocations;
+    scooterLocations,
+    currentReplicaName,
+    q;
 
 let simRatio = 1000; // real ms / sim ms
 let satisfiedRequests = 0;
@@ -40,10 +42,10 @@ loadMap();
 loadLegend();
 createInfo();
 loadStatsGraph();
-loadData();
 reset();
 map.on('zoom', reset);
 map.on('viewreset', reset);
+
 
 
 var statsLine = d3.line()
@@ -73,7 +75,27 @@ timerWorker.addEventListener("message", function (event) {
     }
 });
 */
+function loadReplicaData() {
+    g.selectAll('circle').transition().remove();
+    var scootersFilename = getSelectedReplicaScootersFilename();
+    var replicaFilename = getSelectedReplicaFilename();
+    loadData(replicaFilename, scootersFilename);
+}
 
+function getSelectedReplicaScootersFilename (){
+    var replica_n = $('#replica-selector').val();
+    return "scooter_locations_" + replica_n + '.json'
+}
+function getSelectedReplicaFilename() {
+    var pricing = $('#pricing-checkbox').is(":checked");
+    var replica_n = $('#replica-selector').val();
+    var filename = "stkde_nhpp_" + replica_n;
+    if (pricing) {
+        filename += '_pricing'
+    }
+    filename += '.json'
+    return filename
+}
 function createInfo() {
     var info = "This graph shows the evolution of the service level of the system i.e. the percentage of potential users that were able to rent a scooter and finished their trips succecsfully."
     var div = d3.select("body").append("div")
@@ -241,7 +263,7 @@ function restart() {
 }
 
 function loadStatsGraph() {
-    var height = 260;
+    var height = 200;
     var width = 360;
     var padding = 45;
 
@@ -268,6 +290,7 @@ function loadStatsGraph() {
                 .tickFormat(d3.timeFormat("%a %H hrs."));
     var formatPercent = d3.format(".0%");
     yAxis = d3.axisLeft(yScale)
+            .ticks(5)
             .tickFormat(formatPercent);
 
     xAxisG = statsSVG.append("g")
@@ -295,7 +318,7 @@ function updateStats() {
         hour: currentDate,
         serviceLevel: serviceLevel
     });
-    xScale.domain([toDateTime(0), currentDate]);
+    xScale.domain([toDateTime(0), currentDate]).ticks(5);
     xAxisG.transition().call(xAxis);
     
     statsSVG.select("#service-level")
@@ -339,14 +362,14 @@ function reset() {
 
 
 
-function loadData() {
+function loadData(replicaFilename, scooterFilename) {
 
     Promise.all([
         d3.json('data/bike_edges.geojson'),
         d3.json('data/bike_nodes.geojson'),
         d3.json('data/walk_edges.geojson'),
         d3.json('data/walk_nodes.geojson'),
-        d3.json('data/test.json'),
+        d3.json('data/' + replicaFilename),
     ])
    .then(function (data) {
         bikeEdgesCollection = data[0];
@@ -354,16 +377,19 @@ function loadData() {
         walkEdgesCollection = data[2];
         walkNodesCollection = data[3];
         tripsCollection = data[4];
-        scooterLocations = locateScooters();
-        console.log("Done");
+        
+        
+        scooterLocations = locateScooters(scooterFilename);
+        
     });
     
 }
 
-function locateScooters() {
+function locateScooters(filename = 'scooter_locations.json') {
     return new Promise(function (resolve, reject) {
-        d3.json('data/scooter_locations.json').then(function (scootersCollection){
+        d3.json('data/' + filename).then(function (scootersCollection){
             console.log('Locating Scooters')
+            g.selectAll('circle.static-scooter').remove()
             var scooterLocations = bikeNodesCollection.features.filter(node => scootersCollection.includes(String(node.properties.osmid)));
             console.log(scooterLocations)
             g.selectAll('circle')
@@ -374,9 +400,10 @@ function locateScooters() {
                 .style("fill", d3.color(d3.interpolateRdYlGn(1)).hex())
                 .attr("class", "static-scooter")
                 .attr("id", function(d) {
-                    d.id = scootersCollection.indexOf(String(d.properties.osmid)) + 1;
+                    var replica = parseInt($("#replica-selector").val()) * 100;
+                    d.id = replica + scootersCollection.indexOf(String(d.properties.osmid)) + 1;
                     d.battery = 1
-                    return "scooter-" + (scootersCollection.indexOf(String(d.properties.osmid)) + 1);
+                    return "scooter-" + (scootersCollection.indexOf(String(d.properties.osmid)) + 1 + replica);
                 })
                 .attr("transform", function (d) {
                     var p = applyLatLngToLayer(d.geometry.coordinates);
@@ -413,8 +440,12 @@ function locateScooters() {
 }
 
 function animateAllTrips() {
+    if ($("#replica-selector").val() == "") {
+        alert("Must select a replica.");
+        return null;
+    }
    
-    var q = d3.queue();
+    q = d3.queue();
     trips = tripsCollection.trips;
     
     //trips = [tripsCollection.trips[2]];
@@ -509,7 +540,6 @@ function animateTrip(trip, delay, callback)  {
             trip.ride.forEach(function(osmid) {
                 shortestPathRide.push(bikeEdgesCollection.features.find(edge => String(edge.properties.osmid) == osmid));
             });
-            console.log(shortestPathRide)
             animateRide(shortestPathRide, 0, 0, trip.scooter.id);
         }
         else if (trip.walk.length > 0 && trip.ride.length == 0) {
@@ -523,9 +553,13 @@ function animateTrip(trip, delay, callback)  {
             animateUnsatisfiedRequest(trip.pickup_node, trip.pickup_time - trip.arrival_time);
         } else {
             // user walks and picks up an scooter
+            if (trip.pricing) {
+                console.log('Pricing incentive: ' + trip.pricing + '$');
+            }
             satisfiedRequests++;
             shortestPathWalk =[]
             trip.walk.forEach(function(osmid) {
+                
                 shortestPathWalk.push(walkEdgesCollection.features.find(edge => String(edge.properties.osmid) == osmid));
             })
             
@@ -538,7 +572,7 @@ function animateTrip(trip, delay, callback)  {
             scooter = trip.scooter;
             ride_delay = trip.pickup_time - trip.arrival_time;
             animateWalk(shortestPathWalk, 0, 0);
-            animateRide(shortestPathRide, 0, ride_delay, scooter);
+            animateRide(shortestPathRide, 0, ride_delay, scooter.id);
         }
         updateStats();
         callback(null);
@@ -549,6 +583,7 @@ function animateTrip(trip, delay, callback)  {
 function animateWalk(path, ipath, delay)  {
     
     var currentEdge = path[ipath];
+
     var edge = g.append("path")
                 .attr("id", function () {
                     return "edge-" + currentEdge.properties.osmid;
@@ -578,7 +613,6 @@ function animateWalk(path, ipath, delay)  {
                     })
                     .on("start", function() {
                         d3.select(this).attr("r", 3);
-                        console.log(delay);
                     })
                     .on("end", function () {
                         d3.select(this).remove()                        
@@ -594,7 +628,7 @@ function animateWalk(path, ipath, delay)  {
 function animateRide(path, ipath, delay, scooter) {
     
     var currentEdge = path[ipath];
-    
+
     var edge = g.append("path")
                 .attr("id", function () {
                     return "edge-" + currentEdge.properties.osmid;
@@ -604,14 +638,15 @@ function animateRide(path, ipath, delay, scooter) {
                     return d3Path(currentEdge.geometry);
                 });
     
-    var circle = g.select("circle#scooter-" + scooter.id)
+    var circle = g.select("circle#scooter-" + scooter)
     circle.transition()
                     .delay(function() {
                         return 1000 * delay / simRatio;
                     })
                     .duration(function() {
                         var velocity = 2.16;
-                        return (1000 * currentEdge.properties.time) / simRatio;
+                        var duration = (1000 * currentEdge.properties.time) / simRatio;
+                        return duration;
                     })
                     .ease(d3.easeLinear)
                     .attrTween("transform", function () {
@@ -630,7 +665,7 @@ function animateRide(path, ipath, delay, scooter) {
                         if (ipath < path.length - 1) {
                             animateRide(path, ipath + 1, 0, scooter);
                         } else {
-                            var thisScooter = d3.select("circle#scooter-" + scooter.id)
+                            var thisScooter = d3.select("circle#scooter-" + scooter)
                                                     .attr("class", "static-scooter")
                                                     .style("fill", function (d) {
                                                         d.battery = scooter.battery_level_dropoff / 100
@@ -640,7 +675,7 @@ function animateRide(path, ipath, delay, scooter) {
                                 
                         }
                     
-                    })
+                    });
 }
 
 function adjustVelocity() {
@@ -657,6 +692,7 @@ function adjustVelocity() {
 
 
 function pause() {
+    q.abort();
     g.selectAll('circle')
         .transition()
         .duration(0)

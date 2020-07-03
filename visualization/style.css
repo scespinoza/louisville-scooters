@@ -87,10 +87,14 @@
     font-weight: normal;
 }
 .big {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: bold;
 }
 
+#graph-info {
+    position: absolute;
+    left: 240px;
+}
 
 .control-panel-button {
     display: inline-block;

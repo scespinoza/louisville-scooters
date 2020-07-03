@@ -359,10 +359,7 @@ class UserRequest(Event):
             if np.any(np.array(user_utility) > 0):
                 max_utility = np.argmax(user_utility)
                 nearest_scooter = available_scooters[max_utility]
-                incentive = nearest_scooter.get_price_incentive(simulator.grid)
-                
-                print('User recives an incentive of {:.2f}$.'.format(incentive))
-                
+                incentive = nearest_scooter.get_price_incentive(simulator.grid)                
                 
                 distance = simulator.graph.shortest_path_distance(self.user.origin,nearest_scooter.location)
                 walking_time = distance / self.user.velocity
@@ -426,7 +423,11 @@ class PickUp(Event):
 
         if self.scooter.available and battery_consumption <= self.scooter.battery_level:
             if self.incentive:
-                simulator.service_provider.budget -= self.scooter.price_incentive
+                print('Pricing')
+                incentive = self.scooter.price_incentive
+                simulator.service_provider.budget -= incentive
+                print('User recives an incentive of {:.2f}$.'.format(incentive))
+                print('Remaining Budget: {}'.format(simulator.service_provider.budget))
                 simulator.grid.update_stat(origin['osmid'], 'pricing', expense=self.scooter.price_incentive)
                 self.user.trip['pricing'] = self.scooter.price_incentive
             self.satisfied = True
