@@ -18,7 +18,7 @@ class SubActor(layers.Layer):
         self.n_neurons = n_neurons
         self.n_hidden = n_hidden
         self.layers = [layers.Dense(self.n_neurons, activation='sigmoid',
-                        kernel_initializer='he_init', kernel_regularizer='l2') 
+                        kernel_initializer='he_normal', kernel_regularizer='l2') 
                       for _ in range(n_hidden)]
         self.output_layer = layers.Dense(1, activation='relu')
 
