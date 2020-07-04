@@ -363,7 +363,7 @@ class UserRequest(Event):
                 
                 distance = simulator.graph.shortest_path_distance(self.user.origin,nearest_scooter.location)
                 walking_time = distance / self.user.velocity
-                pickup = PickUp(simulator.time + walking_time, self.user, nearest_scooter)
+                pickup = PickUp(simulator.time + walking_time, self.user, nearest_scooter, incentive=True)
                 simulator.grid.update_stat(nearest_scooter.location, 'pricing', value=incentive)
                 simulator.service_provider.expend(incentive)
                 self.user.trip['pickup_node'] = nearest_scooter.location
