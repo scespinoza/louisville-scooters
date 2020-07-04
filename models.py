@@ -255,6 +255,8 @@ class Agent:
                 batch_loss = self.train_minibatch()
                 print('Batch Loss: {:.2f}'.format(batch_loss))
                 self.history['batch_loss'].append(batch_loss)
+                plt.plot(self.history['batch_loss'])
+                plt.savefig('training-loss.png')
             self.history['rewards'].append(np.sum(episode_rewards))
             self.history['dqn_loss'].append(self.get_q_loss())
         self.model.save_target_model('test_model')
