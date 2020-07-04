@@ -428,7 +428,7 @@ class PickUp(Event):
                 simulator.service_provider.budget -= incentive
                 print('User recives an incentive of {:.2f}$.'.format(incentive))
                 print('Remaining Budget: {}'.format(simulator.service_provider.budget))
-                simulator.grid.update_stat(origin['osmid'], 'pricing', expense=self.scooter.price_incentive)
+                simulator.grid.update_stat(origin['osmid'], 'pricing', value=self.scooter.price_incentive)
                 self.user.trip['pricing'] = self.scooter.price_incentive
             self.satisfied = True
             self.__class__.satisfied_requests += 1
