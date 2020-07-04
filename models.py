@@ -13,7 +13,7 @@ for device in gpu_devices:
     tf.config.experimental.set_memory_growth(device, True)
 
 class SubActor(layers.Layer):
-    def __init__(self, n_neurons=32, n_hidden=2, name='SubActor'):
+    def __init__(self, n_neurons=8, n_hidden=4, name='SubActor'):
         super(SubActor, self).__init__(name=name)
         self.n_neurons = n_neurons
         self.n_hidden = n_hidden
@@ -48,7 +48,7 @@ class ActorNetwork(models.Model):
 
 class LocalizedModule(layers.Layer):
 
-    def __init__(self, n_neurons=32, n_hidden=2, name='LocalizedModule'):
+    def __init__(self, n_neurons=8, n_hidden=4, name='LocalizedModule'):
         super(LocalizedModule, self).__init__(name=name)
         self.n_neurons = n_neurons
         self.n_hidden = n_hidden
@@ -62,7 +62,7 @@ class LocalizedModule(layers.Layer):
         return self.output_layer(x)
 
 class SubCritic(layers.Layer):
-    def __init__(self, n_neurons=32, n_hidden=2, name='SubCritic'):
+    def __init__(self, n_neurons=32, n_hidden=3, name='SubCritic'):
         super(SubCritic, self).__init__(name=name)
         self.n_neurons = n_neurons
         self.n_hidden = n_hidden
@@ -90,6 +90,7 @@ class CriticNetwork(models.Model):
         batch_size, y_regions, x_regions, t, state_size = x.shape
         f = []
         q = []
+        p = tf.stack([p, p], axis=3)
         for n, (i, j) in enumerate(product(range(y_regions), range(x_regions))):
             i_area = i + 1
             j_area = j + 1
@@ -98,14 +99,13 @@ class CriticNetwork(models.Model):
             x = tf.pad(x, paddings=paddings)
             neighbors = [(i_area - 1, j_area), (i_area, j_area + 1), (i_area + 1, j_area), (i_area, j_area - 1)]
 
-            neighbors_tensor = tf.stack([x[:, i, j, -1:] for i, j in neighbors])
+            neighbors_tensor = tf.stack([x[:, i, j] for i, j in neighbors])
 
             neighbors = tf.reshape(tf.transpose(neighbors_tensor, 
                                     perm=[1, 2, 0, 3]), 
                                     shape=(batch_size, 1, state_size * 4))
-            x_f = tf.concat([neighbors, x[:, i, j, -1:,:], tf.reshape(p[:, i, j], 
-                            shape=(batch_size, 1, 1))], axis=2)
-            x_q = tf.concat([x[:, i, j, -1:], tf.reshape(p[:, i, j], shape=(batch_size, 1, 1))], axis=2)
+            x_f = tf.concat([neighbors, x[:, i, j], p[:, i, j]], axis=2)
+            x_q = tf.concat([x[:, i, j], p[:, i, j]], axis=2)
             f.append(getattr(self, "loc_module_{}".format(n))(tf.reshape(x_f, shape=(batch_size, 5 * state_size + 1))))
             q.append(getattr(self, "sub_critic_{}".format(n))(getattr(self, "gru_{}".format(n))(x_q)))
         Q = tf.reduce_sum(tf.stack(f) +  tf.stack(q))
@@ -256,6 +256,7 @@ class Agent:
                 batch_loss = self.train_minibatch()
                 print('Batch Loss: {:.2f}'.format(batch_loss))
                 self.history['batch_loss'].append(batch_loss)
+                plt.figure()
                 plt.plot(self.history['batch_loss'])
                 plt.savefig('training-loss.png')
             self.history['rewards'].append(np.sum(episode_rewards))
