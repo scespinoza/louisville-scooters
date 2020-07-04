@@ -58,6 +58,8 @@ class Grid:
         self.nodes_in_boxes = nodes_in_boxes
         self.demand_history = deque(maxlen=8)
         self.satisfied_requests_history = deque(maxlen=8)
+        self.stats_memory = deque(maxlen=2)
+        self.stats_memory.append(np.zeros(1, 10, 10, 1, 6))
         self.prices = np.zeros_like(boxes)
         self.stats =  {
             'demand': np.zeros_like(boxes),
@@ -126,7 +128,7 @@ class Grid:
         return self.stats
 
     def set_price(self, action):
-        self.prices = action.reshape(self.boxes.shape)
+        self.prices = action.T.reshape(self.boxes.shape)
 
     def get_scooter_price(self, scooter):
         area = self.get_area(scooter.location)
@@ -144,7 +146,9 @@ class Grid:
         sr[demands == 0] = 1
         stats['unsatisfied_ratio'] = 1 - sr/demands
         state_array = stats.loc[:, ['supply', 'demand', 'arrival', 'expense', 'remaining_budget', 'unsatisfied_ratio']].values.reshape(1, 10, 10, 1, stats.shape[1] - 2).astype(np.float32)
-        return state_array
+        state_array = state_array.transpose(0, 2, 1, 3, 4)
+        self.state_history.append(state_array)
+        return np.concatenate(self.state_history, axis=3)
 
     def get_last_satisfied_requests(self):
         return self.stats['satisfied_requests'].sum()
@@ -756,7 +760,7 @@ if __name__ == '__main__':
         
         study_area_polygon = study_area.iloc[0]['geometry']
         graph = MultiModalNetwork.from_polygon(study_area_polygon, speeds={'walk': 1.4, 'bike':2.16})
-        grid_gdf = gpd.read_file('shapes/grid/grid_500m.shp').to_crs('epsg:4326')
+        grid_gdf = gpd.read_file('shapes/grid/grid_500m.shp').to_crs('epsg:4326').sort_values('id')
         
         grid = Grid.from_gdf(grid_gdf, (10,10))
         grid.create_nodes_dict(graph.layers['walk']['nodes'])
@@ -766,7 +770,7 @@ if __name__ == '__main__':
         replicas = ['data/replicas/stkde_nhpp_{}.csv'.format(i) for i in range(20)]
         history_saver = HistorySaver(name='test')
         study_area_filename = 'shapes/study_area/study_area.shp'
-        study_area = gpd.read_file(study_area_filename).to_crs('epsg:4326')
+        study_area = gpd.read_file(study_area_filename).to_crs('epsg:4326').sort_values('id')
         
         study_area_polygon = study_area.iloc[0]['geometry']
         graph = MultiModalNetwork.from_polygon(study_area_polygon, speeds={'walk': 1.4, 'bike':2.16})
@@ -789,8 +793,8 @@ if __name__ == '__main__':
         ax.set_title('Batch Loss')
         ax.set_xlabel('Episode')
         ax.set_ylabel('Loss')
-        ax.set_xticks(list(range(0, 15*24*7 + 1, 48)))
-        ax.set_xticklabels(list(range(0, 24, 2)))
+        ax.set_xticks(list(range(0, 15*24*7, 24*7)))
+        ax.set_xticklabels(list(range(0, 15)))
         fig.savefig('batch_loss.png')
         
     if args.test_grid:
