@@ -59,7 +59,7 @@ class Grid:
         self.demand_history = deque(maxlen=8)
         self.satisfied_requests_history = deque(maxlen=8)
         self.stats_memory = deque(maxlen=2)
-        self.stats_memory.append(np.zeros(1, 10, 10, 1, 6))
+        self.stats_memory.append(size=np.zeros(1, 10, 10, 1, 6))
         self.prices = np.zeros_like(boxes)
         self.stats =  {
             'demand': np.zeros_like(boxes),
@@ -135,7 +135,7 @@ class Grid:
         return self.prices[area]
 
     def get_state(self, simulator):
-        
+
         stats = gpd.GeoDataFrame(self.get_stats(), geometry=self.boxes)
         stats['remaining_budget'] = simulator.service_provider.budget
         self.demand_history.append(self.stats['demand'])
