@@ -725,7 +725,7 @@ class ScooterSharingSimulator:
     def reset(self):
         Scooter.init_supply(self.graph, n=self.initial_supply)
         #UserRequest.init_user_requests(self)
-        RunPricing.init_pricing(self)
+        #RunPricing.init_pricing(self)
         self.service_provider.restore_budget()
         replica = self.replicas[self.current_replica]
         self.current_replica = (self.current_replica + 1) % self.n_replicas
