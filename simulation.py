@@ -58,8 +58,8 @@ class Grid:
         self.nodes_in_boxes = nodes_in_boxes
         self.demand_history = deque(maxlen=8)
         self.satisfied_requests_history = deque(maxlen=8)
-        self.stats_memory = deque(maxlen=2)
-        self.stats_memory.append(np.zeros(shape=(1, 10, 10, 1, 6)))
+        self.state_memory = deque(maxlen=2)
+        self.state_memory.append(np.zeros(shape=(1, 10, 10, 1, 6)))
         self.prices = np.zeros_like(boxes)
         self.stats =  {
             'demand': np.zeros_like(boxes),
@@ -147,8 +147,8 @@ class Grid:
         stats['unsatisfied_ratio'] = 1 - sr/demands
         state_array = stats.loc[:, ['supply', 'demand', 'arrival', 'expense', 'remaining_budget', 'unsatisfied_ratio']].values.reshape(1, 10, 10, 1, stats.shape[1] - 2).astype(np.float32)
         state_array = state_array.transpose(0, 2, 1, 3, 4)
-        self.state_history.append(state_array)
-        return np.concatenate(self.state_history, axis=3)
+        self.state_memory.append(state_array)
+        return np.concatenate(self.state_memory, axis=3)
 
     def get_last_satisfied_requests(self):
         return self.stats['satisfied_requests'].sum()
