@@ -179,7 +179,7 @@ class Grid:
 
 class ServiceProvider(Agent):
     
-    def __init__(self, budget=20000, model=HRP(), buffer_length=100, name='HRP'):
+    def __init__(self, budget=1500, model=HRP(), buffer_length=100, name='HRP'):
         super(ServiceProvider, self).__init__(name=name, model=model, buffer_length=buffer_length)
         self.total_budget = budget
         self.budget = budget
@@ -429,7 +429,7 @@ class PickUp(Event):
                 print('User recives an incentive of {:.2f}$.'.format(incentive))
                 print('Remaining Budget: {}'.format(simulator.service_provider.budget))
                 simulator.grid.update_stat(origin['osmid'], 'pricing', value=self.scooter.price_incentive)
-                self.user.trip['pricing'] = self.scooter.price_incentive
+                self.user.trip['pricing'] = str(self.scooter.price_incentive)
             self.satisfied = True
             self.__class__.satisfied_requests += 1
             self.scooter.available = False
