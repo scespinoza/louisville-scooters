@@ -70,8 +70,12 @@
                      onchange="adjustVelocity()" autocomplete="off">
 
             <span  id="velocity-display" class="control-panel-text">x1000</span>
+            <br>
+            <br>
+            <label class='control-panel-text'>
+                SELECT REPLICA: 
             <select name="Replica" id="replica-selector", onchange="loadReplicaData()">
-                <option value="">Select Replica</option>
+                <option value="">--</option>
                 <option value="1">Replica 1</option>
                 <option value="2">Replica 2</option>
                 <option value="3">Replica 3</option>
@@ -83,7 +87,12 @@
                 <option value="9">Replica 9</option>
                 <option value="10">Replica 10</option>
             </select>
-            <input type="checkbox" name="Pricing" id="pricing-checkbox">
+        </label>
+            <label class='control-panel-text'>
+                PRICING
+                <input type="checkbox" name="Pricing" id="pricing-checkbox", onChange="loadReplicaData()">
+                
+            </label>
             
         </div>
     </div>

@@ -27,6 +27,10 @@ let totalRequests = 0;
 let serviceLevelStats = [{hour:toDateTime(0), serviceLevel:1}];
 let currentTime = 0;
 
+let cashIcon = '<path d="M14 3H1a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1h-1z"/> \
+<path fill-rule="evenodd" d="M15 5H1v8h14V5zM1 4a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1H1z"/>\
+<path d="M13 5a2 2 0 0 0 2 2V5h-2zM3 5a2 2 0 0 1-2 2V5h2zm10 8a2 2 0 0 1 2-2v2h-2zM3 13a2 2 0 0 0-2-2v2h2zm7-4a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/>'
+
 function getCurrentServiceLevel() {
     if (totalRequests > 0) {
         return satisfiedRequests / totalRequests;
@@ -76,10 +80,51 @@ timerWorker.addEventListener("message", function (event) {
 });
 */
 function loadReplicaData() {
-    g.selectAll('circle').transition().remove();
+    console.log($("#replica-selector").val() == "");
+    if ($("#replica-selector").val() == ""){
+        alert('Select a replica.');
+        return null;
+    } else {
+    var loadingBackground = d3.select('#mapwrapper').insert('div', ":first-child")
+        .attr("class", "loading-background")
+        .style('height', '100%')
+        .style('width', '100%')
+        .style('text-align', 'center')
+        .style('opacity', 0)
+    loadingBackground.transition()
+        .duration(3000)
+        .style('opacity', 0.6);
+
+    var title = loadingBackground.append('h1')
+            .style('color', 'white')
+            .style('margin', 'auto auto')
+            .style('vertical-align', 'middle')
+            .html('LOADING');
+    repeat();
+
+        function repeat(){
+            title.transition()
+             .duration(1000)
+            .style('opacity', 0.5)
+            .transition()
+            .duration(1000)
+            .style('opacity', 1)
+            .on("end", repeat);
+        }
+    ;
+        
+    g.selectAll('circle').transition().duration(2000).style('opacity', 0).on("end", function(){d3.select(this).remove()});
     var scootersFilename = getSelectedReplicaScootersFilename();
     var replicaFilename = getSelectedReplicaFilename();
-    loadData(replicaFilename, scootersFilename);
+
+    Promise.all([
+        loadData(replicaFilename, scootersFilename)
+    ]).then(function(){
+        loadingBackground.transition().duration(3000).style('opacity',0).on('end', d3.select(this).remove());
+        title.transition().duration(3000).style('opacity',0).on('end', d3.select(this).remove());
+    });
+}
+    
 }
 
 function getSelectedReplicaScootersFilename (){
@@ -363,25 +408,27 @@ function reset() {
 
 
 function loadData(replicaFilename, scooterFilename) {
-
-    Promise.all([
-        d3.json('data/bike_edges.geojson'),
-        d3.json('data/bike_nodes.geojson'),
-        d3.json('data/walk_edges.geojson'),
-        d3.json('data/walk_nodes.geojson'),
-        d3.json('data/' + replicaFilename),
-    ])
-   .then(function (data) {
-        bikeEdgesCollection = data[0];
-        bikeNodesCollection = data[1];
-        walkEdgesCollection = data[2];
-        walkNodesCollection = data[3];
-        tripsCollection = data[4];
-        
-        
-        scooterLocations = locateScooters(scooterFilename);
-        
-    });
+    return new Promise(function(resolve, reject) {
+        Promise.all([
+            d3.json('data/bike_edges.geojson'),
+            d3.json('data/bike_nodes.geojson'),
+            d3.json('data/walk_edges.geojson'),
+            d3.json('data/walk_nodes.geojson'),
+            d3.json('data/' + replicaFilename),
+        ])
+       .then(function (data) {
+            bikeEdgesCollection = data[0];
+            bikeNodesCollection = data[1];
+            walkEdgesCollection = data[2];
+            walkNodesCollection = data[3];
+            tripsCollection = data[4];
+            
+            
+            scooterLocations = locateScooters(scooterFilename);
+            resolve(scooterLocations)
+        });
+    })
+    
     
 }
 
@@ -392,12 +439,13 @@ function locateScooters(filename = 'scooter_locations.json') {
             g.selectAll('circle.static-scooter').remove()
             var scooterLocations = bikeNodesCollection.features.filter(node => scootersCollection.includes(String(node.properties.osmid)));
             console.log(scooterLocations)
-            g.selectAll('circle')
+            var scooterCircles = g.selectAll('circle')
                 .data(scooterLocations)
                 .enter()
                 .append("circle")
                 .attr("r", 4)
                 .style("fill", d3.color(d3.interpolateRdYlGn(1)).hex())
+                .style('opacity', 0)
                 .attr("class", "static-scooter")
                 .attr("id", function(d) {
                     var replica = parseInt($("#replica-selector").val()) * 100;
@@ -422,7 +470,7 @@ function locateScooters(filename = 'scooter_locations.json') {
                             .replace('translate(', '')
                             .replace(')', '')
                             .split(', ')
-                    console.log(coords);
+                    
                     div.html(info)
                         .style("left",(parseInt(coords[0]) )+ "px")
                         .style("top", parseInt(coords[1]) + "px");
@@ -433,10 +481,43 @@ function locateScooters(filename = 'scooter_locations.json') {
                 }).on('mouseout', function(d) {
                     d3.select('div#scooter-info-' + d.id).transition().style('opacity', 0).on('end', function(){d3.select(this.remove())})
                 });
+            scooterCircles.transition().duration(3000).style('opacity', 0.3);
+            
             resolve(scooterLocations)
         }) 
     })
    
+}
+
+function animatePricing(scooter,pricing) {
+    //var scooterCircle = g.select("circle#scooter-" + scooter);
+    //console.log(scooterCircle.data())
+    var scooterDatum = g.select("#scooter-" + scooter).datum().properties
+    var xScooter = scooterDatum.x;
+    var yScooter = scooterDatum.y;
+    var p = applyLatLngToLayer([xScooter, yScooter]);
+
+    var iconSVG = g.append('svg')
+        .attr("width", '60px')
+        .attr("height", '30px')  
+        .attr("x", p.x - 10)      
+        .attr("y", p.y - 10)
+        .attr("class", "bi bi-cash-stack")
+        .attr("fill", "green")
+        .attr("xmlns", "http://www.w3.org/2000/svg")
+        .html(cashIcon)
+    iconSVG.append("text")
+        .html(parseFloat(pricing).toFixed(2) + "$")
+        .attr("x", 22)
+        .attr("y", 13)
+        .attr("fill", "white")
+        .style('green', "white")
+        
+
+    iconSVG.transition()
+        .duration(4000)
+        .attr("y", p.y - 20)
+        .style('opacity', 0)
 }
 
 function animateAllTrips() {
@@ -553,9 +634,8 @@ function animateTrip(trip, delay, callback)  {
             animateUnsatisfiedRequest(trip.pickup_node, trip.pickup_time - trip.arrival_time);
         } else {
             // user walks and picks up an scooter
-            if (trip.pricing) {
-                console.log('Pricing incentive: ' + trip.pricing + '$');
-            }
+            if (trip.pricing){
+            console.log('Pricing incentive: ' + trip.pricing + '$');}
             satisfiedRequests++;
             shortestPathWalk =[]
             trip.walk.forEach(function(osmid) {
@@ -572,7 +652,7 @@ function animateTrip(trip, delay, callback)  {
             scooter = trip.scooter;
             ride_delay = trip.pickup_time - trip.arrival_time;
             animateWalk(shortestPathWalk, 0, 0);
-            animateRide(shortestPathRide, 0, ride_delay, scooter.id);
+            animateRide(shortestPathRide, 0, ride_delay, scooter.id, trip.pricing);
         }
         updateStats();
         callback(null);
@@ -625,9 +705,14 @@ function animateWalk(path, ipath, delay)  {
 }
 
 
-function animateRide(path, ipath, delay, scooter) {
+function animateRide(path, ipath, delay, scooter, pricing = null) {
     
     var currentEdge = path[ipath];
+
+    if ((pricing != null) & (ipath == 0)) {
+        console.log(pricing);
+        animatePricing(scooter, pricing);
+    }
 
     var edge = g.append("path")
                 .attr("id", function () {

@@ -24,7 +24,9 @@
 
 #map {
     height: 100%;
+    width: 100%;
     margin: 0;
+    position: absolute;
 }
 
 
@@ -76,7 +78,7 @@
     width: 80%;
     height: 20%;
     left:10%;
-    top: 65%;
+    top: 55%;
     text-align: center;
 }
 
@@ -311,4 +313,13 @@ div.tooltip {
     pointer-events: none;
     font-size: 0.6rem;
     font-size:11px;
+}
+
+.loading-background {
+    background-color: black;
+    z-index: 10;
+    position: absolute;
+    display:flex;
+    align-items: center;
+    justify-content: center;
 }

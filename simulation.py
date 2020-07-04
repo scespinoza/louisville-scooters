@@ -179,7 +179,7 @@ class Grid:
 
 class ServiceProvider(Agent):
     
-    def __init__(self, budget=1500, model=HRP(), buffer_length=100, name='HRP'):
+    def __init__(self, budget=1000, model=HRP(), buffer_length=100, name='HRP'):
         super(ServiceProvider, self).__init__(name=name, model=model, buffer_length=buffer_length)
         self.total_budget = budget
         self.budget = budget
