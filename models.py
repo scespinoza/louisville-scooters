@@ -101,7 +101,7 @@ class CriticNetwork(models.Model):
 
             neighbors = tf.reshape(tf.transpose(neighbors_tensor, 
                                     perm=[1, 2, 0, 3]), 
-                                    shape=(batch_size, t, state_size * 4))
+                                    shape=(batch_size, 1, state_size * 4))
             x_f = tf.concat([neighbors, x[:, i, j, -1:,:], tf.reshape(p[:, i, j], 
                             shape=(batch_size, 1, 1))], axis=2)
             x_q = tf.concat([x[:, i, j, -1:], tf.reshape(p[:, i, j], shape=(batch_size, 1, 1))], axis=2)
