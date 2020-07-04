@@ -13,11 +13,12 @@ for device in gpu_devices:
     tf.config.experimental.set_memory_growth(device, True)
 
 class SubActor(layers.Layer):
-    def __init__(self, n_neurons=8, n_hidden=2, name='SubActor'):
+    def __init__(self, n_neurons=32, n_hidden=2, name='SubActor'):
         super(SubActor, self).__init__(name=name)
         self.n_neurons = n_neurons
         self.n_hidden = n_hidden
-        self.layers = [layers.Dense(self.n_neurons, activation='sigmoid') 
+        self.layers = [layers.Dense(self.n_neurons, activation='sigmoid',
+                        kernel_initializer='he_init', kernel_regularizer='l2') 
                       for _ in range(n_hidden)]
         self.output_layer = layers.Dense(1, activation='relu')
 
@@ -47,7 +48,7 @@ class ActorNetwork(models.Model):
 
 class LocalizedModule(layers.Layer):
 
-    def __init__(self, n_neurons=8, n_hidden=2, name='LocalizedModule'):
+    def __init__(self, n_neurons=32, n_hidden=2, name='LocalizedModule'):
         super(LocalizedModule, self).__init__(name=name)
         self.n_neurons = n_neurons
         self.n_hidden = n_hidden
@@ -61,7 +62,7 @@ class LocalizedModule(layers.Layer):
         return self.output_layer(x)
 
 class SubCritic(layers.Layer):
-    def __init__(self, n_neurons=8, n_hidden=2, name='SubCritic'):
+    def __init__(self, n_neurons=32, n_hidden=2, name='SubCritic'):
         super(SubCritic, self).__init__(name=name)
         self.n_neurons = n_neurons
         self.n_hidden = n_hidden
