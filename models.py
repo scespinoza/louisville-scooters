@@ -52,7 +52,8 @@ class LocalizedModule(layers.Layer):
         super(LocalizedModule, self).__init__(name=name)
         self.n_neurons = n_neurons
         self.n_hidden = n_hidden
-        self.layers = [layers.Dense(self.n_neurons, activation='sigmoid')
+        self.layers = [layers.Dense(self.n_neurons, activation='sigmoid',
+                                    kernel_initializer='he_uniform', kernel_regularizer='l2')
                         for _ in range(self.n_hidden)]
         self.output_layer = layers.Dense(1, activation='linear')
 
@@ -106,7 +107,7 @@ class CriticNetwork(models.Model):
                                     shape=(batch_size, t, state_size * 4))
             x_f = tf.concat([neighbors, x[:, i, j], tf.reshape(p[:, i, j], shape=(batch_size, t, 1))], axis=2)
             x_q = tf.concat([x[:, i, j], tf.reshape(p[:, i, j], shape=(batch_size, t, 1))], axis=2)
-            f.append(getattr(self, "loc_module_{}".format(n))(tf.reshape(x_f, shape=(batch_size, 5 * state_size + 1))))
+            f.append(getattr(self, "loc_module_{}".format(n))(tf.reshape(x_f, shape=(batch_size, t * 5 * state_size + 1))))
             q.append(getattr(self, "sub_critic_{}".format(n))(getattr(self, "gru_{}".format(n))(x_q)))
         Q = tf.reduce_sum(tf.stack(f) +  tf.stack(q))
         return Q
