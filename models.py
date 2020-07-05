@@ -54,7 +54,7 @@ class LocalizedModule(layers.Layer):
         self.n_neurons = n_neurons
         self.n_hidden = n_hidden
         self.layers = [layers.Dense(self.n_neurons, activation='sigmoid',
-                                    kernel_initializer='he_uniform', kernel_regularizer='l2')
+                                    kernel_initializer='zeros', kernel_regularizer='zeros')
                         for _ in range(self.n_hidden)]
         self.output_layer = layers.Dense(1, activation='linear')
 
@@ -68,7 +68,8 @@ class SubCritic(layers.Layer):
         super(SubCritic, self).__init__(name=name)
         self.n_neurons = n_neurons
         self.n_hidden = n_hidden
-        self.layers = [layers.Dense(self.n_neurons, activation='sigmoid') 
+        self.layers = [layers.Dense(self.n_neurons, activation='sigmoid',
+                        kernel_initializer='zeros') 
                       for _ in range(n_hidden)]
         self.output_layer = layers.Dense(1, activation='linear')
 
@@ -83,7 +84,7 @@ class CriticNetwork(models.Model):
         self.n_regions = n_regions
         self.region_critics = []
         for i in range(n_regions):
-            setattr(self, "gru_%i" % i, layers.GRU(16))
+            setattr(self, "gru_%i" % i, layers.GRU(16, kernel_initializer='zeros'))
             setattr(self, "loc_module_%i" % i, LocalizedModule(name='LocalizedModule-Region-{}'.format(i)))
             setattr(self, "sub_critic_%i" % i, SubCritic(name='SubCritic-Region-{}'.format(i)))
 
