@@ -258,7 +258,7 @@ class Agent:
                 self.history['batch_loss'].append(batch_loss)
                 plt.figure()
                 plt.plot(self.history['batch_loss'])
-                plt.savefig('training-loss.png')
+                plt.savefig('figures/training-loss-{}-{}.png'.format(e, t))
             self.history['rewards'].append(np.sum(episode_rewards))
             self.history['dqn_loss'].append(self.get_q_loss())
         self.model.save_target_model('test_model')
