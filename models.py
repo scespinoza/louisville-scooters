@@ -13,7 +13,7 @@ for device in gpu_devices:
     tf.config.experimental.set_memory_growth(device, True)
 
 class SubActor(layers.Layer):
-    def __init__(self, n_neurons=8, n_hidden=4, name='SubActor'):
+    def __init__(self, zonei, zonej,n_neurons=8, n_hidden=4, name='SubActor'):
         super(SubActor, self).__init__(name=name)
         self.n_neurons = n_neurons
         self.n_hidden = n_hidden
@@ -21,10 +21,10 @@ class SubActor(layers.Layer):
                         kernel_initializer='he_normal', kernel_regularizer='l2') 
                       for _ in range(n_hidden)]
         self.output_layer = layers.Dense(1, activation='relu')
-
+    
     def call(self, x):
-        for layer in self.layers:
-            x = layer(x)
+        for n in tf.range(len(self.layers)):
+            x = self.layers[n](x)
         return self.output_layer(x)
 
 class ActorNetwork(models.Model):
@@ -39,7 +39,8 @@ class ActorNetwork(models.Model):
     def call(self, x):
         batch_size, y_regions, x_regions, t, state_size = x.shape
         prices = []
-        for n, (i, j) in enumerate(product(range(y_regions), range(x_regions))):
+        for n in tf.range(100):
+            i, j = n // 10, n % 10
             x_p = getattr(self, "gru_{}".format(n))(x[:, i, j, :])
             price = getattr(self, "subactor_{}".format(n))(x_p)
             prices.append(price)
@@ -58,8 +59,8 @@ class LocalizedModule(layers.Layer):
         self.output_layer = layers.Dense(1, activation='linear')
 
     def call(self, x):
-        for layer in self.layers:
-            x = layer(x)
+        for n in tf.range(len(self.layers)):
+            x = self.layers[n](x)
         return self.output_layer(x)
 
 class SubCritic(layers.Layer):
@@ -72,8 +73,8 @@ class SubCritic(layers.Layer):
         self.output_layer = layers.Dense(1, activation='linear')
 
     def call(self, x):
-        for layer in self.layers:
-            x = layer(x)
+        for n in tf.range(len(self.layers)):
+            x = self.layers[n](x)
         return self.output_layer(x)
         
 class CriticNetwork(models.Model):
@@ -92,7 +93,8 @@ class CriticNetwork(models.Model):
         f = []
         q = []
         p = tf.stack([p, p], axis=3)
-        for n, (i, j) in enumerate(product(range(y_regions), range(x_regions))):
+        for n in tf.range(100):
+            i, j = n // 10, n % 10
             i_area = i + 1
             j_area = j + 1
             paddings = tf.constant([[0, 0], [1, 1], [1, 1], [0, 0], [0, 0]])
@@ -107,7 +109,7 @@ class CriticNetwork(models.Model):
                                     shape=(batch_size, t, state_size * 4))
             x_f = tf.concat([neighbors, x[:, i, j], tf.reshape(p[:, i, j], shape=(batch_size, t, 1))], axis=2)
             x_q = tf.concat([x[:, i, j], tf.reshape(p[:, i, j], shape=(batch_size, t, 1))], axis=2)
-            f.append(getattr(self, "loc_module_{}".format(n))(tf.reshape(x_f, shape=(batch_size, t * (5 * state_size + 1)))))
+            f.append(getattr(self, "loc_module_{}".format(n))(tf.reshape(x_f, shape=(batch_size, t * (  )))))
             q.append(getattr(self, "sub_critic_{}".format(n))(getattr(self, "gru_{}".format(n))(x_q)))
         Q = tf.reduce_sum(tf.stack(f) +  tf.stack(q))
         return Q
