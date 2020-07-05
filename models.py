@@ -13,7 +13,7 @@ for device in gpu_devices:
     tf.config.experimental.set_memory_growth(device, True)
 
 class SubActor(layers.Layer):
-    def __init__(self, zonei, zonej,n_neurons=8, n_hidden=4, name='SubActor'):
+    def __init__(self, n_neurons=8, n_hidden=4, name='SubActor'):
         super(SubActor, self).__init__(name=name)
         self.n_neurons = n_neurons
         self.n_hidden = n_hidden
