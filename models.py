@@ -13,7 +13,7 @@ for device in gpu_devices:
     tf.config.experimental.set_memory_growth(device, True)
 """
 class SubActor(layers.Layer):
-    def __init__(self, n_neurons=8, n_hidden=4, name='SubActor'):
+    def __init__(self, n_neurons=8, n_hidden=2, name='SubActor'):
         super(SubActor, self).__init__(name=name)
         self.n_neurons = n_neurons
         self.n_hidden = n_hidden
@@ -49,7 +49,7 @@ class ActorNetwork(models.Model):
 
 class LocalizedModule(layers.Layer):
 
-    def __init__(self, n_neurons=8, n_hidden=4, name='LocalizedModule'):
+    def __init__(self, n_neurons=8, n_hidden=2, name='LocalizedModule'):
         super(LocalizedModule, self).__init__(name=name)
         self.n_neurons = n_neurons
         self.n_hidden = n_hidden
@@ -64,7 +64,7 @@ class LocalizedModule(layers.Layer):
         return self.output_layer(x)
 
 class SubCritic(layers.Layer):
-    def __init__(self, n_neurons=32, n_hidden=3, name='SubCritic'):
+    def __init__(self, n_neurons=8, n_hidden=2, name='SubCritic'):
         super(SubCritic, self).__init__(name=name)
         self.n_neurons = n_neurons
         self.n_hidden = n_hidden
@@ -117,7 +117,7 @@ class CriticNetwork(models.Model):
         
 
 class HRP(models.Model):
-    def __init__(self, regions=(10, 10), name='HRP', target=False, learning_rate=1e-7):
+    def __init__(self, regions=(10, 10), name='HRP', target=False, learning_rate=1e-3):
         super(HRP, self).__init__(name=name)
         self.regions = regions
         self.n_regions = regions[0] * regions[1]
