@@ -54,7 +54,7 @@ class LocalizedModule(layers.Layer):
         self.n_neurons = n_neurons
         self.n_hidden = n_hidden
         self.layers = [layers.Dense(self.n_neurons, activation='sigmoid',
-                                    kernel_initializer='zeros', kernel_regularizer='zeros')
+                                    kernel_initializer='zeros')
                         for _ in range(self.n_hidden)]
         self.output_layer = layers.Dense(1, activation='linear')
 
