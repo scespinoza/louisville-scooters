@@ -107,7 +107,7 @@ class CriticNetwork(models.Model):
                                     shape=(batch_size, t, state_size * 4))
             x_f = tf.concat([neighbors, x[:, i, j], tf.reshape(p[:, i, j], shape=(batch_size, t, 1))], axis=2)
             x_q = tf.concat([x[:, i, j], tf.reshape(p[:, i, j], shape=(batch_size, t, 1))], axis=2)
-            f.append(getattr(self, "loc_module_{}".format(n))(tf.reshape(x_f, shape=(batch_size, t * 5 * state_size + 1))))
+            f.append(getattr(self, "loc_module_{}".format(n))(tf.reshape(x_f, shape=(batch_size, t * (5 * state_size + 1)))))
             q.append(getattr(self, "sub_critic_{}".format(n))(getattr(self, "gru_{}".format(n))(x_q)))
         Q = tf.reduce_sum(tf.stack(f) +  tf.stack(q))
         return Q
