@@ -7,11 +7,11 @@ import tensorflow as tf
 from tensorflow.keras import models, layers, optimizers
 import matplotlib.pyplot as plt
 
-
+"""
 gpu_devices = tf.config.experimental.list_physical_devices('GPU')
 for device in gpu_devices:
     tf.config.experimental.set_memory_growth(device, True)
-
+"""
 class SubActor(layers.Layer):
     def __init__(self, n_neurons=8, n_hidden=4, name='SubActor'):
         super(SubActor, self).__init__(name=name)
