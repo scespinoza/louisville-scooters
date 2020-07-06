@@ -358,8 +358,8 @@ class CriticNetwork(nn.Module):
 class HRP(nn.Module):
     def __init__(self, target_model=False):
         super(HRP, self).__init__()
-        self.an = ActorNetwork()
-        self.cn = CriticNetwork()
+        self.an = ActorNetwork().float()
+        self.cn = CriticNetwork().float()
         self.critic_criterion = nn.MSELoss()
         self.discount_rate = 0.99
         self.learning_rate = 1e-4
@@ -367,7 +367,7 @@ class HRP(nn.Module):
         self.critic_optimizer = torch.optim.Adam(self.cn.parameters(), lr=self.learning_rate)
         self.actor_optimizer = torch.optim.Adam(self.an.parameters(), lr=self.learning_rate)
         if not target_model:
-            self.target_model = HRP(target_model=True)
+            self.target_model = HRP(target_model=True).float()
 
     def forward(self, x):
         p = self.an(x)
