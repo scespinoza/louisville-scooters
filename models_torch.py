@@ -469,10 +469,10 @@ class Agent:
 
     def train_minibatch(self, batch_size=16):
         state, action, reward, next_state = self.sample_minibatch(batch_size)
-        x = {'state': torch.from_numpy(np.concatenate(state)),
-            'action': torch.from_numpy(np.concatenate(action)), 
-            'reward': torch.from_numpy(np.array(reward)).view(-1, 1),
-            'next_state': torch.from_numpy(np.concatenate(next_state))}
+        x = {'state': torch.from_numpy(np.concatenate(state)).float(),
+            'action': torch.from_numpy(np.concatenate(action)).float(), 
+            'reward': torch.from_numpy(np.array(reward)).view(-1, 1).float(),
+            'next_state': torch.from_numpy(np.concatenate(next_state)).float()}
         self.model.train_step(x)
         return self.model.critic_loss(x)
 
