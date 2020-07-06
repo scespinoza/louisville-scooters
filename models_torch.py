@@ -453,10 +453,10 @@ class Agent:
 
     def train_minibatch(self, batch_size=16):
         state, action, reward, next_state = self.sample_minibatch(batch_size)
-        x = {'state': np.concatenate(state), 
-             'action': np.concatenate(action),
-             'reward': np.array(reward),
-             'next_state': np.concatenate(next_state)}
+        x = {'state': torch.from_numpy(np.concatenate(state)),
+            'action': torch.from_numpy(np.concatenate(action)), 
+            'reward': torch.from_numpy(np.array(reward)),
+            'next_state': torch.from_numpy(np.concatenate(next_state))}
         self.model.train_step(x)
         return self.model.critic_loss(x)
 
@@ -509,10 +509,10 @@ class Agent:
 
     def get_q_loss(self):
         state, action, reward, next_state = [[sample[i] for sample in self.experience_buffer] for i in range(4)]
-        return self.model.dqn_loss({'state': np.concatenate(state), 
-                                    'action': np.concatenate(action), 
-                                    'reward': np.array(reward),
-                                    'next_state': np.concatenate(next_state)})
+        return self.model.critic_loss({'state': torch.from_numpy(np.concatenate(state)),
+                                    'action': torch.from_numpy(np.concatenate(action)), 
+                                    'reward': torch.from_numpy(np.array(reward)),
+                                    'next_state': torch.from_numpy(np.concatenate(next_state))})
     def save_target_model(self):
         self.model.save_target_model()
 
