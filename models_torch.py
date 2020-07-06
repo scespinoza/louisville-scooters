@@ -522,10 +522,10 @@ class Agent:
 
     def get_q_loss(self):
         state, action, reward, next_state = [[sample[i] for sample in self.experience_buffer] for i in range(4)]
-        return self.model.critic_loss({'state': torch.from_numpy(np.concatenate(state)),double(),
-                                    'action': torch.from_numpy(np.concatenate(action)),double(), 
-                                    'reward': torch.from_numpy(np.array(reward)).view(-1, 1),double(),
-                                    'next_state': torch.from_numpy(np.concatenate(next_state)),double()})
+        return self.model.critic_loss({'state': torch.from_numpy(np.concatenate(state)).double(),
+                                    'action': torch.from_numpy(np.concatenate(action)).double(), 
+                                    'reward': torch.from_numpy(np.array(reward)).view(-1, 1).double(),
+                                    'next_state': torch.from_numpy(np.concatenate(next_state)).double()})
     def save_target_model(self):
         self.model.save_target_model()
 
