@@ -231,7 +231,7 @@ class Agent:
 
     def act(self, environment):
         state  = environment.get_state()
-        action = self.get_action(torch.from_numpy(state))
+        action = self.get_action(torch.from_numpy(state).double())
         reward, next_state = environment.perform_action(action)
         self.store_transition((state, action, reward, next_state))
         return reward
