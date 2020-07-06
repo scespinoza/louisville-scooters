@@ -461,7 +461,7 @@ class Agent:
         return self.model.critic_loss(x)
 
     def get_action(self, state):
-        return self.model.an(state).detach().numpy()
+        return self.model.an(state).detach().numpy()[:, -1]
 
     def act(self, environment):
         state  = environment.get_state()
