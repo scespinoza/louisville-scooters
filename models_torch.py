@@ -137,8 +137,8 @@ class CriticNetwork(nn.Module):
 class HRP(nn.Module):
     def __init__(self, target_model=False):
         super(HRP, self).__init__()
-        self.an = ActorNetwork().double()
-        self.cn = CriticNetwork().double()
+        self.an = ActorNetwork().float()
+        self.cn = CriticNetwork().float()
         self.critic_criterion = nn.MSELoss()
         self.discount_rate = 0.99
         self.learning_rate = 1e-4
