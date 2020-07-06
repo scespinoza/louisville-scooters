@@ -69,6 +69,7 @@ class ActorNetwork(nn.Module):
             setattr(self, 'subactor{}'.format(i), SubActor(neurons=neurons, state_size=state_size))
 
     def forward(self, x):
+        print(x.dtype)
         batch, t, nzones, state_size = x.size()
         a = []
         for i in range(self.n_subactors):
