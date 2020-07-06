@@ -137,8 +137,8 @@ class CriticNetwork(nn.Module):
 class HRP(nn.Module):
     def __init__(self, target_model=False):
         super(HRP, self).__init__()
-        self.an = ActorNetwork().float()
-        self.cn = CriticNetwork().float()
+        self.an = ActorNetwork()
+        self.cn = CriticNetwork()
         self.critic_criterion = nn.MSELoss()
         self.discount_rate = 0.99
         self.learning_rate = 1e-4
@@ -232,7 +232,7 @@ class Agent:
 
     def act(self, environment):
         state  = environment.get_state()
-        action = self.get_action(torch.from_numpy(state).double())
+        action = self.get_action(torch.from_numpy(state))
         reward, next_state = environment.perform_action(action)
         self.store_transition((state, action, reward, next_state))
         return reward
@@ -469,10 +469,10 @@ class Agent:
 
     def train_minibatch(self, batch_size=16):
         state, action, reward, next_state = self.sample_minibatch(batch_size)
-        x = {'state': torch.from_numpy(np.concatenate(state)).double(),
-            'action': torch.from_numpy(np.concatenate(action)).double(), 
-            'reward': torch.from_numpy(np.array(reward)).view(-1, 1).double(),
-            'next_state': torch.from_numpy(np.concatenate(next_state)).double()}
+        x = {'state': torch.from_numpy(np.concatenate(state)),
+            'action': torch.from_numpy(np.concatenate(action)), 
+            'reward': torch.from_numpy(np.array(reward)).view(-1, 1),
+            'next_state': torch.from_numpy(np.concatenate(next_state))}
         self.model.train_step(x)
         return self.model.critic_loss(x)
 
@@ -481,7 +481,7 @@ class Agent:
 
     def act(self, environment):
         state  = environment.get_state()
-        action = self.get_action(torch.from_numpy(state).float())
+        action = self.get_action(torch.from_numpy(state))
         next_state, reward = environment.perform_action(action)
         self.store_transition((state, action, reward, next_state))
         return reward
@@ -524,10 +524,10 @@ class Agent:
 
     def get_q_loss(self):
         state, action, reward, next_state = [[sample[i] for sample in self.experience_buffer] for i in range(4)]
-        return self.model.critic_loss({'state': torch.from_numpy(np.concatenate(state)).double(),
-                                    'action': torch.from_numpy(np.concatenate(action)).double(), 
-                                    'reward': torch.from_numpy(np.array(reward)).view(-1, 1).double(),
-                                    'next_state': torch.from_numpy(np.concatenate(next_state)).double()})
+        return self.model.critic_loss({'state': torch.from_numpy(np.concatenate(state)),
+                                    'action': torch.from_numpy(np.concatenate(action)), 
+                                    'reward': torch.from_numpy(np.array(reward)).view(-1, 1),
+                                    'next_state': torch.from_numpy(np.concatenate(next_state))})
     def save_target_model(self):
         self.model.save_target_model()
 
