@@ -354,15 +354,19 @@ class CriticNetwork(nn.Module):
         return torch.sum(f + q, dim=1)
 
 class HRP(nn.Module):
-    def __init__(self):
+    def __init__(self, target_model=False):
         super(HRP, self).__init__()
         self.an = ActorNetwork()
         self.cn = CriticNetwork()
         self.critic_criterion = nn.MSELoss()
         self.discount_rate = 0.99
         self.learning_rate = 1e-4
+        self.tau = 0.2
         self.critic_optimizer = torch.optim.Adam(self.cn.parameters(), lr=self.learning_rate)
         self.actor_optimizer = torch.optim.Adam(self.an.parameters(), lr=self.learning_rate)
+        if not target_model:
+            self.target_model = HRP(target_model=True)
+
     def forward(self, x):
         p = self.an(x)
         xc = torch.cat([x, p.view(-1, 2, 100, 1)], dim=-1)
@@ -371,9 +375,14 @@ class HRP(nn.Module):
     
     def critic_loss(self, batch):
         p, q = self.forward(batch['state'])
-        p_next, q_next = self.forward(batch['next_state'])
-        y = batch['reward'] + self.discount_rate * q_next
+        with torch.no_grad():
+            p_next, q_next = self.target_model(batch['next_state'])
+            y = batch['reward'] + self.discount_rate * q_next
         return self.critic_criterion(y,q)
+
+    def soft_update(self):
+        for target_param, param in zip(self.target_model.parameters(), self.parameters()):
+            target_param.data.copy_(target_param.data * (1.0 - self.tau) + param.data * self.tau)
 
     def critic_step(self, batch):
         for p in self.an.parameters():
@@ -404,6 +413,7 @@ class HRP(nn.Module):
     def train_step(self, batch):
         batch_loss = self.critic_step(batch)
         q_val = self.actor_step(batch)
+        self.soft_update()
         return batch_loss, q_val
                     
     def sample_batch(self, n=16):
@@ -430,6 +440,10 @@ class HRP(nn.Module):
         history = {metric: np.stack(history[metric]) for metric in history}
         print('Elapsed Time : {:.2f}'.format(time.time() - start))
         return history
+
+    def save_target_model(self, filename='weights/hrp.pth'):
+        torch.save(self, filename)
+
 
 class Agent:
 
@@ -516,8 +530,9 @@ class Agent:
     def save_target_model(self):
         self.model.save_target_model()
 
-    def load_trained(self):
-        self.model.load_trained()
+    def load_trained(self, filename = 'weights/hrp.pth'):
+        self.model = torch.load(filename)
+        self.model.eval()
         return self
 
 
