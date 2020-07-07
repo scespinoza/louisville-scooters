@@ -229,13 +229,13 @@ class Agent:
 
     def act(self, environment):
         print('Acting')
-        with torch.no_grad():
-            state  = environment.get_state()
-            print('state: ',state[0, 1, 0, :])
-            state = torch.from_numpy(state.astype(np.float32))
-            action = self.get_action(state)
-            noise = torch.empty(*action.shape).normal_()
-            action = action + noise
+        
+        state  = environment.get_state()
+        print('state: ',state[0, 1, 0, :])
+        state = torch.from_numpy(state.astype(np.float32))
+        action = self.get_action(state)
+        noise = torch.empty(*action.shape).normal_()
+        action = action + noise
         reward, next_state = environment.perform_action(action)
         self.store_transition((state, action, reward, next_state))
         return reward
