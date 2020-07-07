@@ -218,6 +218,7 @@ class HRP(nn.Module):
     def train_step(self, batch):
         batch_loss = self.critic_step(batch)
         q_val = self.actor_step(batch)
+        print(batch_loss, q_val)
         self.soft_update()
         return batch_loss, q_val
                     
