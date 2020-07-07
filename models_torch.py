@@ -9,7 +9,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 
-torch.set_default_tensor_type('torch.FloatTensor')
+torch.set_default_tensor_type('torch.DoubleTensor')
 
 class SubActor(nn.Module):
     def __init__(self, neurons=16, state_size=6):
