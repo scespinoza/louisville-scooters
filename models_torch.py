@@ -543,8 +543,6 @@ class Environment:
     def get_state(self):
         return np.random.randint(50, size=(1, 10, 10, 1, 6)).astype(np.float32)
 
-    def perform_action(self, action):
-        return np.random.uniform()
 
         
                    
