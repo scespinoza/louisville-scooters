@@ -212,7 +212,7 @@ class Agent:
             'reward': torch.from_numpy(np.array(reward)).view(-1, 1),
             'next_state': torch.from_numpy(np.concatenate(next_state))}
         self.model.train_step(x)
-        return self.model.critic_loss(x)
+        return self.model.critic_loss(x).detach().numpy()
 
     def get_action(self, state):
         return self.model.an(state).detach().numpy()[:, -1].reshape(10, 10)
