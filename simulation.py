@@ -135,7 +135,7 @@ class Grid:
         return self.prices[area]
 
     def get_state(self, simulator):
-
+        print(self.stats['supply'])
         stats = gpd.GeoDataFrame(self.get_stats(), geometry=self.boxes)
         stats['remaining_budget'] = simulator.service_provider.budget
         self.demand_history.append(self.stats['demand'])
