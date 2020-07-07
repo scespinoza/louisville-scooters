@@ -756,7 +756,7 @@ if __name__ == '__main__':
     parser.add_argument('--warmup', type=int, default=5)
     parser.add_argument('--episodes', type=int, default=15)
     parser.add_argument('--verbose', type=int, help='verbosity value')
-    parser.add_argument('--lr', type=floar, default=1e-4)
+    parser.add_argument('--lr', type=float, default=1e-4)
 
     args = parser.parse_args()
     if args.simulate:
