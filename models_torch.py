@@ -68,7 +68,6 @@ class ActorNetwork(nn.Module):
             setattr(self, 'subactor{}'.format(i), SubActor(neurons=neurons, state_size=state_size))
 
     def forward(self, x):
-        print(x.dtype)
         batch, t, nzones, state_size = x.size()
         a = []
         for i in range(self.n_subactors):
@@ -231,6 +230,7 @@ class Agent:
 
     def act(self, environment):
         state  = environment.get_state()
+        print(state.dtype)
         action = self.get_action(torch.from_numpy(state.astype(np.float32)))
         reward, next_state = environment.perform_action(action)
         self.store_transition((state, action, reward, next_state))
