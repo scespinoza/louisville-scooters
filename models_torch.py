@@ -230,7 +230,7 @@ class Agent:
     def act(self, environment):
         with torch.no_grad():
             state  = environment.get_state()
-            print(state[0, 1, 0, :])
+            print('state: ',state[0, 1, 0, :])
             state = torch.from_numpy(state.astype(np.float32))
             action = self.get_action(state)
             noise = torch.empty(*action.shape).normal_()
