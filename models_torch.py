@@ -259,7 +259,7 @@ class Agent:
                 print('Batch Loss: {:.2f}'.format(batch_loss))
                 self.history['batch_loss'].append(batch_loss)
             self.history['rewards'].append(np.sum(episode_rewards))
-            self.history['dqn_loss'].append(self.get_q_loss())
+            self.history['dqn_loss'].append(self.get_q_loss().detach().numpy())
         print('Finishing Training: {:.2f}s'.format(time.time() - training_start))
 
     def get_q_loss(self):
