@@ -228,6 +228,7 @@ class Agent:
         return self.model.an(state).detach().numpy()
 
     def act(self, environment):
+        print('Acting')
         with torch.no_grad():
             state  = environment.get_state()
             print('state: ',state[0, 1, 0, :])
