@@ -231,7 +231,7 @@ class Agent:
     def act(self, environment):
         state  = environment.get_state()
         print(state.dtype)
-        state = torch.from_numpy(state.astype(np.float32))
+        state = torch.from_numpy(state.astype(np.float32), dtype=torch.float32)
         print(state.dtype)
         action = self.get_action()
         reward, next_state = environment.perform_action(action)
