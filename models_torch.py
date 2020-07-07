@@ -157,7 +157,8 @@ class SimpleCritic(nn.Module):
             q = []
             
             f.append(self.lm(xi[:, -1, :].view(-1, 5 * 7)))
-            q.append(self.subcritic(self.gru(xi)))
+            xq, h = self.gru(xi)
+            q.append(self.subcritic(xq))
         f = torch.cat(f)
         q = torch.cat(q)
         return torch.sum(f + q, dim=1)
