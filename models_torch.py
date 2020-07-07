@@ -40,7 +40,7 @@ class ActorNetwork(nn.Module):
 class SimpleSubActor(nn.Module):
     def __init__(self, neurons=32, input_size=16):
         super(SimpleSubActor, self).__init__()
-        self.fc1 = nn.Linear(neurons, neurons)
+        self.fc1 = nn.Linear(input_size, neurons)
         self.fc2 = nn.Linear(neurons, neurons)
         self.fc3 = nn.Linear(neurons, 1)
     def forward(self, x):
