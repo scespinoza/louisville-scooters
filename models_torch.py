@@ -8,9 +8,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 
-
-torch.set_default_tensor_type('torch.FloatTensor')
-
 class SubActor(nn.Module):
     def __init__(self, neurons=16, state_size=6):
         super(SubActor, self).__init__()
