@@ -135,7 +135,6 @@ class Grid:
         return self.prices[area]
 
     def get_state(self, simulator):
-        print(self.stats['supply'], sum(self.stats['supply']))
         stats = gpd.GeoDataFrame(self.get_stats(), geometry=self.boxes)
         stats['remaining_budget'] = simulator.service_provider.budget
         self.demand_history.append(self.stats['demand'])
@@ -774,7 +773,7 @@ if __name__ == '__main__':
         simulator = ScooterSharingSimulator(graph, grid, initial_supply=100, pricing=args.pricing)
         simulator.simulate(replicas, verbose=1)
     if args.train:
-        replicas = ['data/replicas/stkde_nhpp_{}.csv'.format(i) for i in range(20)]
+        replicas = ['data/replicas/stkde_nhpp_{}.csv'.format(i) for i in range(1)]
         history_saver = HistorySaver(name='test')
         study_area_filename = 'shapes/study_area/study_area.shp'
         study_area = gpd.read_file(study_area_filename).to_crs('epsg:4326').sort_values('id')
