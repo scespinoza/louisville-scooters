@@ -54,7 +54,7 @@ class SimpleActor(nn.Module):
         super(SimpleActor, self).__init__()
         self.nzones = nzones
         self.gru = nn.GRU(state_size, gru_out, batch_first=True)
-        self.subactor = SubActor(neurons=neurons, input_size=gru_out)
+        self.subactor = SimpleSubActor(neurons=neurons, input_size=gru_out)
 
     def forward(self, x):
         batch, t, nzones, state_size = x.size()
