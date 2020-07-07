@@ -51,6 +51,7 @@ class SimpleSubActor(nn.Module):
 
 class SimpleActor(nn.Module):
     def __init__(self, neurons=32, state_size=6, gru_out=16, nzones=100):
+        super(SimpleActor, self).__init__()
         self.nzones = nzones
         self.gru = nn.GRU(state_size, gru_out, batch_first=True)
         self.subactor = SubActor(neurons=neurons, input_size=gru_out)
@@ -136,6 +137,7 @@ class SimpleSubCritic(nn.Module):
 
 class SimpleCritic(nn.Module):
     def __init__(self, neurons=64, gru_out=16, state_size=6):
+        super(SimpleSubCritic, self).__init__()
         self.gru = nn.GRU((state_size + 1) * 5, gru_out, batch_first=True)
         self.subactor = SimpleSubCritic(neurons=neurons, input_size=gru_out)
         self.lm = LocalizedModule(neurons=neurons, state_size=6)
