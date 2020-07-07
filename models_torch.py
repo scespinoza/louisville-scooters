@@ -140,7 +140,7 @@ class SimpleCritic(nn.Module):
         super(SimpleCritic, self).__init__()
         self.nzones = nzones
         self.gru = nn.GRU((state_size + 1) * 5, gru_out, batch_first=True)
-        self.subactor = SimpleSubCritic(neurons=neurons, input_size=gru_out)
+        self.subcritic = SimpleSubCritic(neurons=neurons, input_size=gru_out)
         self.lm = LocalizedModule(neurons=neurons, state_size=6)
 
     def forward(self, x):
