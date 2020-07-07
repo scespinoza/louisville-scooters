@@ -37,6 +37,33 @@ class ActorNetwork(nn.Module):
             a.append(sa)
         return torch.stack(a).view(-1, t, nzones)
 
+class SimpleSubActor(nn.Module):
+    def __init__(self, neurons=32, input_size=16):
+        super(SimpleSubActor, self).__init__()
+        self.fc1 = nn.Linear(neurons, neurons)
+        self.fc2 = nn.Linear(neurons, neurons)
+        self.fc3 = nn.Linear(neurons, 1)
+    def forward(self, x):
+        x = nn.ReLU()(self.fc1(x))
+        x = nn.ReLU()(self.fc2(x))
+        x = nn.ReLU()(self.fc3(x))
+        return x
+
+class SimpleActor(nn.Module):
+    def __init__(self, neurons=32, state_size=6, gru_out=16, nzones=100):
+        self.nzones = nzones
+        self.gru = nn.GRU(state_size, gru_out, batch_first=True)
+        self.subactor = SubActor(neurons=neurons, input_size=gru_out)
+
+    def forward(self, x):
+        batch, t, nzones, state_size = x.size()
+        a = []
+        for i in range(self.nzones):
+            sx, h = self.gru(x[:, :, i])
+            sa = self.subactor(sx)
+            a.append(sa)
+        return torch.stack(a).view(-1, t, nzones)
+    
 class LocalizedModule(nn.Module):
     def __init__(self, neurons=16, state_size=6):
         super(LocalizedModule, self).__init__()
@@ -94,11 +121,50 @@ class CriticNetwork(nn.Module):
         
         return torch.sum(f + q, dim=1)
 
+class SimpleSubCritic(nn.Module):
+    def __init__(self, neurons=64, input_size=16):
+        super(SimpleSubCritic, self).__init__()
+        self.fc1 = nn.Linear(neurons, neurons)
+        self.fc2 = nn.Linear(neurons, neurons)
+        self.fc3 = nn.Linear(neurons, 1)
+
+    def forward(self, x):
+        x = nn.ReLU()(self.fc1(x))
+        x = nn.ReLU()(self.fc2(x))
+        x = nn.ReLU()(self.fc3(x))
+        return x[:, -1, :]
+
+class SimpleCritic(nn.Module):
+    def __init__(self, neurons=64, gru_out=16, state_size=6):
+        self.gru = nn.GRU((state_size + 1) * 5, gru_out, batch_first=True)
+        self.subactor = SimpleSubCritic(neurons=neurons, input_size=gru_out)
+        self.lm = LocalizedModule(neurons=neurons, state_size=6)
+
+    def forward(self, x):
+        for i in range(self.n_subcritics):
+            neighbors = (i, i - 10, i + 1, i + 10, i - 1)
+            xi = []
+            for n in neighbors:
+                if n >= 0 and n < self.n_subcritics:
+                    xi.append(x[:, :, n])
+                else:
+                    xi.append(torch.zeros_like(x[:,:,i]))
+            xi = torch.cat(xi, dim=2)
+            f = []
+            q = []
+            
+            f.append(self.lm(xi[:, -1, :].view(-1, 5 * 7)))
+            q.append(self.subcritic(self.gru(xi)))
+        f = torch.cat(f)
+        q = torch.cat(q)
+        return torch.sum(f + q, dim=1)
+
+
 class HRP(nn.Module):
     def __init__(self, target_model=False):
         super(HRP, self).__init__()
-        self.an = ActorNetwork()
-        self.cn = CriticNetwork()
+        self.an = SimpleActor()
+        self.cn = SimpleCritic()
         self.critic_criterion = nn.MSELoss()
         self.discount_rate = 0.99
         self.learning_rate = 1e-4
