@@ -657,7 +657,7 @@ class ScooterSharingSimulator:
         return self.events.remove(event)
 
     def perform_action(self, action, verbose=0):
-        print(action)
+        print(action.shape)
         self.verbose=verbose
         self.grid.set_price(action)
         self.run_timestep(training=True, verbose=verbose)
