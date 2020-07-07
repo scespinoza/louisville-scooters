@@ -221,7 +221,7 @@ class Agent:
         state  = environment.get_state()
         print(state[0, 1:, 0, :])
         action = self.get_action(torch.from_numpy(state))
-        noise = torch.empty(*action.shape).normal_()
+        noise = np.random.normal(size=action.shape)
         action = action + noise
         next_state, reward = environment.perform_action(action)
         self.store_transition((state, action, reward, next_state))
