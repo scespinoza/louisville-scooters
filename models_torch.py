@@ -53,7 +53,6 @@ class SubActor(nn.Module):
         self.fc2 = nn.Linear(neurons, neurons)
         self.fc3 = nn.Linear(neurons, 1)
     def forward(self, x):
-        print(x.dtype)
         x, h = self.gru(x)
         x = nn.ReLU()(self.fc1(x))
         x = nn.ReLU()(self.fc2(x))
