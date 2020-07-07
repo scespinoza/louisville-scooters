@@ -125,7 +125,7 @@ class CriticNetwork(nn.Module):
 class SimpleSubCritic(nn.Module):
     def __init__(self, neurons=64, input_size=16):
         super(SimpleSubCritic, self).__init__()
-        self.fc1 = nn.Linear(neurons, neurons)
+        self.fc1 = nn.Linear(input_size, neurons)
         self.fc2 = nn.Linear(neurons, neurons)
         self.fc3 = nn.Linear(neurons, 1)
 
