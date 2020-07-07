@@ -165,7 +165,7 @@ class SimpleCritic(nn.Module):
 
 
 class HRP(nn.Module):
-    def __init__(self, target_model=False):
+    def __init__(self, learning_rate=1e-4, target_model=False):
         super(HRP, self).__init__()
         self.an = SimpleActor()
         self.cn = SimpleCritic()

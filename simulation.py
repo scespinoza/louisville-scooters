@@ -756,6 +756,7 @@ if __name__ == '__main__':
     parser.add_argument('--warmup', type=int, default=5)
     parser.add_argument('--episodes', type=int, default=15)
     parser.add_argument('--verbose', type=int, help='verbosity value')
+    parser.add_argument('--lr', type=floar, default=1e-4)
 
     args = parser.parse_args()
     if args.simulate:
@@ -784,9 +785,8 @@ if __name__ == '__main__':
         
         grid = Grid.from_gdf(grid_gdf, (10,10))
         grid.create_nodes_dict(graph.layers['walk']['nodes'])
-
-        model = HRP()
-        agent = ServiceProvider()
+        model = HRP(learning_rate=args.lr)
+        agent = ServiceProvider(model=model)
         environment = ScooterSharingSimulator(graph, grid, days=1, initial_supply=100, pricing=True)
         environment.set_replicas_for_training(replicas)
         agent.train(environment, warmup_iterations=args.warmup, episodes=args.episodes)
