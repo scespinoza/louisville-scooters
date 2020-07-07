@@ -219,7 +219,6 @@ class Agent:
 
     def act(self, environment):
         state  = environment.get_state()
-        print(state[0, 1:, 0, :])
         action = self.get_action(torch.from_numpy(state))
         noise = np.random.normal(size=action.shape)
         action = action + noise
