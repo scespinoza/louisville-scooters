@@ -38,11 +38,11 @@ class ActorNetwork(nn.Module):
         return torch.stack(a).view(-1, t, nzones)
 
 class SimpleSubActor(nn.Module):
-    def __init__(self, neurons=64, input_size=16):
+    def __init__(self, input_size=16):
         super(SimpleSubActor, self).__init__()
-        self.fc1 = nn.Linear(input_size, neurons)
-        self.fc2 = nn.Linear(neurons, neurons)
-        self.fc3 = nn.Linear(neurons, 1)
+        self.fc1 = nn.Linear(input_size,1024)
+        self.fc2 = nn.Linear(1024, 256)
+        self.fc3 = nn.Linear(256, 1)
     def forward(self, x):
         x = nn.ReLU()(self.fc1(x))
         x = nn.ReLU()(self.fc2(x))
@@ -50,11 +50,11 @@ class SimpleSubActor(nn.Module):
         return x
 
 class SimpleActor(nn.Module):
-    def __init__(self, neurons=64, state_size=6, gru_out=16, nzones=100):
+    def __init__(self, state_size=6, gru_out=16, nzones=100):
         super(SimpleActor, self).__init__()
         self.nzones = nzones
         self.gru = nn.GRU(state_size, gru_out, batch_first=True)
-        self.subactor = SimpleSubActor(neurons=neurons, input_size=gru_out)
+        self.subactor = SimpleSubActor(input_size=gru_out)
 
     def forward(self, x):
         batch, t, nzones, state_size = x.size()
@@ -66,12 +66,12 @@ class SimpleActor(nn.Module):
         return torch.stack(a).view(-1, t, nzones)
     
 class LocalizedModule(nn.Module):
-    def __init__(self, neurons=16, state_size=6):
+    def __init__(self, state_size=6):
         super(LocalizedModule, self).__init__()
         # Input is state_size * neighbors + price (action)
-        self.fc1 = nn.Linear((state_size + 1) * 5 , (state_size + 1) * 5 )
-        self.fc2 = nn.Linear((state_size + 1) * 5, (state_size + 1) * 5)
-        self.fc3 = nn.Linear((state_size + 1) * 5 , 1)
+        self.fc1 = nn.Linear((state_size + 1) * 5 , 512)
+        self.fc2 = nn.Linear(512, 128)
+        self.fc3 = nn.Linear(128 , 1)
 
     def forward(self, x):
         x = nn.ReLU()(self.fc1(x))
@@ -123,11 +123,11 @@ class CriticNetwork(nn.Module):
         return torch.sum(f + q, dim=1)
 
 class SimpleSubCritic(nn.Module):
-    def __init__(self, neurons=128, input_size=16):
+    def __init__(self, input_size=16):
         super(SimpleSubCritic, self).__init__()
-        self.fc1 = nn.Linear(input_size, neurons)
-        self.fc2 = nn.Linear(neurons, neurons)
-        self.fc3 = nn.Linear(neurons, 1)
+        self.fc1 = nn.Linear(input_size, 1024)
+        self.fc2 = nn.Linear(1024, 256)
+        self.fc3 = nn.Linear(256, 1)
 
     def forward(self, x):
         x = nn.ReLU()(self.fc1(x))
@@ -136,12 +136,12 @@ class SimpleSubCritic(nn.Module):
         return x[:, -1, :]
 
 class SimpleCritic(nn.Module):
-    def __init__(self, neurons=64, gru_out=32, state_size=6, nzones=100):
+    def __init__(self, gru_out=32, state_size=6, nzones=100):
         super(SimpleCritic, self).__init__()
         self.nzones = nzones
         self.gru = nn.GRU((state_size + 1) * 5, gru_out, batch_first=True)
-        self.subcritic = SimpleSubCritic(neurons=neurons, input_size=gru_out)
-        self.lm = LocalizedModule(neurons=neurons, state_size=6)
+        self.subcritic = SimpleSubCritic(input_size=gru_out)
+        self.lm = LocalizedModule(state_size=6)
 
     def forward(self, x):
         for i in range(self.nzones):
