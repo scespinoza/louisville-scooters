@@ -360,7 +360,7 @@ class UserRequest(Event):
 
             user_utility = [scooter.get_price_incentive(simulator.grid) - self.user.cost_function(scooter, simulator)
                             for scooter in available_scooters]
-            rb = simulator.service_provider.remaining_budget
+            rb = simulator.service_provider.budget
             if np.any(np.array(user_utility) > 0):
                 max_utility = np.argmax(user_utility)
                 incentive = nearest_scooter.get_price_incentive(simulator.grid)
