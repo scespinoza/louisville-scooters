@@ -254,6 +254,7 @@ class Agent:
             episode_rewards = []
             for t in range(environment.timesteps):
                 print('Episode {}, timestep {}'.format(e + 1, t + 1))
+                print('Experience Buffer: {} samples'.format(len(self.experience_buffer)))
                 reward = self.act(environment)
                 print('Reward: {:.2f}, '.format(reward), end='')  
                 episode_rewards.append(self.model.discount_rate*reward)         
