@@ -787,7 +787,7 @@ if __name__ == '__main__':
 
         model = HRP()
         agent = ServiceProvider()
-        environment = ScooterSharingSimulator(graph, grid, days=7, initial_supply=100, pricing=True)
+        environment = ScooterSharingSimulator(graph, grid, days=1, initial_supply=100, pricing=True)
         environment.set_replicas_for_training(replicas)
         agent.train(environment, warmup_iterations=args.warmup, episodes=args.episodes)
         agent.save_target_model()
