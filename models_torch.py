@@ -9,6 +9,8 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 
+pytorch.set_default_tensor_type('torch.FloatTensor')
+
 class SubActor(nn.Module):
     def __init__(self, neurons=16, state_size=6):
         super(SubActor, self).__init__()
@@ -358,8 +360,8 @@ class CriticNetwork(nn.Module):
 class HRP(nn.Module):
     def __init__(self, target_model=False):
         super(HRP, self).__init__()
-        self.an = ActorNetwork().float()
-        self.cn = CriticNetwork().float()
+        self.an = ActorNetwork()
+        self.cn = CriticNetwork()
         self.critic_criterion = nn.MSELoss()
         self.discount_rate = 0.99
         self.learning_rate = 1e-4
@@ -367,7 +369,7 @@ class HRP(nn.Module):
         self.critic_optimizer = torch.optim.Adam(self.cn.parameters(), lr=self.learning_rate)
         self.actor_optimizer = torch.optim.Adam(self.an.parameters(), lr=self.learning_rate)
         if not target_model:
-            self.target_model = HRP(target_model=True).float()
+            self.target_model = HRP(target_model=True)
 
     def forward(self, x):
         p = self.an(x)
@@ -469,10 +471,10 @@ class Agent:
 
     def train_minibatch(self, batch_size=16):
         state, action, reward, next_state = self.sample_minibatch(batch_size)
-        x = {'state': torch.from_numpy(np.concatenate(state)).float(),
-            'action': torch.from_numpy(np.concatenate(action)).float(), 
-            'reward': torch.from_numpy(np.array(reward)).view(-1, 1).float(),
-            'next_state': torch.from_numpy(np.concatenate(next_state)).float()}
+        x = {'state': torch.from_numpy(np.concatenate(state)),
+            'action': torch.from_numpy(np.concatenate(action)), 
+            'reward': torch.from_numpy(np.array(reward)).view(-1, 1),
+            'next_state': torch.from_numpy(np.concatenate(next_state))}
         self.model.train_step(x)
         return self.model.critic_loss(x)
 
