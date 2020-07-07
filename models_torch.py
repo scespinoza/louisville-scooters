@@ -196,10 +196,6 @@ class HRP(nn.Module):
             target_param.data.copy_(target_param.data * (1.0 - self.tau) + param.data * self.tau)
 
     def critic_step(self, batch):
-        for p in self.an.parameters():
-            p.requires_grad = False
-        for p in self.cn.parameters():
-            p.requires_grad = True
         self.critic_optimizer.zero_grad()
         batch_loss = self.critic_loss(batch)
         batch_loss.backward()
@@ -207,14 +203,12 @@ class HRP(nn.Module):
         return batch_loss.detach().numpy()
 
     def actor_gradient(self, batch):
-        p, q = self.forward(batch['state'])
+        p = self.an(batch['state'])
+        xc = torch.cat([x, p.view(-1, 2, 100, 1)], dim=-1)
+        q = self.cn(xc)
         return -q.mean()
         
     def actor_step(self, batch):
-        for p in self.an.parameters():
-            p.requires_grad = True
-        for p in self.cn.parameters():
-            p.requires_grad = False
         grad = self.actor_gradient(batch)
         self.actor_optimizer.zero_grad()
         grad.backward()
