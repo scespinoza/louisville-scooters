@@ -9,7 +9,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 
-torch.set_default_tensor_type('torch.DoubleTensor')
+torch.set_default_tensor_type('torch.FloatTensor')
 
 class SubActor(nn.Module):
     def __init__(self, neurons=16, state_size=6):
@@ -222,10 +222,10 @@ class Agent:
     def train_minibatch(self, batch_size=16):
         state, action, reward, next_state = self.sample_minibatch(batch_size)
         print(len(state))
-        x = {'state': torch.from_numpy(np.concatenate(state)), 
-             'action': torch.from_numpy(np.concatenate(action)),
-             'reward': torch.from_numpy(np.array(reward)).view(-1, 1),
-             'next_state': torch.from_numpy(np.concatenate(next_state))}
+        x = {'state': torch.from_numpy(np.concatenate(state).astype(np.float32)), 
+             'action': torch.from_numpy(np.concatenate(action).astype(np.float32)),
+             'reward': torch.from_numpy(np.array(reward).astype(np.float32)).view(-1, 1),
+             'next_state': torch.from_numpy(np.concatenate(next_state).astype(np.float32))}
         self.model.train_step(x)
         return self.model.critic_loss(x).detach().numpy()
 
@@ -234,7 +234,7 @@ class Agent:
 
     def act(self, environment):
         state  = environment.get_state()
-        action = self.get_action(torch.from_numpy(state))
+        action = self.get_action(torch.from_numpy(state.astype(np.float32)))
         reward, next_state = environment.perform_action(action)
         self.store_transition((state, action, reward, next_state))
         return reward
@@ -278,10 +278,10 @@ class Agent:
 
     def get_q_loss(self):
         state, action, reward, next_state = [[sample[i] for sample in self.experience_buffer] for i in range(4)]
-        return self.model.critic_loss({'state': torch.from_numpy(np.concatenate(state)), 
-                                    'action': torch.from_numpy(np.concatenate(action)), 
-                                    'reward': torch.from_numpy(np.array(reward)).view(-1, 1),
-                                    'next_state': torch.from_numpy(np.concatenate(next_state))
+        return self.model.critic_loss({'state': torch.from_numpy(np.concatenate(state).astype(np.float32)), 
+                                    'action': torch.from_numpy(np.concatenate(action).astype(np.float32)), 
+                                    'reward': torch.from_numpy(np.array(reward).astype(np.float32)).view(-1, 1),
+                                    'next_state': torch.from_numpy(np.concatenate(next_state).astype(np.float32))
                                     })
     def save_target_model(self):
         self.model.save_target_model()
