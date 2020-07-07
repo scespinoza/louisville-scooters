@@ -136,18 +136,19 @@ class SimpleSubCritic(nn.Module):
         return x[:, -1, :]
 
 class SimpleCritic(nn.Module):
-    def __init__(self, neurons=64, gru_out=16, state_size=6):
+    def __init__(self, neurons=64, gru_out=16, state_size=6, nzones=100):
         super(SimpleCritic, self).__init__()
+        self.nzones = nzones
         self.gru = nn.GRU((state_size + 1) * 5, gru_out, batch_first=True)
         self.subactor = SimpleSubCritic(neurons=neurons, input_size=gru_out)
         self.lm = LocalizedModule(neurons=neurons, state_size=6)
 
     def forward(self, x):
-        for i in range(self.n_subcritics):
+        for i in range(self.nzones):
             neighbors = (i, i - 10, i + 1, i + 10, i - 1)
             xi = []
             for n in neighbors:
-                if n >= 0 and n < self.n_subcritics:
+                if n >= 0 and n < self.nzones:
                     xi.append(x[:, :, n])
                 else:
                     xi.append(torch.zeros_like(x[:,:,i]))
