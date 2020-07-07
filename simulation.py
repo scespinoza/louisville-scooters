@@ -363,10 +363,12 @@ class UserRequest(Event):
             rb = simulator.service_provider.budget
             if np.any(np.array(user_utility) > 0):
                 max_utility = np.argmax(user_utility)
-                incentive = nearest_scooter.get_price_incentive(simulator.grid)
+                nearest_scooter = available_scooters[max_utility]
+                incentive = nearest_scooter.get_price_incentive(simulator.grid)  
                 if incentive > rb:
-                    simulator.insert(UserLeavesSystem(simulator.time, self.user))
+                    simulator.insert(UserLeavesSystem(simulator.time, self.user)) 
                     return None
+                
                 distance = simulator.graph.shortest_path_distance(self.user.origin,nearest_scooter.location)
                 walking_time = distance / self.user.velocity
                 pickup = PickUp(simulator.time + walking_time, self.user, nearest_scooter, incentive=True)
