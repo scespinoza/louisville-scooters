@@ -801,8 +801,8 @@ if __name__ == '__main__':
         fig.savefig('batch_loss.png')
 
         fig, ax = plt.subplots()
-        ax.plot(agent.history['batch_loss'])
-        ax.set_title('Batch Loss')
+        ax.plot(agent.history['Distance'])
+        ax.set_title('Distance')
         ax.set_xlabel('Episode')
         ax.set_ylabel('Loss')
         fig.savefig('distance.png')
