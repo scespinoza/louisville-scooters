@@ -278,7 +278,7 @@ class Agent:
             'reward': torch.from_numpy(np.array(reward)).view(-1, 1),
             'next_state': torch.from_numpy(np.concatenate(next_state))}
         self.model.train_step(x)
-        return self.model.critic_loss(x)[0].detach().numpy()
+        return self.model.critic_loss(x)
 
     def get_action(self, state):
         return self.model.an(state).detach().numpy()[:, -1].reshape(10, 10)
@@ -322,9 +322,9 @@ class Agent:
                 print('Reward: {:.2f}, '.format(reward), end='')  
                 episode_rewards.append(self.model.discount_rate*reward)         
                 batch_loss, distance = self.train_minibatch()
-                print('Batch Loss: {:.2f}'.format(batch_loss))
-                self.history['distance'].append(batch_loss)
-                self.history['batch_loss'].append(batch_loss)
+                print('Batch Loss: {:.2f}'.format(batch_loss.detach().numpy()))
+                self.history['distance'].append(batch_loss.detach().numpy())
+                self.history['batch_loss'].append(batch_loss.detach().numpy())
             self.history['rewards'].append(np.sum(episode_rewards))
             self.history['dqn_loss'].append(self.get_q_loss())
         print('Finishing Training: {:.2f}s'.format(time.time() - training_start))
