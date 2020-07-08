@@ -798,9 +798,14 @@ if __name__ == '__main__':
         ax.set_title('Batch Loss')
         ax.set_xlabel('Episode')
         ax.set_ylabel('Loss')
-        ax.set_xticks(list(range(0, 15*24*7, 24*7)))
-        ax.set_xticklabels(list(range(0, 15)))
         fig.savefig('batch_loss.png')
+
+        fig, ax = plt.subplots()
+        ax.plot(agent.history['batch_loss'])
+        ax.set_title('Batch Loss')
+        ax.set_xlabel('Episode')
+        ax.set_ylabel('Loss')
+        fig.savefig('distance.png')
         
     if args.test_grid:
         replicas = ['data/replicas/stkde_nhpp_{}.csv'.format(i) for i in range(1)]

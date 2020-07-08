@@ -189,7 +189,8 @@ class HRP(nn.Module):
         with torch.no_grad():
             p_next, q_next = self.target_model(batch['next_state'])
             y = batch['reward'] + self.discount_rate * q_next
-        return self.critic_criterion(y,q)
+        distance = (y - q).detach().numpy().mean()
+        return self.critic_criterion(y,q), distance
 
     def soft_update(self):
         for target_param, param in zip(self.target_model.parameters(), self.parameters()):
@@ -197,7 +198,7 @@ class HRP(nn.Module):
 
     def critic_step(self, batch):
         self.critic_optimizer.zero_grad()
-        batch_loss = self.critic_loss(batch)
+        batch_loss, _ = self.critic_loss(batch)
         batch_loss.backward()
         self.critic_optimizer.step()
         return batch_loss.detach().numpy()
@@ -277,7 +278,7 @@ class Agent:
             'reward': torch.from_numpy(np.array(reward)).view(-1, 1),
             'next_state': torch.from_numpy(np.concatenate(next_state))}
         self.model.train_step(x)
-        return self.model.critic_loss(x).detach().numpy()
+        return self.model.critic_loss(x)[0].detach().numpy()
 
     def get_action(self, state):
         return self.model.an(state).detach().numpy()[:, -1].reshape(10, 10)
@@ -320,11 +321,12 @@ class Agent:
                 reward = self.act(environment)
                 print('Reward: {:.2f}, '.format(reward), end='')  
                 episode_rewards.append(self.model.discount_rate*reward)         
-                batch_loss = self.train_minibatch()
+                batch_loss, distance = self.train_minibatch()
                 print('Batch Loss: {:.2f}'.format(batch_loss))
+                self.history['distance'].append(batch_loss)
                 self.history['batch_loss'].append(batch_loss)
             self.history['rewards'].append(np.sum(episode_rewards))
-            self.history['dqn_loss'].append(self.get_q_loss().detach().numpy())
+            self.history['dqn_loss'].append(self.get_q_loss())
         print('Finishing Training: {:.2f}s'.format(time.time() - training_start))
 
     def get_q_loss(self):
@@ -332,7 +334,7 @@ class Agent:
         return self.model.critic_loss({'state': torch.from_numpy(np.concatenate(state)),
                                     'action': torch.from_numpy(np.concatenate(action)), 
                                     'reward': torch.from_numpy(np.array(reward)).view(-1, 1),
-                                    'next_state': torch.from_numpy(np.concatenate(next_state))})
+                                    'next_state': torch.from_numpy(np.concatenate(next_state))})[0].detach().numpy()
     def save_target_model(self):
         self.model.save_target_model()
 
