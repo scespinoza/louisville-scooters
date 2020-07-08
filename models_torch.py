@@ -174,7 +174,7 @@ class HRP(nn.Module):
         self.learning_rate = 1e-4
         self.tau = 0.2
         self.critic_optimizer = torch.optim.Adam(self.cn.parameters(), lr=self.learning_rate)
-        self.actor_optimizer = torch.optim.Adam(self.an.parameters(), lr=self.learning_rate)
+        self.actor_optimizer = torch.optim.Adam(self.an.parameters(), lr=0)
         if not target_model:
             self.target_model = HRP(target_model=True)
 
@@ -288,7 +288,7 @@ class Agent:
     def act(self, environment):
         state  = environment.get_state()
         action = self.get_action(torch.from_numpy(state))
-        noise = np.random.normal(size=action.shape, scale=3.0)
+        noise = np.random.normal(size=action.shape, scale=1.0)
         action = action + noise
         next_state, reward = environment.perform_action(action)
         self.store_transition((state, action, reward, next_state))
