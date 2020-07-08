@@ -219,7 +219,6 @@ class HRP(nn.Module):
     def train_step(self, batch):
         batch_loss = self.critic_step(batch)
         q_val = self.actor_step(batch)
-        print(batch_loss, q_val)
         self.soft_update()
         return batch_loss, q_val
                     
@@ -278,7 +277,6 @@ class Agent:
             'action': torch.from_numpy(np.concatenate(action)), 
             'reward': torch.from_numpy(np.array(reward)).view(-1, 1),
             'next_state': torch.from_numpy(np.concatenate(next_state))}
-        print('Rewards: ', x['reward'].squeeze())
         self.model.train_step(x)
         return self.model.critic_loss(x)
 
