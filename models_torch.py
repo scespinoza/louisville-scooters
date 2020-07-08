@@ -261,7 +261,8 @@ class Agent:
         self.history = {
             'rewards': [],
             'dqn_loss': [],
-            'batch_loss': []
+            'batch_loss': [],
+            'distance': []
         }
 
     def store_transition(self, transition):
