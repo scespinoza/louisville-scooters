@@ -207,7 +207,7 @@ class HRP(nn.Module):
         p = self.an(batch['state'])
         xc = torch.cat([batch['state'], p.view(-1, 2, 100, 1)], dim=-1)
         q = self.cn(xc)
-        return -q.mean()
+        return torch.mean(-1 * q.squeeze())
         
     def actor_step(self, batch):
         grad = self.actor_gradient(batch)
@@ -272,12 +272,13 @@ class Agent:
         batch = random.sample(self.experience_buffer, batch_size)
         return [[sample[i] for sample in batch] for i in range(4)]
 
-    def train_minibatch(self, batch_size=16):
+    def train_minibatch(self, batch_size=32):
         state, action, reward, next_state = self.sample_minibatch(batch_size)
         x = {'state': torch.from_numpy(np.concatenate(state)),
             'action': torch.from_numpy(np.concatenate(action)), 
             'reward': torch.from_numpy(np.array(reward)).view(-1, 1),
             'next_state': torch.from_numpy(np.concatenate(next_state))}
+        print('Rewards: ', x['reward'].squeeze())
         self.model.train_step(x)
         return self.model.critic_loss(x)
 
