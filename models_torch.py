@@ -287,7 +287,7 @@ class Agent:
     def act(self, environment):
         state  = environment.get_state()
         action = self.get_action(torch.from_numpy(state))
-        noise = np.random.normal(size=action.shape)
+        noise = np.random.normal(size=action.shape, scale=3.0)
         action = action + noise
         next_state, reward = environment.perform_action(action)
         self.store_transition((state, action, reward, next_state))
