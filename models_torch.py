@@ -324,7 +324,7 @@ class Agent:
                 episode_rewards.append(self.model.discount_rate*reward)         
                 batch_loss, distance = self.train_minibatch()
                 print('Batch Loss: {:.2f}'.format(batch_loss.detach().numpy()))
-                self.history['distance'].append(distance.detach().numpy())
+                self.history['distance'].append(distance)
                 self.history['batch_loss'].append(batch_loss.detach().numpy())
             self.history['rewards'].append(np.sum(episode_rewards))
             self.history['dqn_loss'].append(self.get_q_loss())
