@@ -40,9 +40,9 @@ class ActorNetwork(nn.Module):
 class SimpleSubActor(nn.Module):
     def __init__(self, input_size=16):
         super(SimpleSubActor, self).__init__()
-        self.fc1 = nn.Linear(input_size,1024)
-        self.fc2 = nn.Linear(1024, 256)
-        self.fc3 = nn.Linear(256, 1)
+        self.fc1 = nn.Linear(input_size,128)
+        self.fc2 = nn.Linear(128, 128)
+        self.fc3 = nn.Linear(128, 1)
     def forward(self, x):
         x = nn.ReLU()(self.fc1(x))
         x = nn.ReLU()(self.fc2(x))
@@ -50,7 +50,7 @@ class SimpleSubActor(nn.Module):
         return x
 
 class SimpleActor(nn.Module):
-    def __init__(self, state_size=6, gru_out=128, nzones=100):
+    def __init__(self, state_size=6, gru_out=32, nzones=100):
         super(SimpleActor, self).__init__()
         self.nzones = nzones
         self.gru = nn.GRU(state_size, gru_out, batch_first=True)
@@ -69,8 +69,8 @@ class LocalizedModule(nn.Module):
     def __init__(self, state_size=6):
         super(LocalizedModule, self).__init__()
         # Input is state_size * neighbors + price (action)
-        self.fc1 = nn.Linear((state_size + 1) * 5 , 512)
-        self.fc2 = nn.Linear(512, 128)
+        self.fc1 = nn.Linear((state_size + 1) * 5 , 128)
+        self.fc2 = nn.Linear(128, 128)
         self.fc3 = nn.Linear(128 , 1)
 
     def forward(self, x):
@@ -125,9 +125,9 @@ class CriticNetwork(nn.Module):
 class SimpleSubCritic(nn.Module):
     def __init__(self, input_size=16):
         super(SimpleSubCritic, self).__init__()
-        self.fc1 = nn.Linear(input_size, 1024)
-        self.fc2 = nn.Linear(1024, 256)
-        self.fc3 = nn.Linear(256, 1)
+        self.fc1 = nn.Linear(input_size, 128)
+        self.fc2 = nn.Linear(128, 128)
+        self.fc3 = nn.Linear(128, 1)
 
     def forward(self, x):
         x = nn.ReLU()(self.fc1(x))
@@ -136,7 +136,7 @@ class SimpleSubCritic(nn.Module):
         return x[:, -1, :]
 
 class SimpleCritic(nn.Module):
-    def __init__(self, gru_out=128, state_size=6, nzones=100):
+    def __init__(self, gru_out=32, state_size=6, nzones=100):
         super(SimpleCritic, self).__init__()
         self.nzones = nzones
         self.gru = nn.GRU((state_size + 1) * 5, gru_out, batch_first=True)
