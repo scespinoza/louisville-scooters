@@ -50,7 +50,7 @@ class SimpleSubActor(nn.Module):
         return x
 
 class SimpleActor(nn.Module):
-    def __init__(self, state_size=6, gru_out=16, nzones=100):
+    def __init__(self, state_size=6, gru_out=128, nzones=100):
         super(SimpleActor, self).__init__()
         self.nzones = nzones
         self.gru = nn.GRU(state_size, gru_out, batch_first=True)
@@ -136,7 +136,7 @@ class SimpleSubCritic(nn.Module):
         return x[:, -1, :]
 
 class SimpleCritic(nn.Module):
-    def __init__(self, gru_out=32, state_size=6, nzones=100):
+    def __init__(self, gru_out=128, state_size=6, nzones=100):
         super(SimpleCritic, self).__init__()
         self.nzones = nzones
         self.gru = nn.GRU((state_size + 1) * 5, gru_out, batch_first=True)
