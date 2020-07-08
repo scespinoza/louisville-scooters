@@ -283,10 +283,11 @@ class Agent:
     def get_action(self, state):
         return self.model.an(state).detach().numpy()[:, -1].reshape(10, 10)
 
-    def act(self, environment):
+    def act(self, environment, episode=0):
         state  = environment.get_state()
         action = self.get_action(torch.from_numpy(state))
-        noise = np.random.normal(size=action.shape, scale=5.0)
+        scale = 5 * (0.99 ** episode)
+        noise = np.random.normal(size=action.shape, scale=)
         action = action + noise
         next_state, reward = environment.perform_action(action)
         self.store_transition((state, action, reward, next_state))
@@ -318,7 +319,7 @@ class Agent:
             episode_rewards = []
             for t in range(environment.timesteps):
                 print('Episode {}, timestep {}'.format(e + 1, t + 1))
-                reward = self.act(environment)
+                reward = self.act(environment, episode=e)
                 print('Reward: {:.2f}, '.format(reward), end='')  
                 episode_rewards.append(self.model.discount_rate*reward)         
                 batch_loss, distance = self.train_minibatch()
