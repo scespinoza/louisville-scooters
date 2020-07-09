@@ -40,17 +40,15 @@ class ActorNetwork(nn.Module):
 class SimpleSubActor(nn.Module):
     def __init__(self, input_size=16):
         super(SimpleSubActor, self).__init__()
-        self.fc1 = nn.Linear(input_size,512)
-        self.fc2 = nn.Linear(512, 128)
-        self.fc3 = nn.Linear(128, 1)
+        self.fc1 = nn.Linear(input_size,8)
+        self.fc2 = nn.Linear(8, 1)
     def forward(self, x):
         x = nn.ReLU()(self.fc1(x))
-        x = nn.ReLU()(self.fc2(x))
-        x = self.fc3(x)
+        x = self.fc2(x)
         return x
 
 class SimpleActor(nn.Module):
-    def __init__(self, state_size=6, gru_out=512, nzones=100):
+    def __init__(self, state_size=6, gru_out=18, nzones=100):
         super(SimpleActor, self).__init__()
         self.nzones = nzones
         self.gru = nn.GRU(state_size, gru_out, batch_first=True)
@@ -61,22 +59,20 @@ class SimpleActor(nn.Module):
         a = []
         for i in range(self.nzones):
             sx, h = self.gru(x[:, :, i])
-            sa = self.subactor(sx[:, -1])
+            sa = self.subactor(sx)
             a.append(sa)
-        return torch.stack(a).view(-1, nzones)
+        return torch.stack(a).view(-1, t, nzones)
     
 class LocalizedModule(nn.Module):
     def __init__(self, state_size=6):
         super(LocalizedModule, self).__init__()
         # Input is state_size * neighbors + price (action)
-        self.fc1 = nn.Linear((state_size + 1) * 5 , 512)
-        self.fc2 = nn.Linear(512, 256)
-        self.fc3 = nn.Linear(256 , 1)
+        self.fc1 = nn.Linear((state_size + 1) * 5 , 32)
+        self.fc2 = nn.Linear(32, 1)
 
     def forward(self, x):
         x = nn.ReLU()(self.fc1(x))
-        x = nn.ReLU()(self.fc2(x))
-        x = self.fc3(x)
+        x = self.fc2(x)
         return x        
 
 class SubCritic(nn.Module):
@@ -125,14 +121,12 @@ class CriticNetwork(nn.Module):
 class SimpleSubCritic(nn.Module):
     def __init__(self, input_size=16):
         super(SimpleSubCritic, self).__init__()
-        self.fc1 = nn.Linear(input_size, 512)
-        self.fc2 = nn.Linear(512, 256)
-        self.fc3 = nn.Linear(256, 1)
+        self.fc1 = nn.Linear(input_size, 8)
+        self.fc2 = nn.Linear(8, 1)
 
     def forward(self, x):
         x = nn.ReLU()(self.fc1(x))
-        x = nn.ReLU()(self.fc2(x))
-        x = self.fc3(x)
+        x = self.fc2(x)
         return x[:, -1, :]
 
 class SimpleCritic(nn.Module):
@@ -158,7 +152,7 @@ class SimpleCritic(nn.Module):
             
             f.append(self.lm(xi[:, -1, :].view(-1, 5 * 7)))
             xq, h = self.gru(xi)
-            q.append(self.subcritic(xq[:, -1]))
+            q.append(self.subcritic(xq))
         f = torch.cat(f)
         q = torch.cat(q)
         return torch.sum(f + q, dim=1)
@@ -173,7 +167,7 @@ class HRP(nn.Module):
         self.cn_target = SimpleCritic()
         self.critic_criterion = nn.MSELoss()
         self.discount_rate = 0.99
-        self.learning_rate = 1e-4
+        self.learning_rate = learning_rate
         self.tau = 0.2
         self.critic_optimizer = torch.optim.Adam(self.cn.parameters(), lr=self.learning_rate)
         self.actor_optimizer = torch.optim.Adam(self.an.parameters(), lr=self.learning_rate)
@@ -181,7 +175,7 @@ class HRP(nn.Module):
      
     def forward(self, x):
         p = self.an(x)
-        xc = torch.cat([x, p.view(-1, 2, 100, 1)], dim=-1)
+        xc = torch.cat([x, p.view(-1, 100, 1)], dim=-1)
         q = self.cn(xc)
         return p[:, -1], q.view(-1, 1)
     def target_forward(self, x):
