@@ -50,7 +50,7 @@ class SimpleSubActor(nn.Module):
         return x
 
 class SimpleActor(nn.Module):
-    def __init__(self, state_size=6, gru_out=64, nzones=100):
+    def __init__(self, state_size=6, gru_out=512, nzones=100):
         super(SimpleActor, self).__init__()
         self.nzones = nzones
         self.gru = nn.GRU(state_size, gru_out, batch_first=True)
@@ -61,9 +61,9 @@ class SimpleActor(nn.Module):
         a = []
         for i in range(self.nzones):
             sx, h = self.gru(x[:, :, i])
-            sa = self.subactor(sx)
+            sa = self.subactor(sx[:, -1])
             a.append(sa)
-        return torch.stack(a).view(-1, t, nzones)
+        return torch.stack(a).view(-1, nzones)
     
 class LocalizedModule(nn.Module):
     def __init__(self, state_size=6):
@@ -158,7 +158,7 @@ class SimpleCritic(nn.Module):
             
             f.append(self.lm(xi[:, -1, :].view(-1, 5 * 7)))
             xq, h = self.gru(xi)
-            q.append(self.subcritic(xq))
+            q.append(self.subcritic(xq[:, -1]))
         f = torch.cat(f)
         q = torch.cat(q)
         return torch.sum(f + q, dim=1)
