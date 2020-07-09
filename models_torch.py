@@ -175,7 +175,7 @@ class HRP(nn.Module):
      
     def forward(self, x):
         p = self.an(x)
-        xc = torch.cat([x, p.view(-1, 100, 1)], dim=-1)
+        xc = torch.cat([x, p.view(-1, 2, 100, 1)], dim=-1)
         q = self.cn(xc)
         return p[:, -1], q.view(-1, 1)
     def target_forward(self, x):
