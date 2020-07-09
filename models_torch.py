@@ -40,15 +40,15 @@ class ActorNetwork(nn.Module):
 class SimpleSubActor(nn.Module):
     def __init__(self, input_size=16):
         super(SimpleSubActor, self).__init__()
-        self.fc1 = nn.Linear(input_size,8)
-        self.fc2 = nn.Linear(8, 1)
+        self.fc1 = nn.Linear(input_size,16)
+        self.fc2 = nn.Linear(16, 1)
     def forward(self, x):
         x = nn.ReLU()(self.fc1(x))
         x = self.fc2(x)
         return x
 
 class SimpleActor(nn.Module):
-    def __init__(self, state_size=6, gru_out=18, nzones=100):
+    def __init__(self, state_size=6, gru_out=16, nzones=100):
         super(SimpleActor, self).__init__()
         self.nzones = nzones
         self.gru = nn.GRU(state_size, gru_out, batch_first=True)
@@ -121,8 +121,8 @@ class CriticNetwork(nn.Module):
 class SimpleSubCritic(nn.Module):
     def __init__(self, input_size=16):
         super(SimpleSubCritic, self).__init__()
-        self.fc1 = nn.Linear(input_size, 8)
-        self.fc2 = nn.Linear(8, 1)
+        self.fc1 = nn.Linear(input_size, 16)
+        self.fc2 = nn.Linear(16, 1)
 
     def forward(self, x):
         x = nn.ReLU()(self.fc1(x))
@@ -292,7 +292,7 @@ class Agent:
     def act(self, environment, episode=0):
         state  = environment.get_state()
         action = self.get_action(torch.from_numpy(state))
-        scale = 5 * (0.99 ** episode)
+        scale = 1 * (0.99 ** episode)
         noise = np.random.normal(size=action.shape, scale=scale)
         action = action + noise
         next_state, reward = environment.perform_action(action)
