@@ -770,7 +770,7 @@ if __name__ == '__main__':
         
         grid = Grid.from_gdf(grid_gdf, (10,10))
         grid.create_nodes_dict(graph.layers['walk']['nodes'])
-        simulator = ScooterSharingSimulator(graph, grid, initial_supply=100, pricing=args.pricing)
+        simulator = ScooterSharingSimulator(graph, grid, initial_supply=60, pricing=args.pricing)
         simulator.simulate(replicas, verbose=1)
     if args.train:
         replicas = ['data/replicas/stkde_nhpp_{}.csv'.format(i) for i in range(1)]
