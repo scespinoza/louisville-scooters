@@ -58,10 +58,8 @@ class Grid:
         self.nodes_in_boxes = nodes_in_boxes
         self.demand_history = deque(maxlen=8)
         self.satisfied_requests_history = deque(maxlen=8)
-        self.state_memory = deque(maxlen=4)
-        self.state_memory.append(np.zeros(shape=(1, 1, 100, 6)))
-        self.state_memory.append(np.zeros(shape=(1, 1, 100, 6)))
-        self.state_memory.append(np.zeros(shape=(1, 1, 100, 6)))
+        self.state_memory = deque(maxlen=2)
+        self.state_memory.append(np.zeros(shape=(1, 1, 100, 6)))        
         self.prices = np.zeros_like(boxes)
         self.stats =  {
             'demand': np.zeros_like(boxes),
