@@ -165,36 +165,48 @@ class SimpleCritic(nn.Module):
 
 
 class HRP(nn.Module):
-    def __init__(self, learning_rate=1e-4, target_model=False):
+    def __init__(self, learning_rate=1e-4):
         super(HRP, self).__init__()
         self.an = SimpleActor()
         self.cn = SimpleCritic()
+        self.an_target = SimpleActor()
+        self.cn_target = SimpleCritic()
         self.critic_criterion = nn.MSELoss()
         self.discount_rate = 0.99
         self.learning_rate = 1e-4
         self.tau = 0.2
         self.critic_optimizer = torch.optim.Adam(self.cn.parameters(), lr=self.learning_rate)
         self.actor_optimizer = torch.optim.Adam(self.an.parameters(), lr=self.learning_rate)
-        if not target_model:
-            self.target_model = HRP(target_model=True)
-
+        self.hard_update()
+     
     def forward(self, x):
         p = self.an(x)
         xc = torch.cat([x, p.view(-1, 2, 100, 1)], dim=-1)
         q = self.cn(xc)
         return p[:, -1], q.view(-1, 1)
-    
+    def target_forward(self, x):
+        p = self.an_target(x)
+        xc = torch.cat([x, p.view(-1, 2, 100, 1)], dim=-1)
+        q = self.cn_target(xc)
+        return p[:, -1], q.view(-1, 1)
     def critic_loss(self, batch):
         p, q = self.forward(batch['state'])
         with torch.no_grad():
-            p_next, q_next = self.target_model(batch['next_state'])
+            p_next, q_next = self.target_forward(batch['next_state'])
             y = batch['reward'] + self.discount_rate * q_next
         distance = (y - q).detach().numpy().mean()
         return self.critic_criterion(y,q), distance
 
     def soft_update(self):
-        for target_param, param in zip(self.target_model.parameters(), self.parameters()):
+        for target_param, param in zip(self.an_target.parameters(), self.an.parameters()):
             target_param.data.copy_(target_param.data * (1.0 - self.tau) + param.data * self.tau)
+        for target_param, param in zip(self.cn_target.parameters(), self.cn.parameters()):
+            target_param.data.copy_(target_param.data * (1.0 - self.tau) + param.data * self.tau)
+    def hard_update(self):
+        for target_param, param in zip(self.an_target.parameters(), self.an.parameters()):
+            target_param.data.copy_(param.data)
+        for target_param, param in zip(self.cn_target.parameters(), self.cn.parameters()):
+            target_param.data.copy_(param.data)
 
     def critic_step(self, batch):
         self.critic_optimizer.zero_grad()
