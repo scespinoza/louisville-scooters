@@ -752,13 +752,14 @@ if __name__ == '__main__':
     parser.add_argument('--warmup', type=int, default=5)
     parser.add_argument('--episodes', type=int, default=15)
     parser.add_argument('--noise', type=float, default=2)
+    parser.add_argument('--replicas', type=int, default=20)
     parser.add_argument('--budget', type=int, default=100)
     parser.add_argument('--verbose', type=int, help='verbosity value')
     parser.add_argument('--lr', type=float, default=1e-4)
 
     args = parser.parse_args()
     if args.simulate:
-        replicas = ['data/replicas/stkde_nhpp_{}.csv'.format(i) for i in range(20)]
+        replicas = ['data/replicas/stkde_nhpp_{}.csv'.format(i) for i in range(args.replicas)]
         
         study_area_filename = 'shapes/study_area/study_area.shp'
         study_area = gpd.read_file(study_area_filename).to_crs('epsg:4326')
@@ -772,7 +773,7 @@ if __name__ == '__main__':
         simulator = ScooterSharingSimulator(graph, grid, initial_supply=60, pricing=args.pricing)
         simulator.simulate(replicas, verbose=1)
     if args.train:
-        replicas = ['data/replicas/stkde_nhpp_{}.csv'.format(i) for i in range(20)]
+        replicas = ['data/replicas/stkde_nhpp_{}.csv'.format(i) for i in range(args.replicas)]
         history_saver = HistorySaver(name='test')
         study_area_filename = 'shapes/study_area/study_area.shp'
         study_area = gpd.read_file(study_area_filename).to_crs('epsg:4326').sort_values('id')
