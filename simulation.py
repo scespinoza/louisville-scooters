@@ -620,7 +620,8 @@ class HistorySaver:
 
 class ScooterSharingSimulator:
 
-    def __init__(self, graph, grid, initial_supply=200, days=7, month='march', year=2019, history_saver=None, pricing=False):
+    def __init__(self, graph, grid, initial_supply=200, days=7, month='march', year=2019, history_saver=None, pricing=False,
+                service_provider=ServiceProvider()):
         self.pricing = pricing
         self.replicas = replicas
         self.events = ListQueue()
@@ -631,13 +632,7 @@ class ScooterSharingSimulator:
         self.history_saver = history_saver
         self.time_window = 3600
         self.timesteps = self.simulation_time // self.time_window
-        
-        try:
-            print('Loading Trained Model')
-            self.service_provider = ServiceProvider().load_trained()
-        except:
-            print("Warning: couldn't load trained model")
-            self.service_provider = ServiceProvider()
+        self.service_provider = service_provider
         self.initial_supply = initial_supply
 
     @property
@@ -790,7 +785,7 @@ if __name__ == '__main__':
         grid.create_nodes_dict(graph.layers['walk']['nodes'])
         model = HRP(learning_rate=args.lr)
         agent = ServiceProvider(model=model, noise_scale=args.noise, budget=args.budget)
-        environment = ScooterSharingSimulator(graph, grid, days=1, initial_supply=100, pricing=True)
+        environment = ScooterSharingSimulator(graph, grid, days=1, initial_supply=100, pricing=True, service_provider=agent)
         environment.set_replicas_for_training(replicas)
         agent.train(environment, warmup_iterations=args.warmup, episodes=args.episodes)
         agent.save_target_model()
