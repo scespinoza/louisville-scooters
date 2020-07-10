@@ -430,6 +430,7 @@ class PickUp(Event):
 
         if self.scooter.available and battery_consumption <= self.scooter.battery_level:
             if self.incentive:
+                incentive = self.scooter.price_incentive
                 print('Pricing')
                 print('User recives an incentive of {:.2f}$.'.format(incentive))
                 print('Remaining Budget: {}'.format(simulator.service_provider.budget))
