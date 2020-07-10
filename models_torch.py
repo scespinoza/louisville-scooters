@@ -292,7 +292,7 @@ class Agent:
     def act(self, environment, episode=0):
         state  = environment.get_state()
         action = self.get_action(torch.from_numpy(state))
-        scale = self.noise_scale * (0.99 ** episode)
+        scale = self.noise_scale * (0.999 ** episode)
         noise = np.random.normal(size=action.shape, scale=scale)
         action = action + noise
         next_state, reward = environment.perform_action(action)
