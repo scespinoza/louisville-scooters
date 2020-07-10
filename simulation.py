@@ -367,7 +367,7 @@ class UserRequest(Event):
                 if incentive > rb:
                     simulator.insert(UserLeavesSystem(simulator.time, self.user)) 
                     return None
-                
+                simulator.service_provider.budget -= incentive
                 distance = simulator.graph.shortest_path_distance(self.user.origin,nearest_scooter.location)
                 walking_time = distance / self.user.velocity
                 pickup = PickUp(simulator.time + walking_time, self.user, nearest_scooter, incentive=True)
@@ -431,8 +431,6 @@ class PickUp(Event):
         if self.scooter.available and battery_consumption <= self.scooter.battery_level:
             if self.incentive:
                 print('Pricing')
-                incentive = self.scooter.price_incentive
-                simulator.service_provider.budget -= incentive
                 print('User recives an incentive of {:.2f}$.'.format(incentive))
                 print('Remaining Budget: {}'.format(simulator.service_provider.budget))
                 simulator.grid.update_stat(origin['osmid'], 'pricing', value=self.scooter.price_incentive)
@@ -456,6 +454,9 @@ class PickUp(Event):
             simulator.insert(dropoff)
         
         else:
+            if self.incentive:
+                incentive = self.scooter.price_incentive
+                simulator.service_provider.budget += incentive
             simulator.insert(UserLeavesSystem(simulator.time, self.user))
 
     def __str__(self):
@@ -755,6 +756,7 @@ if __name__ == '__main__':
     parser.add_argument('--warmup', type=int, default=5)
     parser.add_argument('--episodes', type=int, default=15)
     parser.add_argument('--noise', type=float, default=2)
+    parser.add_argument('--budget', type=int, default=100)
     parser.add_argument('--verbose', type=int, help='verbosity value')
     parser.add_argument('--lr', type=float, default=1e-4)
 
@@ -786,7 +788,7 @@ if __name__ == '__main__':
         grid = Grid.from_gdf(grid_gdf, (10,10))
         grid.create_nodes_dict(graph.layers['walk']['nodes'])
         model = HRP(learning_rate=args.lr)
-        agent = ServiceProvider(model=model, noise_scale=args.noise)
+        agent = ServiceProvider(model=model, noise_scale=args.noise, budget=args.budget)
         environment = ScooterSharingSimulator(graph, grid, days=1, initial_supply=100, pricing=True)
         environment.set_replicas_for_training(replicas)
         agent.train(environment, warmup_iterations=args.warmup, episodes=args.episodes)
