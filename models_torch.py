@@ -258,11 +258,11 @@ class HRP(nn.Module):
 
 class Agent:
 
-    def __init__(self, name, model, buffer_length):
+    def __init__(self, name, model, buffer_length, noise_scale=2.0):
         self.name = name
         self.model = model
         self.experience_buffer = deque(maxlen=buffer_length)
-        self.random_exploration_process = np.random.rand
+        self.noise_scale = noise_scale
         self.history = {
             'rewards': [],
             'dqn_loss': [],
@@ -292,7 +292,7 @@ class Agent:
     def act(self, environment, episode=0):
         state  = environment.get_state()
         action = self.get_action(torch.from_numpy(state))
-        scale = 1 * (0.99 ** episode)
+        scale = self.noise_scale * (0.99 ** episode)
         noise = np.random.normal(size=action.shape, scale=scale)
         action = action + noise
         next_state, reward = environment.perform_action(action)
