@@ -8,6 +8,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 
+
+use_cuda = torch.cuda.is_available()
+device = torch.device("cuda" if use_cuda else "cpu")
+
 class SubActor(nn.Module):
     def __init__(self, neurons=16, state_size=6):
         super(SubActor, self).__init__()
@@ -161,10 +165,10 @@ class SimpleCritic(nn.Module):
 class HRP(nn.Module):
     def __init__(self, learning_rate=1e-4):
         super(HRP, self).__init__()
-        self.an = SimpleActor()
-        self.cn = SimpleCritic()
-        self.an_target = SimpleActor()
-        self.cn_target = SimpleCritic()
+        self.an = SimpleActor().to(device)
+        self.cn = SimpleCritic().to(device)
+        self.an_target = SimpleActor().to(device)
+        self.cn_target = SimpleCritic().to(device)
         self.critic_criterion = nn.MSELoss()
         self.discount_rate = 0.99
         self.learning_rate = learning_rate
@@ -279,10 +283,10 @@ class Agent:
 
     def train_minibatch(self, batch_size=32):
         state, action, reward, next_state = self.sample_minibatch(batch_size)
-        x = {'state': torch.from_numpy(np.concatenate(state)),
-            'action': torch.from_numpy(np.concatenate(action)), 
-            'reward': torch.from_numpy(np.array(reward)).view(-1, 1),
-            'next_state': torch.from_numpy(np.concatenate(next_state))}
+        x = {'state': torch.from_numpy(np.concatenate(state)).to(device),
+            'action': torch.from_numpy(np.concatenate(action)).to(device), 
+            'reward': torch.from_numpy(np.array(reward)).view(-1, 1).to(device),
+            'next_state': torch.from_numpy(np.concatenate(next_state)).to(device)}
         self.model.train_step(x)
         return self.model.critic_loss(x)
 
@@ -338,10 +342,10 @@ class Agent:
 
     def get_q_loss(self):
         state, action, reward, next_state = [[sample[i] for sample in self.experience_buffer] for i in range(4)]
-        return self.model.critic_loss({'state': torch.from_numpy(np.concatenate(state)),
-                                    'action': torch.from_numpy(np.concatenate(action)), 
-                                    'reward': torch.from_numpy(np.array(reward)).view(-1, 1),
-                                    'next_state': torch.from_numpy(np.concatenate(next_state))})[0].detach().numpy()
+        return self.model.critic_loss({'state': torch.from_numpy(np.concatenate(state)).to(device),
+                                    'action': torch.from_numpy(np.concatenate(action)).to(device), 
+                                    'reward': torch.from_numpy(np.array(reward)).view(-1, 1).to(device),
+                                    'next_state': torch.from_numpy(np.concatenate(next_state)).to(device)})[0].detach().numpy()
     def save_target_model(self):
         self.model.save_target_model()
 
