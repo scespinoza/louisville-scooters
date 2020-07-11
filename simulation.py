@@ -785,7 +785,7 @@ if __name__ == '__main__':
         grid = Grid.from_gdf(grid_gdf, (10,10))
         grid.create_nodes_dict(graph.layers['walk']['nodes'])
         model = HRP(learning_rate=args.lr)
-        agent = ServiceProvider(model=model, noise_scale=args.noise, budget=args.budget)
+        agent = ServiceProvider(model=model, noise_scale=args.noise, budget=args.budget, buffer_length=1000)
         environment = ScooterSharingSimulator(graph, grid, days=1, initial_supply=100, pricing=True, service_provider=agent)
         environment.set_replicas_for_training(replicas)
         agent.train(environment, warmup_iterations=args.warmup, episodes=args.episodes)
