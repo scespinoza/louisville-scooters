@@ -44,8 +44,8 @@ class ActorNetwork(nn.Module):
 class SimpleSubActor(nn.Module):
     def __init__(self, input_size=16):
         super(SimpleSubActor, self).__init__()
-        self.fc1 = nn.Linear(input_size,32)
-        self.fc2 = nn.Linear(32, 1)
+        self.fc1 = nn.Linear(input_size,16)
+        self.fc2 = nn.Linear(16, 1)
     def forward(self, x):
         x = nn.ReLU()(self.fc1(x))
         x = self.fc2(x)
@@ -71,8 +71,8 @@ class LocalizedModule(nn.Module):
     def __init__(self, state_size=6):
         super(LocalizedModule, self).__init__()
         # Input is state_size * neighbors + price (action)
-        self.fc1 = nn.Linear((state_size + 1) * 5 , 64)
-        self.fc2 = nn.Linear(64, 1)
+        self.fc1 = nn.Linear((state_size + 1) * 5 , 32)
+        self.fc2 = nn.Linear(32, 1)
 
     def forward(self, x):
         x = nn.ReLU()(self.fc1(x))
@@ -125,8 +125,8 @@ class CriticNetwork(nn.Module):
 class SimpleSubCritic(nn.Module):
     def __init__(self, input_size=16):
         super(SimpleSubCritic, self).__init__()
-        self.fc1 = nn.Linear(input_size, 32)
-        self.fc2 = nn.Linear(32, 1)
+        self.fc1 = nn.Linear(input_size, 16)
+        self.fc2 = nn.Linear(16, 1)
 
     def forward(self, x):
         x = nn.ReLU()(self.fc1(x))
