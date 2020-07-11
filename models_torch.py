@@ -17,13 +17,11 @@ class SubActor(nn.Module):
         super(SubActor, self).__init__()
         self.gru = nn.GRU(state_size, neurons, batch_first=True)
         self.fc1 = nn.Linear(neurons, neurons)
-        self.fc2 = nn.Linear(neurons, neurons)
-        self.fc3 = nn.Linear(neurons, 1)
+        self.fc2 = nn.Linear(neurons, 1)
     def forward(self, x):
         x, h = self.gru(x)
         x = nn.ReLU()(self.fc1(x))
-        x = nn.ReLU()(self.fc2(x))
-        x = nn.ReLU()(self.fc3(x))
+        x = self.fc2(x)
         return x
 
 class ActorNetwork(nn.Module):
@@ -84,14 +82,12 @@ class SubCritic(nn.Module):
         super(SubCritic, self).__init__()
         self.gru = nn.GRU((state_size + 1) * 5, neurons, batch_first=True)
         self.fc1 = nn.Linear(neurons, neurons)
-        self.fc2 = nn.Linear(neurons, neurons)
-        self.fc3 = nn.Linear(neurons, 1)
+        self.fc2 = nn.Linear(neurons, 1)
 
     def forward(self, x):
         x, h = self.gru(x)
         x = nn.ReLU()(self.fc1(x))
-        x = nn.ReLU()(self.fc2(x))
-        x = self.fc3(x)
+        x = self.fc2(x)
         return x[:, -1, :]
 
 class CriticNetwork(nn.Module):
@@ -165,10 +161,10 @@ class SimpleCritic(nn.Module):
 class HRP(nn.Module):
     def __init__(self, learning_rate=1e-4):
         super(HRP, self).__init__()
-        self.an = SimpleActor().to(device)
-        self.cn = SimpleCritic().to(device)
-        self.an_target = SimpleActor().to(device)
-        self.cn_target = SimpleCritic().to(device)
+        self.an = ActorNetwork().to(device)
+        self.cn = CriticNetwork().to(device)
+        self.an_target = ActorNetwork().to(device)
+        self.cn_target = CriticNetwork().to(device)
         self.critic_criterion = nn.MSELoss()
         self.discount_rate = 0.99
         self.learning_rate = learning_rate
