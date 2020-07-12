@@ -8,6 +8,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+from tqdm import trange
 
 
 use_cuda = torch.cuda.is_available()
@@ -340,16 +341,16 @@ class Agent:
         print('Finishing Warmup Phase: {:.2f}s'.format(time.time() - warmup_start))
         print('Starting Training')
         training_start = time.time()
+        
         for e in range(episodes):
             environment.reset()
             episode_rewards = []
-            for t in range(environment.timesteps):
-                print('Episode {}, timestep {}'.format(e + 1, t + 1))
+            t = trange(environment.timesteps, desc='Episode {}/{}'.format(episode, 10), leave=True)
+            for t in t:
                 reward = self.act(environment, episode=e)
-                print('Reward: {:.2f}, '.format(reward), end='')  
                 episode_rewards.append(self.model.discount_rate*reward)         
                 batch_loss, distance = self.train_minibatch()
-                print('Batch Loss: {:.2f}'.format(batch_loss.detach().cpu().numpy()))
+                t.set_description('Episode {}/{}. Loss = {:.2f}. Reward = {:.2f}'.format(e, episodes, batch_loss.detach().cpu().numpy(), reward))
                 self.history['distance'].append(distance)
                 self.history['batch_loss'].append(batch_loss.detach().cpu().numpy())
             self.history['rewards'].append(np.sum(episode_rewards))
