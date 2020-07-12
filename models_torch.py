@@ -75,7 +75,7 @@ class SimpleActor(nn.Module):
         a = []
         for i in range(self.nzones):
             sx, h = self.gru(x[:, :, i])
-            sa = self.subactor(sx)
+            sa = self.subactor(nn.ReLU()(sx))
             a.append(sa)
         return torch.stack(a).view(-1, t, nzones)
     
@@ -145,11 +145,15 @@ class CriticNetwork(nn.Module):
 class SimpleSubCritic(nn.Module):
     def __init__(self, input_size=16):
         super(SimpleSubCritic, self).__init__()
+        self.bn1 = nn.BatchNorm1d(input_size)
         self.fc1 = nn.Linear(input_size, 16)
+        self.bn2 = nn.BatchNorm1d(16)
         self.fc2 = nn.Linear(16, 1)
 
     def forward(self, x):
+        x = self.bn1(x)
         x = nn.ReLU()(self.fc1(x))
+        x = self.bn2(x)
         x = self.fc2(x)
         return x[:, -1, :]
 
