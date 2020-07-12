@@ -88,6 +88,7 @@ class LocalizedModule(nn.Module):
         self.fc2 = nn.Linear(neurons, 1)
 
     def forward(self, x):
+        print(x.size())
         x = self.bn1(x)
         x = nn.ReLU()(self.fc1(x))
         x = self.bn1(x)
