@@ -16,11 +16,20 @@ class SubActor(nn.Module):
     def __init__(self, neurons=16, state_size=6):
         super(SubActor, self).__init__()
         self.gru = nn.GRU(state_size, neurons, batch_first=True)
+        self.bn1 = nn.BatchNorm1d(neurons)
         self.fc1 = nn.Linear(neurons, neurons)
+        self.bn2 = nn.BatchNorm1d(neurons)
         self.fc2 = nn.Linear(neurons, 1)
     def forward(self, x):
         x, h = self.gru(x)
+        x = nn.ReLU(x)
+        x = x.permute(0, 2, 1)
+        x = self.bn1(x)
+        x = x.permute(0, 2, 1)
         x = nn.ReLU()(self.fc1(x))
+        x = x.permute(0, 2, 1)
+        x = self.bn2(x)
+        x = x.permute(0, 2, 1)
         x = self.fc2(x)
         return x
 
@@ -42,10 +51,14 @@ class ActorNetwork(nn.Module):
 class SimpleSubActor(nn.Module):
     def __init__(self, input_size=16):
         super(SimpleSubActor, self).__init__()
+        self.bn1 = nn.BatchNorm1d(input_size)
         self.fc1 = nn.Linear(input_size,16)
+        self.bn2 = nn.BatchNorm1d(16)
         self.fc2 = nn.Linear(16, 1)
     def forward(self, x):
+        x = self.bn1(x)
         x = nn.ReLU()(self.fc1(x))
+        x = self.bn2(x)
         x = self.fc2(x)
         return x
 
@@ -66,14 +79,22 @@ class SimpleActor(nn.Module):
         return torch.stack(a).view(-1, t, nzones)
     
 class LocalizedModule(nn.Module):
-    def __init__(self, state_size=6):
+    def __init__(self, neurons=32, state_size=6):
         super(LocalizedModule, self).__init__()
         # Input is state_size * neighbors + price (action)
-        self.fc1 = nn.Linear((state_size + 1) * 5 , 32)
-        self.fc2 = nn.Linear(32, 1)
+        self.bn1 = nn.BatchNorm1d(neurons)
+        self.fc1 = nn.Linear((state_size + 1) * 5 , neurons)
+        self.bn2 = nn.BatchNorm1d(neurons)
+        self.fc2 = nn.Linear(neurons, 1)
 
     def forward(self, x):
+        x = x.permute(0, 2, 1)
+        x = self.bn1(x)
+        x = self.permute(0, 2, 1)
         x = nn.ReLU()(self.fc1(x))
+        x = self.permute(0, 2, 1)
+        x = self.bn1(x)
+        x = self.permute(0, 2, 1)
         x = self.fc2(x)
         return x        
 
@@ -81,12 +102,21 @@ class SubCritic(nn.Module):
     def __init__(self, neurons=16, state_size=6):
         super(SubCritic, self).__init__()
         self.gru = nn.GRU((state_size + 1) * 5, neurons, batch_first=True)
+        self.bn1 = nn.BatchNorm1d(neurons)
         self.fc1 = nn.Linear(neurons, neurons)
+        self.bn2 = nn.BatchNorm1d(neurons)
         self.fc2 = nn.Linear(neurons, 1)
 
     def forward(self, x):
         x, h = self.gru(x)
+        x = self.ReLU(x)
+        x = x.permute(0, 2, 1)
+        x = self.bn1(x)
+        x = x.permute(0, 2, 1)
         x = nn.ReLU()(self.fc1(x))
+        x = x.permute(0, 2, 1)
+        x = self.bn2(x)
+        x = x.permute(0, 2, 1)
         x = self.fc2(x)
         return x[:, -1, :]
 
