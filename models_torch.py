@@ -22,7 +22,7 @@ class SubActor(nn.Module):
         self.fc2 = nn.Linear(neurons, 1)
     def forward(self, x):
         x, h = self.gru(x)
-        x = nn.ReLU(x)
+        x = nn.ReLU()(x)
         x = x.permute(0, 2, 1)
         x = self.bn1(x)
         x = x.permute(0, 2, 1)
@@ -109,7 +109,7 @@ class SubCritic(nn.Module):
 
     def forward(self, x):
         x, h = self.gru(x)
-        x = self.ReLU(x)
+        x = self.ReLU()(x)
         x = x.permute(0, 2, 1)
         x = self.bn1(x)
         x = x.permute(0, 2, 1)
