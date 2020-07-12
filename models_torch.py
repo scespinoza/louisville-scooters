@@ -345,8 +345,8 @@ class Agent:
         for e in range(episodes):
             environment.reset()
             episode_rewards = []
-            t_bar = trange(environment.timesteps, desc='Episode {}/{}'.format(e, 10), leave=True)
-            for t in t:
+            t_bar = trange(environment.timesteps, desc='Episode {}/{}'.format(e, episodes), leave=True)
+            for t in t_bar:
                 reward = self.act(environment, episode=e)
                 episode_rewards.append(self.model.discount_rate*reward)         
                 batch_loss, distance = self.train_minibatch()
