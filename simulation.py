@@ -755,6 +755,7 @@ if __name__ == '__main__':
     parser.add_argument('--replicas', type=int, default=20)
     parser.add_argument('--budget', type=int, default=100)
     parser.add_argument('--verbose', type=int, help='verbosity value')
+    parser.add_argument('--name', type=str, help='name of agent')
     parser.add_argument('--lr', type=float, default=1e-4)
 
     args = parser.parse_args()
@@ -789,7 +790,7 @@ if __name__ == '__main__':
         environment = ScooterSharingSimulator(graph, grid, days=1, initial_supply=100, pricing=True, service_provider=agent)
         environment.set_replicas_for_training(replicas)
         agent.train(environment, warmup_iterations=args.warmup, episodes=args.episodes)
-        agent.save_target_model()
+        agent.save_agent(name=args.name)
         fig = agent.plot_history()
         fig.savefig('training-history.png')
 
