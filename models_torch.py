@@ -52,9 +52,9 @@ class ActorNetwork(nn.Module):
 class SimpleSubActor(nn.Module):
     def __init__(self, input_size=16):
         super(SimpleSubActor, self).__init__()
-        self.bn1 = nn.BatchNorm1d(input_size)
+        self.bn1 = nn.LayerNorm(input_size)
         self.fc1 = nn.Linear(input_size,16)
-        self.bn2 = nn.BatchNorm1d(16)
+        self.bn2 = nn.LayerNorm(16)
         self.fc2 = nn.Linear(16, 1)
     def forward(self, x):
         x = self.bn1(x)
@@ -145,9 +145,9 @@ class CriticNetwork(nn.Module):
 class SimpleSubCritic(nn.Module):
     def __init__(self, input_size=16):
         super(SimpleSubCritic, self).__init__()
-        self.bn1 = nn.BatchNorm1d(input_size)
+        self.bn1 = nn.LayerNorm(input_size)
         self.fc1 = nn.Linear(input_size, 16)
-        self.bn2 = nn.BatchNorm1d(16)
+        self.bn2 = nn.LayerNorm(16)
         self.fc2 = nn.Linear(16, 1)
 
     def forward(self, x):
@@ -291,9 +291,9 @@ class Agent:
         return self.model.critic_loss(x)
 
     def get_action(self, state):
-        self.model.eval()
+        self.model.an.eval()
         a = self.model.an(state).detach().cpu().numpy()[:, -1].reshape(10, 10)
-        self.model.train()
+        self.model.an.train()
         return a
 
     def act(self, environment, episode=0):
