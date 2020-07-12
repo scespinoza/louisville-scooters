@@ -13,6 +13,11 @@ import torch.optim as optim
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
 
+def init_uniform(m):
+    if type(m) == nn.Linear:
+        torch.nn.init.uniform_(m, a=-3e-4, b=3e-4)
+        m.bias.data.fill_(0.0)
+
 class SubActor(nn.Module):
     def __init__(self, neurons=16, state_size=6):
         super(SubActor, self).__init__()
@@ -50,12 +55,13 @@ class ActorNetwork(nn.Module):
         return torch.stack(a).view(-1, t, nzones)
 
 class SimpleSubActor(nn.Module):
-    def __init__(self, input_size=16):
+    def __init__(self, neurons=64, input_size=16):
         super(SimpleSubActor, self).__init__()
         self.bn1 = nn.LayerNorm(input_size)
-        self.fc1 = nn.Linear(input_size,16)
-        self.bn2 = nn.LayerNorm(16)
-        self.fc2 = nn.Linear(16, 1)
+        self.fc1 = nn.Linear(input_size,neurons)
+        self.bn2 = nn.LayerNorm(neurons)
+        self.fc2 = nn.Linear(neurons, 1)
+        self.apply(init_uniform)
     def forward(self, x):
         x = self.bn1(x)
         x = nn.ReLU()(self.fc1(x))
@@ -80,13 +86,14 @@ class SimpleActor(nn.Module):
         return torch.stack(a).view(-1, t, nzones)
     
 class LocalizedModule(nn.Module):
-    def __init__(self, neurons=32, state_size=6):
+    def __init__(self, neurons=128, state_size=6):
         super(LocalizedModule, self).__init__()
         # Input is state_size * neighbors + price (action)
         self.ln1 = nn.LayerNorm((state_size + 1) * 5)
         self.fc1 = nn.Linear((state_size + 1) * 5 , neurons)
         self.ln2 = nn.LayerNorm(neurons)
         self.fc2 = nn.Linear(neurons, 1)
+        self.apply(init_uniform)
 
     def forward(self, x):
         x = self.ln1(x)
@@ -152,6 +159,7 @@ class SimpleSubCritic(nn.Module):
         self.fc1 = nn.Linear(input_size, 16)
         self.bn2 = nn.LayerNorm(16)
         self.fc2 = nn.Linear(16, 1)
+        self.apply(init_uniform)
 
     def forward(self, x):
         x = self.bn1(x)
@@ -187,6 +195,7 @@ class SimpleCritic(nn.Module):
         f = torch.cat(f)
         q = torch.cat(q)
         return torch.sum(f + q, dim=1)
+
 
 
 class HRP(nn.Module):
