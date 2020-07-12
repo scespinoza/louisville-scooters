@@ -213,7 +213,7 @@ class HRP(nn.Module):
         with torch.no_grad():
             p_next, q_next = self.target_forward(batch['next_state'])
             y = batch['reward'] + self.discount_rate * q_next
-        distance = (y - q).detach().numpy().mean()
+        distance = (y - q).detach().cpu().numpy().mean()
         self.train()
         return self.critic_criterion(y,q), distance
 
@@ -233,7 +233,7 @@ class HRP(nn.Module):
         batch_loss, _ = self.critic_loss(batch)
         batch_loss.backward()
         self.critic_optimizer.step()
-        return batch_loss.detach().numpy()
+        return batch_loss.detach().cpu().numpy()
 
     def actor_gradient(self, batch):
         p = self.an(batch['state'])
@@ -246,7 +246,7 @@ class HRP(nn.Module):
         self.actor_optimizer.zero_grad()
         grad.backward()
         self.actor_optimizer.step()
-        return grad.detach().numpy()
+        return grad.detach().cpu().numpy()
 
     def train_step(self, batch):
         batch_loss = self.critic_step(batch)
@@ -290,7 +290,7 @@ class Agent:
 
     def get_action(self, state):
         self.model.eval()
-        a = self.model.an(state).detach().numpy()[:, -1].reshape(10, 10)
+        a = self.model.an(state).detach().cpu().numpy()[:, -1].reshape(10, 10)
         self.model.train()
         return a
 
@@ -334,9 +334,9 @@ class Agent:
                 print('Reward: {:.2f}, '.format(reward), end='')  
                 episode_rewards.append(self.model.discount_rate*reward)         
                 batch_loss, distance = self.train_minibatch()
-                print('Batch Loss: {:.2f}'.format(batch_loss.detach().numpy()))
+                print('Batch Loss: {:.2f}'.format(batch_loss.detach().cpu().numpy()))
                 self.history['distance'].append(distance)
-                self.history['batch_loss'].append(batch_loss.detach().numpy())
+                self.history['batch_loss'].append(batch_loss.detach().cpu().numpy())
             self.history['rewards'].append(np.sum(episode_rewards))
             self.history['dqn_loss'].append(self.get_q_loss())
         print('Finishing Training: {:.2f}s'.format(time.time() - training_start))
@@ -346,7 +346,7 @@ class Agent:
         return self.model.critic_loss({'state': torch.from_numpy(np.concatenate(state)).to(device),
                                     'action': torch.from_numpy(np.concatenate(action)).to(device), 
                                     'reward': torch.from_numpy(np.array(reward)).view(-1, 1).to(device),
-                                    'next_state': torch.from_numpy(np.concatenate(next_state)).to(device)})[0].detach().numpy()
+                                    'next_state': torch.from_numpy(np.concatenate(next_state)).to(device)})[0].detach().cpu().numpy()
     def save_agent(self, name='test-model'):
         with open('weights/' + name + '.pickle', 'wb') as file:
             pickle.dump(self, file)
