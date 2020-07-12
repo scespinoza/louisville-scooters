@@ -208,13 +208,11 @@ class HRP(nn.Module):
         q = self.cn_target(xc)
         return p[:, -1], q.view(-1, 1)
     def critic_loss(self, batch):
-        self.eval()
         p, q = self.forward(batch['state'])
         with torch.no_grad():
             p_next, q_next = self.target_forward(batch['next_state'])
             y = batch['reward'] + self.discount_rate * q_next
         distance = (y - q).detach().cpu().numpy().mean()
-        self.train()
         return self.critic_criterion(y,q), distance
 
     def soft_update(self):
