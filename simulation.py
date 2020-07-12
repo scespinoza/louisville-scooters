@@ -143,7 +143,6 @@ class Grid:
         demands[demands == 0] = 1
         sr = np.array(self.satisfied_requests_history).sum(0)
         sr[demands == 0] = 1
-        print((demands<sr).sum())
         stats['unsatisfied_ratio'] = 1 - (sr/demands)
         state_array = stats.loc[:, ['supply', 'demand', 'arrival', 'expense', 'remaining_budget', 'unsatisfied_ratio']].values.reshape(1, 1, 10, 10, stats.shape[1] - 2).astype(np.float32)
         state_array = state_array.transpose(0, 1, 3, 2, 4).reshape(1, 1, 100, 6)
