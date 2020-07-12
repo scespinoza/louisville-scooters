@@ -293,7 +293,7 @@ class Agent:
         return [[sample[i] for sample in batch] for i in range(4)]
 
     def train_minibatch(self, batch_size=32):
-        state, action, reward, next_state = self.sample_minibatch(batch_size)
+        state, action, reward, next_state = self.sample_minibatch()
         x = {'state': torch.from_numpy(np.concatenate(state)).to(device),
             'action': torch.from_numpy(np.concatenate(action)).to(device), 
             'reward': torch.from_numpy(np.array(reward)).view(-1, 1).to(device),
