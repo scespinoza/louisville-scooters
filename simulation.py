@@ -442,7 +442,7 @@ class PickUp(Event):
             self.scooter.available = False
 
             
-            simulator.grid.update_stat(origin['osmid'], 'pickup')
+            simulator.grid.update_stat(self.user.origin, 'pickup')
 
             self.user.trip['pickup_time'] = simulator.time
             self.user.trip['scooter']['id'] = self.scooter.scooter_id
