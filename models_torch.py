@@ -66,7 +66,7 @@ class SimpleSubActor(nn.Module):
         x = self.bn1(x)
         x = nn.ReLU()(self.fc1(x))
         x = self.bn2(x)
-        x = self.fc2(x)
+        x = nn.ReLU(self.fc2(x))
         return x
 
 class SimpleActor(nn.Module):
