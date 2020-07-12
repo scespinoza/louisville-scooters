@@ -83,9 +83,9 @@ class LocalizedModule(nn.Module):
     def __init__(self, neurons=32, state_size=6):
         super(LocalizedModule, self).__init__()
         # Input is state_size * neighbors + price (action)
-        self.ln1 = nn.Linear((state_size + 1) * 5)
+        self.ln1 = nn.LayerNorm((state_size + 1) * 5)
         self.fc1 = nn.Linear((state_size + 1) * 5 , neurons)
-        self.ln2 = nn.Linear(neurons)
+        self.ln2 = nn.LayerNorm(neurons)
         self.fc2 = nn.Linear(neurons, 1)
 
     def forward(self, x):
