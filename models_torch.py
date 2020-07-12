@@ -272,11 +272,12 @@ class HRP(nn.Module):
 
 class Agent:
 
-    def __init__(self, name, model, buffer_length, noise_scale=2.0):
+    def __init__(self, name, model, buffer_length, noise_scale=2.0, batch_size=64):
         self.name = name
         self.model = model
         self.experience_buffer = deque(maxlen=buffer_length)
         self.noise_scale = noise_scale
+        self.batch_size = batch_size
         self.history = {
             'rewards': [],
             'dqn_loss': [],
@@ -287,8 +288,8 @@ class Agent:
     def store_transition(self, transition):
         self.experience_buffer.append(transition)
 
-    def sample_minibatch(self, batch_size):
-        batch = random.sample(self.experience_buffer, batch_size)
+    def sample_minibatch(self):
+        batch = random.sample(self.experience_buffer, self.batch_size)
         return [[sample[i] for sample in batch] for i in range(4)]
 
     def train_minibatch(self, batch_size=32):
