@@ -182,8 +182,12 @@ class Grid:
 
 class ServiceProvider(Agent):
     
-    def __init__(self, budget=1000, model=HRP(), buffer_length=100, name='HRP', noise_scale=2):
-        super(ServiceProvider, self).__init__(name=name, model=model, buffer_length=buffer_length, noise_scale=noise_scale)
+    def __init__(self, budget=1000, model=HRP(), buffer_length=100, name='HRP', noise_scale=2, batch_size=64):
+        super(ServiceProvider, self).__init__(name=name, 
+                                              model=model, 
+                                              buffer_length=buffer_length,
+                                              noise_scale=noise_scale, 
+                                              batch_size=batch_size)
         self.total_budget = budget
         self.budget = budget
 
@@ -753,6 +757,7 @@ if __name__ == '__main__':
     parser.add_argument('--episodes', type=int, default=15)
     parser.add_argument('--noise', type=float, default=2)
     parser.add_argument('--replicas', type=int, default=20)
+    parser.add_argument('--batch', type=int, default=64)
     parser.add_argument('--budget', type=int, default=100)
     parser.add_argument('--verbose', type=int, help='verbosity value')
     parser.add_argument('--name', type=str, help='name of agent')
@@ -786,7 +791,7 @@ if __name__ == '__main__':
         grid = Grid.from_gdf(grid_gdf, (10,10))
         grid.create_nodes_dict(graph.layers['walk']['nodes'])
         model = HRP(learning_rate=args.lr)
-        agent = ServiceProvider(model=model, noise_scale=args.noise, budget=args.budget, buffer_length=1000)
+        agent = ServiceProvider(model=model, noise_scale=args.noise, budget=args.budget, buffer_length=1000, batch_size=args.batch)
         environment = ScooterSharingSimulator(graph, grid, days=1, initial_supply=100, pricing=True, service_provider=agent)
         environment.set_replicas_for_training(replicas)
         agent.train(environment, warmup_iterations=args.warmup, episodes=args.episodes)

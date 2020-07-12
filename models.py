@@ -194,9 +194,10 @@ class HRP(models.Model):
 
 class Agent:
 
-    def __init__(self, name, model, buffer_length):
+    def __init__(self, name, model, buffer_length, batch_size):
         self.name = name
         self.model = model
+        self.batch_size=batch_size
         self.experience_buffer = deque(maxlen=buffer_length)
         self.random_exploration_process = np.random.rand
         self.history = {
@@ -212,8 +213,8 @@ class Agent:
         batch = random.sample(self.experience_buffer, batch_size)
         return [[sample[i] for sample in batch] for i in range(4)]
 
-    def train_minibatch(self, batch_size=16):
-        state, action, reward, next_state = self.sample_minibatch(batch_size)
+    def train_minibatch(self):
+        state, action, reward, next_state = self.sample_minibatch(self.batch_size)
         x = [np.concatenate(state), np.concatenate(action), np.array(reward), np.concatenate(next_state)]
         self.model.train_step(x)
         return self.model.dqn_loss(x)
