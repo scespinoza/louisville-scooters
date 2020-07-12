@@ -88,13 +88,9 @@ class LocalizedModule(nn.Module):
         self.fc2 = nn.Linear(neurons, 1)
 
     def forward(self, x):
-        x = x.permute(0, 2, 1)
         x = self.bn1(x)
-        x = self.permute(0, 2, 1)
         x = nn.ReLU()(self.fc1(x))
-        x = self.permute(0, 2, 1)
         x = self.bn1(x)
-        x = self.permute(0, 2, 1)
         x = self.fc2(x)
         return x        
 
