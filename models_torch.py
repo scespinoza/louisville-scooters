@@ -82,15 +82,12 @@ class LocalizedModule(nn.Module):
     def __init__(self, neurons=32, state_size=6):
         super(LocalizedModule, self).__init__()
         # Input is state_size * neighbors + price (action)
-        self.bn1 = nn.BatchNorm1d((state_size + 1) * 5)
+        
         self.fc1 = nn.Linear((state_size + 1) * 5 , neurons)
-        self.bn2 = nn.BatchNorm1d(neurons)
         self.fc2 = nn.Linear(neurons, 1)
 
     def forward(self, x):
-        x = self.bn1(x)
         x = nn.ReLU()(self.fc1(x))
-        x = self.bn1(x)
         x = self.fc2(x)
         return x        
 
