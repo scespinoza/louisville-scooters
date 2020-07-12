@@ -345,7 +345,7 @@ class Agent:
         for e in range(episodes):
             environment.reset()
             episode_rewards = []
-            t = trange(environment.timesteps, desc='Episode {}/{}'.format(episode, 10), leave=True)
+            t = trange(environment.timesteps, desc='Episode {}/{}'.format(e, 10), leave=True)
             for t in t:
                 reward = self.act(environment, episode=e)
                 episode_rewards.append(self.model.discount_rate*reward)         
