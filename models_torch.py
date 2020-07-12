@@ -1,4 +1,5 @@
 import time
+import pickle
 from collections import deque
 import random
 import time
@@ -252,6 +253,7 @@ class HRP(nn.Module):
         q_val = self.actor_step(batch)
         self.soft_update()
         return batch_loss, q_val
+
                     
 
 class Agent:
@@ -345,13 +347,16 @@ class Agent:
                                     'action': torch.from_numpy(np.concatenate(action)).to(device), 
                                     'reward': torch.from_numpy(np.array(reward)).view(-1, 1).to(device),
                                     'next_state': torch.from_numpy(np.concatenate(next_state)).to(device)})[0].detach().numpy()
-    def save_target_model(self):
-        self.model.save_target_model()
+    def save_agent(self, name='test-model'):
+        with open('weights/' + name + '.pickle', 'wb') as file:
+            pickle.dump(self, file)
+    @classmethod
+    def load_agent(self, name='test-model'):
+        with open('weights/' + name + '.pickle', 'rb') as file:
+            agent = pickle.load(file)
+        return agent
 
-    def load_trained(self, filename = 'weights/hrp.pth'):
-        self.model = torch.load(filename)
-        self.model.eval()
-        return self
+
 
  
 
