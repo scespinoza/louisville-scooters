@@ -254,33 +254,6 @@ class HRP(nn.Module):
         self.soft_update()
         return batch_loss, q_val
                     
-    def sample_batch(self, n=16):
-        torch.manual_seed(0)
-        return {
-            'state': torch.randn(n, 2, 100, 6),
-            'next_state': torch.randn(n, 2, 100, 6),
-            'reward': torch.randn(n, 1),
-            'action': torch.randn(n, 100)
-        }
-    def train(self, iter=24):
-        history = {
-            'batch_loss': [],
-            'q_val': []
-        }
-        start = time.time()
-        for i in range(iter):
-            print('Training step {}/{}'.format(i + 1, iter))
-            batch = self.sample_batch()
-            batch_loss, q_val = self.train_step(batch)
-            print('Batch Loss: {:.2f}'.format(batch_loss))
-            history['batch_loss'].append(batch_loss)
-            history['q_val'].append(q_val)
-        history = {metric: np.stack(history[metric]) for metric in history}
-        print('Elapsed Time : {:.2f}'.format(time.time() - start))
-        return history
-
-    def save_target_model(self, filename='weights/hrp.pth'):
-        torch.save(self, filename)
 
 class Agent:
 
