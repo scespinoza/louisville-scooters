@@ -345,12 +345,12 @@ class Agent:
         for e in range(episodes):
             environment.reset()
             episode_rewards = []
-            t = trange(environment.timesteps, desc='Episode {}/{}'.format(e, 10), leave=True)
+            t_bar = trange(environment.timesteps, desc='Episode {}/{}'.format(e, 10), leave=True)
             for t in t:
                 reward = self.act(environment, episode=e)
                 episode_rewards.append(self.model.discount_rate*reward)         
                 batch_loss, distance = self.train_minibatch()
-                t.set_description('Episode {}/{}. Loss = {:.2f}. Reward = {:.2f}'.format(e, episodes, batch_loss.detach().cpu().numpy(), reward))
+                t_bar.set_description('Episode {}/{}. Loss = {:.2f}. Reward = {:.2f}'.format(e, episodes, batch_loss.detach().cpu().numpy(), reward))
                 self.history['distance'].append(distance)
                 self.history['batch_loss'].append(batch_loss.detach().cpu().numpy())
             self.history['rewards'].append(np.sum(episode_rewards))
