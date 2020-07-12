@@ -88,7 +88,6 @@ class LocalizedModule(nn.Module):
         self.fc2 = nn.Linear(neurons, 1)
 
     def forward(self, x):
-        print(x.size())
         x = self.bn1(x)
         x = nn.ReLU()(self.fc1(x))
         x = self.bn1(x)
@@ -206,9 +205,9 @@ class HRP(nn.Module):
         q = self.cn(xc)
         return p[:, -1], q.view(-1, 1)
     def target_forward(self, x):
-        p = self.an_target(x)
+        p = self.an_target.eval(x)
         xc = torch.cat([x, p.view(-1, 2, 100, 1)], dim=-1)
-        q = self.cn_target(xc)
+        q = self.cn_target.eval(xc)
         return p[:, -1], q.view(-1, 1)
     def critic_loss(self, batch):
         p, q = self.forward(batch['state'])
@@ -314,7 +313,7 @@ class Agent:
         return self.model.critic_loss(x)
 
     def get_action(self, state):
-        return self.model.an(state).detach().numpy()[:, -1].reshape(10, 10)
+        return self.model.an.eval(state).detach().numpy()[:, -1].reshape(10, 10)
 
     def act(self, environment, episode=0):
         state  = environment.get_state()
