@@ -189,10 +189,10 @@ class SimpleCritic(nn.Module):
 class HRP(nn.Module):
     def __init__(self, learning_rate=1e-4):
         super(HRP, self).__init__()
-        self.an = ActorNetwork().to(device)
-        self.cn = CriticNetwork().to(device)
-        self.an_target = ActorNetwork().to(device)
-        self.cn_target = CriticNetwork().to(device)
+        self.an = SimpleActor().to(device)
+        self.cn = SimpleCritic().to(device)
+        self.an_target = SimpleActor().to(device)
+        self.cn_target = SimpleCritic().to(device)
         self.critic_criterion = nn.MSELoss()
         self.discount_rate = 0.99
         self.learning_rate = learning_rate
