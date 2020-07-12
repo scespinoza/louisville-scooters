@@ -15,7 +15,7 @@ device = torch.device("cuda" if use_cuda else "cpu")
 
 def init_uniform(m):
     if type(m) == nn.Linear:
-        torch.nn.init.uniform_(m, a=-3e-4, b=3e-4)
+        torch.nn.init.uniform_(m.weight, a=-3e-4, b=3e-4)
         m.bias.data.fill_(0.0)
 
 class SubActor(nn.Module):
