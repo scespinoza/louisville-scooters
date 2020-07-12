@@ -205,9 +205,9 @@ class HRP(nn.Module):
         q = self.cn(xc)
         return p[:, -1], q.view(-1, 1)
     def target_forward(self, x):
-        p = self.an_target.eval(x)
+        p = self.an_target(x)
         xc = torch.cat([x, p.view(-1, 2, 100, 1)], dim=-1)
-        q = self.cn_target.eval(xc)
+        q = self.cn_target(xc)
         return p[:, -1], q.view(-1, 1)
     def critic_loss(self, batch):
         p, q = self.forward(batch['state'])
@@ -309,11 +309,16 @@ class Agent:
             'action': torch.from_numpy(np.concatenate(action)).to(device), 
             'reward': torch.from_numpy(np.array(reward)).view(-1, 1).to(device),
             'next_state': torch.from_numpy(np.concatenate(next_state)).to(device)}
+        self.model.train()
         self.model.train_step(x)
+        self.model.eval()
         return self.model.critic_loss(x)
 
     def get_action(self, state):
-        return self.model.an.eval(state).detach().numpy()[:, -1].reshape(10, 10)
+        self.model.eval()
+        a = self.model.an(state).detach().numpy()[:, -1].reshape(10, 10)
+        self.model.train()
+        return a
 
     def act(self, environment, episode=0):
         state  = environment.get_state()
