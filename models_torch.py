@@ -56,7 +56,7 @@ class ActorNetwork(nn.Module):
         return torch.stack(a).view(-1, t, nzones)
 
 class SimpleSubActor(nn.Module):
-    def __init__(self, neurons=128, input_size=16):
+    def __init__(self, neurons=8, input_size=16):
         super(SimpleSubActor, self).__init__()
         self.bn1 = nn.LayerNorm(input_size)
         self.fc1 = nn.Linear(input_size,neurons)
@@ -87,7 +87,7 @@ class SimpleActor(nn.Module):
         return torch.stack(a).view(-1, t, nzones)
     
 class LocalizedModule(nn.Module):
-    def __init__(self, neurons=256, state_size=6):
+    def __init__(self, neurons=16, state_size=6):
         super(LocalizedModule, self).__init__()
         # Input is state_size * neighbors + price (action)
         self.ln1 = nn.LayerNorm((state_size + 1) * 5)
@@ -104,7 +104,7 @@ class LocalizedModule(nn.Module):
         return x        
 
 class SubCritic(nn.Module):
-    def __init__(self, neurons=16, state_size=6):
+    def __init__(self, neurons=8, state_size=6):
         super(SubCritic, self).__init__()
         self.gru = nn.GRU((state_size + 1) * 5, neurons, batch_first=True)
         self.bn1 = nn.BatchNorm1d(neurons)
