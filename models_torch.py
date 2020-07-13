@@ -348,7 +348,7 @@ class Agent:
         print('Finishing Training: {:.2f}s'.format(time.time() - training_start))
 
     def get_q_loss(self):
-        state, action, reward, next_state, terminal = [[sample[i] for sample in self.experience_buffer] for i in range(4)]
+        state, action, reward, next_state, terminal = [[sample[i] for sample in self.experience_buffer] for i in range(5)]
         return self.model.critic_loss({'state': torch.from_numpy(np.concatenate(state)).to(device),
                                     'action': torch.from_numpy(np.concatenate(action)).to(device), 
                                     'reward': torch.from_numpy(np.array(reward)).view(-1, 1).to(device),
