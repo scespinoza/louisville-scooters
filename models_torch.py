@@ -60,7 +60,6 @@ class SimpleSubActor(nn.Module):
         super(SimpleSubActor, self).__init__()
         self.fc1 = nn.Linear(input_size,neurons)
         self.fc2 = nn.Linear(neurons, 1)
-        self.apply(init_uniform)
     def forward(self, x):
         x = nn.ReLU()(self.fc1(x))
         x = nn.ReLU()(self.fc2(x))
