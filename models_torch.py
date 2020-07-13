@@ -213,7 +213,7 @@ class HRP(nn.Module):
         q = self.cn_target(xc)
         return p[:, -1], q.view(-1, 1)
     def critic_loss(self, batch):
-        q = self.cn(torch.cat([batch['state'], batch['action'].view(-1, 2, 100, 1)], dim=-1))
+        q = self.cn.forward(torch.cat([batch['state'], batch['action'].view(-1, 2, 100, 1)], dim=-1))
         with torch.no_grad():
             p_next, q_next = self.target_forward(batch['next_state'])
             y = batch['reward'] + self.discount_rate * q_next
@@ -294,7 +294,7 @@ class Agent:
 
     def get_action(self, state):
         self.model.an.eval()
-        a = self.model.an(state).detach().cpu().numpy()[:, -1].reshape(10, 10)
+        a = self.model.an(state).detach().cpu().numpy()
         self.model.an.train()
         return a
 
@@ -304,7 +304,7 @@ class Agent:
         scale = self.noise_scale * (0.999 ** episode)
         noise = np.random.normal(size=action.shape, scale=scale)
         action = action + noise
-        next_state, reward = environment.perform_action(action)
+        next_state, reward = environment.perform_action(action[:, -1].reshape(10, 10))
         self.store_transition((state, action, reward, next_state))
         return reward
     
