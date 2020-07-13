@@ -213,10 +213,10 @@ class HRP(nn.Module):
         q = self.cn_target(xc)
         return p[:, -1], q.view(-1, 1)
     def critic_loss(self, batch):
-        q = self.cn.forward(torch.cat([batch['state'], batch['action'].view(-1, 2, 100, 1)], dim=-1))
+        q = self.cn.forward(torch.cat([batch['state'], batch['action'].view(-1, 2, 100, 1)], dim=-1)).squeeze()
         with torch.no_grad():
             p_next, q_next = self.target_forward(batch['next_state'])
-            y = batch['reward'] + self.discount_rate * q_next
+            y = batch['reward'].squeeze() + self.discount_rate * q_next.squeeze() * batch['terminal'].squeeze()
         distance = (y - q).detach().cpu().numpy().mean()
         return self.critic_criterion(y,q), distance
 
@@ -279,14 +279,15 @@ class Agent:
 
     def sample_minibatch(self):
         batch = random.sample(self.experience_buffer, self.batch_size)
-        return [[sample[i] for sample in batch] for i in range(4)]
+        return [[sample[i] for sample in batch] for i in range(5)]
 
     def train_minibatch(self, batch_size=32):
-        state, action, reward, next_state = self.sample_minibatch()
+        state, action, reward, next_state, terminal = self.sample_minibatch()
         x = {'state': torch.from_numpy(np.concatenate(state)).to(device),
             'action': torch.from_numpy(np.concatenate(action)).to(device), 
             'reward': torch.from_numpy(np.array(reward)).view(-1, 1).to(device),
-            'next_state': torch.from_numpy(np.concatenate(next_state)).to(device)}
+            'next_state': torch.from_numpy(np.concatenate(next_state)).to(device),
+            'terminal': torch.from_numpy(np.concatenate(terminal).astype(np.float32)).to(device)}
         self.model.train()
         self.model.train_step(x)
         self.model.eval()
@@ -305,7 +306,8 @@ class Agent:
         noise = np.random.normal(size=action.shape, scale=scale)
         action = (action + noise).astype(np.float32)
         next_state, reward = environment.perform_action(action[:, -1].reshape(10, 10))
-        self.store_transition((state, action, reward, next_state))
+        terminal = float(self.environment.terminal_state)
+        self.store_transition((state, action, reward, next_state, terminal))
         return reward
     
     def warmup_phase(self, environment, iterations=10):
@@ -350,7 +352,8 @@ class Agent:
         return self.model.critic_loss({'state': torch.from_numpy(np.concatenate(state)).to(device),
                                     'action': torch.from_numpy(np.concatenate(action)).to(device), 
                                     'reward': torch.from_numpy(np.array(reward)).view(-1, 1).to(device),
-                                    'next_state': torch.from_numpy(np.concatenate(next_state)).to(device)})[0].detach().cpu().numpy()
+                                    'next_state': torch.from_numpy(np.concatenate(next_state)).to(device),
+                                    'terminal': torch.from_numpy(np.concatenate(terminal).astype(np.float32)).to(device)})[0].detach().cpu().numpy()
     def save_agent(self, name='test-model'):
         with open('weights/' + name + '.pickle', 'wb') as file:
             pickle.dump(self, file)

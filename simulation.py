@@ -630,6 +630,7 @@ class ScooterSharingSimulator:
         self.replicas = replicas
         self.events = ListQueue()
         self.time = 0
+        self.current_timestep = 0
         self.simulation_time = days * 24 * 3600
         self.graph = graph
         self.grid = grid
@@ -638,7 +639,9 @@ class ScooterSharingSimulator:
         self.timesteps = self.simulation_time // self.time_window
         self.service_provider = service_provider
         self.initial_supply = initial_supply
-
+    @classmethod
+    def terminal_state(self):
+        return self.current_timestep == self.timesteps - 1
     @property
     def day(self):
         return (self.time // (3600 * 24)) % 7
@@ -667,6 +670,7 @@ class ScooterSharingSimulator:
         state = self.grid.get_state(self)
         reward = self.grid.get_last_satisfied_requests()
         self.grid.reset_stats()
+        self.current_timestep += 1
         return state, reward
         
     def do_all_events(self, verbose=0, training=False):
@@ -737,6 +741,7 @@ class ScooterSharingSimulator:
         self.trip_reader = TripReader(replica)
         arrivals = self.trip_reader.construct_events(self)
         self.time = 0
+        self.current_timestep = 0
         self.events.reset()
         self.insert_events(arrivals)
 
