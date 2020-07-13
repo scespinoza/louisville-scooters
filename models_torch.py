@@ -154,7 +154,7 @@ class SimpleSubCritic(nn.Module):
 
     def forward(self, x):
         x = nn.ReLU()(self.fc1(x))
-        x = nn.ReLU()(self.fc2(x))
+        x = self.fc2(x)
         return x[:, -1, :]
 
 class SimpleCritic(nn.Module):
