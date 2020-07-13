@@ -303,7 +303,7 @@ class Agent:
         action = self.get_action(torch.from_numpy(state).to(device))
         scale = self.noise_scale * (0.999 ** episode)
         noise = np.random.normal(size=action.shape, scale=scale)
-        action = action + noise
+        action = (action + noise).astype(np.float32)
         next_state, reward = environment.perform_action(action[:, -1].reshape(10, 10))
         self.store_transition((state, action, reward, next_state))
         return reward
