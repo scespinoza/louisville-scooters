@@ -56,7 +56,7 @@ class ActorNetwork(nn.Module):
         return torch.stack(a).view(-1, t, nzones)
 
 class SimpleSubActor(nn.Module):
-    def __init__(self, neurons=32, input_size=16):
+    def __init__(self, neurons=64, input_size=16):
         super(SimpleSubActor, self).__init__()
         self.fc1 = nn.Linear(input_size,neurons)
         self.fc2 = nn.Linear(neurons, 1)
@@ -67,7 +67,7 @@ class SimpleSubActor(nn.Module):
         return x
 
 class SimpleActor(nn.Module):
-    def __init__(self, state_size=6, gru_out=16, nzones=100):
+    def __init__(self, state_size=6, gru_out=32, nzones=100):
         super(SimpleActor, self).__init__()
         self.nzones = nzones
         self.gru = nn.GRU(state_size, gru_out, batch_first=True)
@@ -83,7 +83,7 @@ class SimpleActor(nn.Module):
         return torch.stack(a).view(-1, t, nzones)
     
 class LocalizedModule(nn.Module):
-    def __init__(self, neurons=64, state_size=6):
+    def __init__(self, neurons=128, state_size=6):
         super(LocalizedModule, self).__init__()
         # Input is state_size * neighbors + price (action)
         self.fc1 = nn.Linear((state_size + 1) * 5 , neurons)
@@ -146,7 +146,7 @@ class CriticNetwork(nn.Module):
         return torch.sum(f + q, dim=1)
 
 class SimpleSubCritic(nn.Module):
-    def __init__(self, neurons=32, input_size=16):
+    def __init__(self, neurons=64, input_size=16):
         super(SimpleSubCritic, self).__init__()
         self.fc1 = nn.Linear(input_size, neurons)
         self.fc2 = nn.Linear(neurons, 1)
@@ -158,7 +158,7 @@ class SimpleSubCritic(nn.Module):
         return x[:, -1, :]
 
 class SimpleCritic(nn.Module):
-    def __init__(self, gru_out=16, state_size=6, nzones=100):
+    def __init__(self, gru_out=32, state_size=6, nzones=100):
         super(SimpleCritic, self).__init__()
         self.nzones = nzones
         self.gru = nn.GRU((state_size + 1) * 5, gru_out, batch_first=True)
