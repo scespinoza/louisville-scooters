@@ -287,7 +287,7 @@ class Agent:
             'action': torch.from_numpy(np.concatenate(action)).to(device), 
             'reward': torch.from_numpy(np.array(reward)).view(-1, 1).to(device),
             'next_state': torch.from_numpy(np.concatenate(next_state)).to(device),
-            'terminal': torch.from_numpy(np.concatenate(terminal).astype(np.float32)).to(device)}
+            'terminal': torch.from_numpy(np.array(terminal).astype(np.float32)).to(device)}
         self.model.train()
         self.model.train_step(x)
         self.model.eval()
@@ -353,7 +353,7 @@ class Agent:
                                     'action': torch.from_numpy(np.concatenate(action)).to(device), 
                                     'reward': torch.from_numpy(np.array(reward)).view(-1, 1).to(device),
                                     'next_state': torch.from_numpy(np.concatenate(next_state)).to(device),
-                                    'terminal': torch.from_numpy(np.concatenate(terminal).astype(np.float32)).to(device)})[0].detach().cpu().numpy()
+                                    'terminal': torch.from_numpy(np.array(terminal).astype(np.float32)).to(device)})[0].detach().cpu().numpy()
     def save_agent(self, name='test-model'):
         with open('weights/' + name + '.pickle', 'wb') as file:
             pickle.dump(self, file)
