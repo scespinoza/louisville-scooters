@@ -164,7 +164,6 @@ class SimpleCritic(nn.Module):
         self.gru = nn.GRU((state_size + 1) * 5, gru_out, batch_first=True)
         self.subcritic = SimpleSubCritic(input_size=gru_out)
         self.lm = LocalizedModule(state_size=6)
-        self.linear = nn.Linear()
 
     def forward(self, x):
         for i in range(self.nzones):
