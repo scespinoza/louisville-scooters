@@ -306,7 +306,7 @@ class Agent:
         noise = np.random.normal(size=action.shape, scale=scale)
         action = (action + noise).astype(np.float32)
         next_state, reward = environment.perform_action(action[:, -1].reshape(10, 10))
-        terminal = float(self.environment.terminal_state)
+        terminal = float(environment.terminal_state)
         self.store_transition((state, action, reward, next_state, terminal))
         return reward
     
