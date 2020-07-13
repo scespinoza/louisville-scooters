@@ -213,7 +213,7 @@ class HRP(nn.Module):
         q = self.cn_target(xc)
         return p[:, -1], q.view(-1, 1)
     def critic_loss(self, batch):
-        p, q = self.forward(batch['state'])
+        q = self.cn([batch['state'], batch['action'].view(-1, 2, 100, 1)])
         with torch.no_grad():
             p_next, q_next = self.target_forward(batch['next_state'])
             y = batch['reward'] + self.discount_rate * q_next
