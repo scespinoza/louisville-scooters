@@ -639,7 +639,7 @@ class ScooterSharingSimulator:
         self.timesteps = self.simulation_time // self.time_window
         self.service_provider = service_provider
         self.initial_supply = initial_supply
-    @classmethod
+    @property
     def terminal_state(self):
         return self.current_timestep == self.timesteps - 1
     @property
