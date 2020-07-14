@@ -63,7 +63,7 @@ class SimpleSubActor(nn.Module):
         self.fc3 = nn.Linear(neurons, 1)
     def forward(self, x):
         x = nn.ReLU()(self.fc1(x))
-        x = nn.ReLu()(self.fc2(x))
+        x = nn.ReLU()(self.fc2(x))
         x = 3 * nn.Sigmoid()(self.fc3(x))
         return x
 
