@@ -62,7 +62,7 @@ class SimpleSubActor(nn.Module):
         self.fc2 = nn.Linear(neurons, 1)
     def forward(self, x):
         x = nn.ReLU()(self.fc1(x))
-        x = self.fc2(x)
+        x = nn.Tanh()(self.fc2(x))
         return x
 
 class SimpleActor(nn.Module):
