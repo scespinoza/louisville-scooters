@@ -59,10 +59,12 @@ class SimpleSubActor(nn.Module):
     def __init__(self, neurons=64, input_size=16):
         super(SimpleSubActor, self).__init__()
         self.fc1 = nn.Linear(input_size,neurons)
-        self.fc2 = nn.Linear(neurons, 1)
+        self.fc2 = nn.Linear(neurons, neurons)
+        self.fc3 = nn.Linear(neurons, 1)
     def forward(self, x):
         x = nn.ReLU()(self.fc1(x))
-        x = nn.Tanh()(self.fc2(x))
+        x = nn.ReLu()(self.fc2(x))
+        x = 3 * nn.Sigmoid()(self.fc3(x))
         return x
 
 class SimpleActor(nn.Module):
@@ -86,12 +88,14 @@ class LocalizedModule(nn.Module):
         super(LocalizedModule, self).__init__()
         # Input is state_size * neighbors + price (action)
         self.fc1 = nn.Linear((state_size + 1) * 5 , neurons)
-        self.fc2 = nn.Linear(neurons, 1)
+        self.fc2 = nn.Linear(neurons, neurons)
+        self.fc3 = nn.Linear(neurons, 1)
         self.apply(init_uniform)
 
     def forward(self, x):
         x = nn.ReLU()(self.fc1(x))
-        x = self.fc2(x)
+        x = nn.ReLU()(self.fc2(x))
+        x = self.fc3(x)
         return x        
 
 class SubCritic(nn.Module):
@@ -148,12 +152,14 @@ class SimpleSubCritic(nn.Module):
     def __init__(self, neurons=64, input_size=16):
         super(SimpleSubCritic, self).__init__()
         self.fc1 = nn.Linear(input_size, neurons)
-        self.fc2 = nn.Linear(neurons, 1)
+        self.fc2 = nn.Linear(neurons, neurons)
+        self.fc3 = nn.Linear(neurons, 1)
         self.apply(init_uniform)
 
     def forward(self, x):
         x = nn.ReLU()(self.fc1(x))
-        x = self.fc2(x)
+        x = nn.ReLU(self.fc2(x))
+        x = self.fc3(x)
         return x[:, -1, :]
 
 class SimpleCritic(nn.Module):
