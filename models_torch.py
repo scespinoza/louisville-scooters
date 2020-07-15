@@ -56,7 +56,7 @@ class ActorNetwork(nn.Module):
         return torch.stack(a).view(-1, t, nzones)
 
 class SimpleSubActor(nn.Module):
-    def __init__(self, neurons=64, input_size=16):
+    def __init__(self, neurons=128, input_size=16):
         super(SimpleSubActor, self).__init__()
         self.fc1 = nn.Linear(input_size,neurons)
         self.fc2 = nn.Linear(neurons, neurons)
