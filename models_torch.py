@@ -304,6 +304,9 @@ class Agent:
         self.model.an.train()
         return a
 
+    def get_prices(self, state):
+        return self.model.an_target(state).detach().cpu().numpy()[:, -1, :]
+
     def act(self, environment, episode=0):
         state  = environment.get_state()
         action = self.get_action(torch.from_numpy(state).to(device))
@@ -360,12 +363,15 @@ class Agent:
                                     'next_state': torch.from_numpy(np.concatenate(next_state)).to(device),
                                     'terminal': torch.from_numpy(np.array(terminal).astype(np.float32)).to(device)})[0].detach().cpu().numpy()
     def save_agent(self, name='test-model'):
+        # pass model to cpu to asure loading
+        self.model.to(torch.device('cpu'))
         with open('weights/' + name + '.pickle', 'wb') as file:
             pickle.dump(self, file)
     @classmethod
     def load_agent(self, name='test-model'):
         with open('weights/' + name + '.pickle', 'rb') as file:
             agent = pickle.load(file)
+            agent.model.to(device)
         return agent
 
 
