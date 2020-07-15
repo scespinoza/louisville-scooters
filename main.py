@@ -45,7 +45,7 @@ if __name__ == '__main__':
             agent.model.eval()
             simulator = ScooterSharingSimulator(graph, grid, days=1, initial_supply=60, pricing=True, service_provider=agent,
             name=args.pricing)
-        elif arg.pricing == 'random':
+        elif args.pricing == 'random':
             model = RandomPricing()
             agent = ServiceProvider(model=model, budget=args.budget, method=args.pricing)
             simulator = ScooterSharingSimulator(graph, grid, days=1, initial_supply=60, pricing=True, service_provider=agent,
