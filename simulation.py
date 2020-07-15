@@ -190,7 +190,7 @@ class ServiceProvider(Agent):
                                               batch_size=batch_size)
         self.total_budget = budget
         self.budget = budget
-
+        self.method = name
     def expend(self, value):
         self.budget -= value
 
@@ -712,7 +712,7 @@ class ScooterSharingSimulator:
             if self.pricing:
                 self.service_provider.restore_budget()
             self.trip_reader = TripReader(replica)
-            self.history_saver = HistorySaver(name=replica.split('.')[0].split('/')[-1] + self.pricing * '_pricing')
+            self.history_saver = HistorySaver(name=replica.split('.')[0].split('/')[-1] + self.pricing * '_{}'.format(self.service_provider.method))
             arrivals = self.trip_reader.construct_events(self)
             self.insert_events(arrivals)
             self.do_all_events(verbose=verbose)

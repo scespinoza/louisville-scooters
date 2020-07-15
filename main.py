@@ -43,11 +43,15 @@ if __name__ == '__main__':
         if args.pricing == 'HRP':
             agent = ServiceProvider.load_agent(name=args.model)
             agent.model.eval()
-            simulator = ScooterSharingSimulator(graph, grid, days=1, initial_supply=60, pricing=args.pricing, service_provider=agent)
+            simulator = ScooterSharingSimulator(graph, grid, days=1, initial_supply=60, pricing=True, service_provider=agent,
+            name=args.pricing)
         elif arg.pricing == 'random':
-            agent = ServiceProvider(budget=args.budget, method=args.pricing)
+            model = RandomPricing()
+            agent = ServiceProvider(model=model, budget=args.budget, method=args.pricing)
+            simulator = ScooterSharingSimulator(graph, grid, days=1, initial_supply=60, pricing=True, service_provider=agent,
+            name=args.pricing)
         else:
-            simulator = ScooterSharingSimulator(graph, grid, days=1, initial_supply=60, pricing=args.pricing)
+            simulator = ScooterSharingSimulator(graph, grid, days=1, initial_supply=60, pricing=False)
         
         simulator.simulate(replicas, verbose=1)
     if args.train:
