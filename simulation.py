@@ -627,7 +627,6 @@ class ScooterSharingSimulator:
     def __init__(self, graph, grid, initial_supply=200, days=7, history_saver=None, pricing=False,
                 service_provider=ServiceProvider()):
         self.pricing = pricing
-        self.replicas = replicas
         self.events = ListQueue()
         self.time = 0
         self.current_timestep = 0
