@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import geopandas as gpd
 
-from preprocess import MultiModalNetwork
+from multimodal_network import MultiModalNetwork
 from simulation import ScooterSharingSimulator, HistorySaver, ServiceProvider
 from models_torch import HRP
 

@@ -730,8 +730,8 @@ class ScooterSharingSimulator:
             arrivals = self.trip_reader.construct_events(self)
             self.events.reset()
             self.insert_events(arrivals)"""
-    def reset(self, random_state=0):
-        #Scooter.init_supply(self.graph, n=self.initial_supply, random_state=i)
+    def reset(self):
+        Scooter.init_supply(self.graph, n=self.initial_supply, random_state=self.current_replica)
         #UserRequest.init_user_requests(self)
         #RunPricing.init_pricing(self)
         self.service_provider.restore_budget()
