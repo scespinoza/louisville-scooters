@@ -43,7 +43,10 @@ if __name__ == '__main__':
         if args.pricing:
             agent = ServiceProvider.load_agent(name=args.model)
             agent.model.eval()
+            simulator = ScooterSharingSimulator(graph, grid, initial_supply=60, pricing=args.pricing, service_provider=agent)
+        else:
             simulator = ScooterSharingSimulator(graph, grid, initial_supply=60, pricing=args.pricing)
+        
         simulator.simulate(replicas, verbose=1)
     if args.train:
         replicas = ['data/replicas/stkde_nhpp_{}.csv'.format(i) for i in range(args.replicas)]
@@ -59,7 +62,7 @@ if __name__ == '__main__':
         grid.create_nodes_dict(graph.layers['walk']['nodes'])
         model = HRP(learning_rate=args.lr)
         agent = ServiceProvider(model=model, noise_scale=args.noise, budget=args.budget, buffer_length=1000, batch_size=args.batch)
-        environment = ScooterSharingSimulator(graph, grid, days=1, initial_supply=100, pricing=True, service_provider=agent)
+        environment = ScooterSharingSimulator(graph, grid, days=1, initial_supply=60, pricing=True, service_provider=agent)
         environment.set_replicas_for_training(replicas)
         agent.train(environment, warmup_iterations=args.warmup, episodes=args.episodes)
         agent.save_agent(name=args.name)
