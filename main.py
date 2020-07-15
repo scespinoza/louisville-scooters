@@ -5,7 +5,7 @@ import seaborn as sns
 import geopandas as gpd
 
 from multimodal_network import MultiModalNetwork
-from simulation import ScooterSharingSimulator, HistorySaver, ServiceProvider
+from simulation import ScooterSharingSimulator, HistorySaver, ServiceProvider, Grid
 from models_torch import HRP
 
 
