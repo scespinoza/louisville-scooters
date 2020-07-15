@@ -25,7 +25,8 @@ if __name__ == '__main__':
     parser.add_argument('--model', type=str, default='100ep_250bg_sigm')
     parser.add_argument('--verbose', type=int, help='verbosity value')
     parser.add_argument('--name', type=str, help='name of agent')
-    parser.add_argument('--lr', type=float, default=1e-4)
+    parser.add_argument('--actor_lr', type=float, default=1e-4)
+    parser.add_argument('--critic_lr', type=float, default=1e-6)
 
     args = parser.parse_args()
     if args.simulate:
@@ -66,7 +67,7 @@ if __name__ == '__main__':
         
         grid = Grid.from_gdf(grid_gdf, (10,10))
         grid.create_nodes_dict(graph.layers['walk']['nodes'])
-        model = HRP(learning_rate=args.lr)
+        model = HRP(critic_lr=args.critic_lr, actor_lr=args.actor_lr)
         agent = ServiceProvider(model=model, noise_scale=args.noise, budget=args.budget, buffer_length=1000, batch_size=args.batch)
         environment = ScooterSharingSimulator(graph, grid, days=1, initial_supply=60, pricing=True, service_provider=agent)
         environment.set_replicas_for_training(replicas)

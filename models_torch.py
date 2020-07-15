@@ -193,7 +193,7 @@ class SimpleCritic(nn.Module):
 
 
 class HRP(nn.Module):
-    def __init__(self, learning_rate=1e-4):
+    def __init__(self, actor_lr=1e-6, critic_lr=1e-4):
         super(HRP, self).__init__()
         self.an = SimpleActor().to(device)
         self.cn = SimpleCritic().to(device)
@@ -201,10 +201,11 @@ class HRP(nn.Module):
         self.cn_target = SimpleCritic().to(device)
         self.critic_criterion = nn.MSELoss()
         self.discount_rate = 0.99
-        self.learning_rate = learning_rate
+        self.critic_lr = critic_lr
+        self.actor_lr = actor_lr
         self.tau = 0.2
-        self.critic_optimizer = torch.optim.Adam(self.cn.parameters(), lr=self.learning_rate)
-        self.actor_optimizer = torch.optim.Adam(self.an.parameters(), lr=self.learning_rate)
+        self.critic_optimizer = torch.optim.Adam(self.cn.parameters(), lr=self.critic_lr)
+        self.actor_optimizer = torch.optim.Adam(self.an.parameters(), lr=self.actor_lr)
         self.hard_update()
      
     def forward(self, x):
