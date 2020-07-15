@@ -305,6 +305,7 @@ class Agent:
         return a
 
     def get_prices(self, state):
+        state = torch.from_numpy(state.astype(np.float32)).to(device)
         return self.model.an_target(state).detach().cpu().numpy()[:, -1, :]
 
     def act(self, environment, episode=0):
