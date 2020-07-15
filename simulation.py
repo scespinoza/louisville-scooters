@@ -214,7 +214,6 @@ class ServiceProvider(Agent):
         ax[1].set_title('DQN Training Loss')
         return fig
 
-
         
 class User:
     count = 0

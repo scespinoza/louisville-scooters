@@ -15,7 +15,7 @@ if __name__ == '__main__':
     parser.add_argument('--simulate', action='store_true')
     parser.add_argument('--train', action='store_true')
     parser.add_argument('--test_grid', action='store_true')
-    parser.add_argument('--pricing', action='store_true')
+    parser.add_argument('--pricing', type=str, default=None)
     parser.add_argument('--warmup', type=int, default=5)
     parser.add_argument('--episodes', type=int, default=15)
     parser.add_argument('--noise', type=float, default=2)
@@ -40,10 +40,12 @@ if __name__ == '__main__':
         
         grid = Grid.from_gdf(grid_gdf, (10,10))
         grid.create_nodes_dict(graph.layers['walk']['nodes'])
-        if args.pricing:
+        if args.pricing == 'HRP':
             agent = ServiceProvider.load_agent(name=args.model)
             agent.model.eval()
             simulator = ScooterSharingSimulator(graph, grid, days=1, initial_supply=60, pricing=args.pricing, service_provider=agent)
+        elif arg.pricing == 'random':
+            agent = ServiceProvider(budget=args.budget, method=args.pricing)
         else:
             simulator = ScooterSharingSimulator(graph, grid, days=1, initial_supply=60, pricing=args.pricing)
         

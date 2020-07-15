@@ -262,7 +262,14 @@ class HRP(nn.Module):
         self.soft_update()
         return batch_loss, q_val
 
-                    
+class RandomPricing:
+    def __init__(self, min_p=0, max_p=3):
+        self.min_p = 0
+        self.max_p = 3
+    def an_target(self, state):
+        batch, t, n_zones, state_size = state.size()
+        return torch.FloatTensor(batch, t, n_zones).uniform_(self.min_p, self.max_p)
+
 
 class Agent:
 
