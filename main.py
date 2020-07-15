@@ -5,8 +5,8 @@ import seaborn as sns
 import geopandas as gpd
 
 from multimodal_network import MultiModalNetwork
-from simulation import ScooterSharingSimulator, HistorySaver, ServiceProvider, Grid, RandomPricing
-from models_torch import HRP
+from simulation import ScooterSharingSimulator, HistorySaver, ServiceProvider, Grid
+from models_torch import HRP, RandomPricing
 
 
 
@@ -42,14 +42,14 @@ if __name__ == '__main__':
         grid.create_nodes_dict(graph.layers['walk']['nodes'])
         if args.pricing == 'HRP':
             agent = ServiceProvider.load_agent(name=args.model)
+            agent.method = args.pricing
             agent.model.eval()
-            simulator = ScooterSharingSimulator(graph, grid, days=1, initial_supply=60, pricing=True, service_provider=agent,
-            name=args.pricing)
+            simulator = ScooterSharingSimulator(graph, grid, days=1, initial_supply=60, pricing=True, service_provider=agent)
         elif args.pricing == 'random':
             model = RandomPricing()
-            agent = ServiceProvider(model=model, budget=args.budget, method=args.pricing)
-            simulator = ScooterSharingSimulator(graph, grid, days=1, initial_supply=60, pricing=True, service_provider=agent,
-            name=args.pricing)
+            agent = ServiceProvider(model=model, budget=args.budget)
+            agent.method = args.pricing
+            simulator = ScooterSharingSimulator(graph, grid, days=1, initial_supply=60, pricing=True, service_provider=agent)
         else:
             simulator = ScooterSharingSimulator(graph, grid, days=1, initial_supply=60, pricing=False)
         
