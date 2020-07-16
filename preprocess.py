@@ -7,6 +7,7 @@ import geopandas as gpd
 import matplotlib.pyplot as plt
 import statsmodels.api as sm
 
+from tqdm import trange
 from shapely.geometry import Point
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -32,8 +33,8 @@ class ConditionedKDE:
     def sample(self, exog):
         d = self.endog_unique.shape[1]
         samples = []
-        for i, obs in enumerate(exog):
-            print('Sampling {}/{} obs.'.format(i, len(exog)))
+        for i in trange(len(exog)):
+            obs = exog[i]
             p = self.compute_weights(obs)
             p = p / p.sum()
             xi = np.random.choice(range(self.endog_unique.shape[0]), size=1, p=p)[0]
