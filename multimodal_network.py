@@ -17,8 +17,10 @@ def fix_duplicated_ids(edges):
     return edges
     
 def fix_isolated(edges, nodes):
-    node_counts = edges['u'].append(edges['v']).value_counts()
-    isolated_nodes = list(node_counts[node_counts == 1].index)
+    outputs = edges[['u', 'v']].groupby('u').size().to_frame('outputs').reset_index()
+    inputs = edges[['u', 'v']].groupby('v').size().to_frame('inputs').reset_index()
+    in_outs = pd.merge(outputs, inputs, right_on='v', left_on='u').fillna(0)
+    isolated_nodes = in_outs[(in_outs['outputs'] <=1) |(in_outs['inputs'] <= 1)]['u'].values
     filter_isolated = edges['u'].isin(isolated_nodes) | edges['v'].isin(isolated_nodes)
     return edges[~filter_isolated], nodes[nodes['osmid'].isin(isolated_nodes)]
 
