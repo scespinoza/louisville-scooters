@@ -22,7 +22,7 @@ def fix_isolated(edges, nodes):
     in_outs = pd.merge(outputs, inputs, right_on='v', left_on='u').fillna(0)
     isolated_nodes = in_outs[(in_outs['outputs'] <=1) |(in_outs['inputs'] <= 1)]['u'].values
     filter_isolated = edges['u'].isin(isolated_nodes) | edges['v'].isin(isolated_nodes)
-    return edges[~filter_isolated], nodes[nodes['osmid'].isin(isolated_nodes)]
+    return edges[~filter_isolated], nodes[~nodes['osmid'].isin(isolated_nodes)]
 
 
 def get_nearest(src_points, candidates, k_neighbors=1):
