@@ -249,7 +249,7 @@ class HRP(nn.Module):
         p = self.an(batch['state'])
         xc = torch.cat([batch['state'], p.view(-1, 2, 100, 1)], dim=-1)
         q = self.cn(xc)
-        return torch.mean(-1 * q.squeeze())
+        return -1*torch.mean(q.squeeze())
         
     def actor_step(self, batch):
         grad = self.actor_gradient(batch)
