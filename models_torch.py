@@ -98,8 +98,8 @@ class SubCritic(nn.Module):
         super(SubCritic, self).__init__()
         self.gru = nn.GRU((state_size + 1) * 5, neurons, batch_first=True)
         self.fc1 = nn.Linear(neurons, neurons)
-        self.fc3 = nn.Linear(neurons, neurons)
-        self.fc2 = nn.Linear(neurons, 1)
+        self.fc2 = nn.Linear(neurons, neurons)
+        self.fc3 = nn.Linear(neurons, 1)
 
     def forward(self, x):
         x, h = self.gru(x)
