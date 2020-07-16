@@ -20,28 +20,22 @@ def init_uniform(m):
         m.bias.data.fill_(0.0)
 
 class SubActor(nn.Module):
-    def __init__(self, neurons=16, state_size=6):
+    def __init__(self, neurons=32, state_size=6):
         super(SubActor, self).__init__()
         self.gru = nn.GRU(state_size, neurons, batch_first=True)
-        self.bn1 = nn.BatchNorm1d(neurons)
         self.fc1 = nn.Linear(neurons, neurons)
-        self.bn2 = nn.BatchNorm1d(neurons)
-        self.fc2 = nn.Linear(neurons, 1)
+        self.fc2 = nn.Linear(neurons, neurons)
+        self.fc3 = nn.Linear(neurons, 1)
     def forward(self, x):
         x, h = self.gru(x)
         x = nn.ReLU()(x)
-        x = x.permute(0, 2, 1)
-        x = self.bn1(x)
-        x = x.permute(0, 2, 1)
         x = nn.ReLU()(self.fc1(x))
-        x = x.permute(0, 2, 1)
-        x = self.bn2(x)
-        x = x.permute(0, 2, 1)
-        x = self.fc2(x)
+        x = nn.ReLU()(self.fc2(x))
+        x = 3 * nn.Sigmoid()(self.fc3(x))
         return x
 
 class ActorNetwork(nn.Module):
-    def __init__(self, n_subactors=100, neurons=16, state_size=6):
+    def __init__(self, n_subactors=100, neurons=32, state_size=6):
         super(ActorNetwork, self).__init__()
         self.n_subactors = n_subactors
         for i in range(n_subactors):
@@ -103,26 +97,20 @@ class SubCritic(nn.Module):
     def __init__(self, neurons=16, state_size=6):
         super(SubCritic, self).__init__()
         self.gru = nn.GRU((state_size + 1) * 5, neurons, batch_first=True)
-        self.bn1 = nn.BatchNorm1d(neurons)
         self.fc1 = nn.Linear(neurons, neurons)
-        self.bn2 = nn.BatchNorm1d(neurons)
+        self.fc3 = nn.Linear(neurons, neurons)
         self.fc2 = nn.Linear(neurons, 1)
 
     def forward(self, x):
         x, h = self.gru(x)
         x = nn.ReLU()(x)
-        x = x.permute(0, 2, 1)
-        x = self.bn1(x)
-        x = x.permute(0, 2, 1)
         x = nn.ReLU()(self.fc1(x))
-        x = x.permute(0, 2, 1)
-        x = self.bn2(x)
-        x = x.permute(0, 2, 1)
-        x = self.fc2(x)
+        x = nn.ReLU()(self.fc2(x))
+        x = self.fc3(x)
         return x[:, -1, :]
 
 class CriticNetwork(nn.Module):
-    def __init__(self, n_subcritics=100, neurons=16, state_size=6):
+    def __init__(self, n_subcritics=100, neurons=64, state_size=6):
         super(CriticNetwork, self).__init__()
         self.n_subcritics = n_subcritics
         for i in range(n_subcritics):
