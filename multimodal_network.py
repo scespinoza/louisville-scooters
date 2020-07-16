@@ -21,8 +21,13 @@ def fix_isolated(edges, nodes):
     inputs = edges[['u', 'v']].groupby('v').size().to_frame('inputs').reset_index()
     in_outs = pd.merge(outputs, inputs, right_on='v', left_on='u').fillna(0)
     isolated_nodes = in_outs[(in_outs['outputs'] <=1) |(in_outs['inputs'] <= 1)]['u'].values
-    filter_isolated = edges['u'].isin(isolated_nodes) | edges['v'].isin(isolated_nodes)
-    return edges[~filter_isolated], nodes[~nodes['osmid'].isin(isolated_nodes)]
+    isolated_edges = edges['u'].isin(isolated_nodes) | edges['v'].isin(isolated_nodes)
+    if len(isolated_nodes) == 0:
+        return edges, nodes
+    else:
+        return fix_isolated(edges[~isolated_edges], nodes[~nodes['osmid'].isin(isolated_nodes)])
+    
+    
 
 
 def get_nearest(src_points, candidates, k_neighbors=1):
