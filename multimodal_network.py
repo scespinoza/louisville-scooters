@@ -20,7 +20,7 @@ def fix_isolated(edges, nodes):
     node_counts = edges['u'].append(edges['v']).value_counts()
     isolated_nodes = list(node_counts[node_counts == 1].index)
     filter_isolated = edges['u'].isin(isolated_nodes) | edges['v'].isin(isolated_nodes)
-    return edges['edges'][~filter_isolated], nodes[nodes['osmid'].isin(isolated_nodes)]
+    return edges[~filter_isolated], nodes[nodes['osmid'].isin(isolated_nodes)]
 
 
 def get_nearest(src_points, candidates, k_neighbors=1):
