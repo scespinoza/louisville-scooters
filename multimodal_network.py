@@ -157,7 +157,7 @@ class MultiModalNetwork:
                 print(nodes.shape)
                 edges = fix_duplicated_ids(edges)
                 edges, nodes = fix_isolated(edges, nodes)
-
+                print(nodes.shape)
                 if save:
                     nodes.to_file('shapes/{}/nodes.shp'.format(layer))
                     edges.to_file('shapes/{}/edges.shp'.format(layer))
