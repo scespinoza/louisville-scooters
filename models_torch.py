@@ -61,10 +61,11 @@ class SimpleSubActor(nn.Module):
         self.fc1 = nn.Linear(input_size,neurons)
         self.fc2 = nn.Linear(neurons, neurons)
         self.fc3 = nn.Linear(neurons, 1)
+        self.scale = torch.nn.Parameter(torch.zeros(1))
     def forward(self, x):
         x = nn.ReLU()(self.fc1(x))
         x = nn.ReLU()(self.fc2(x))
-        x = 3 * nn.Sigmoid()(self.fc3(x))
+        x = self.scale * nn.Sigmoid()(self.fc3(x))
         return x
 
 class SimpleActor(nn.Module):
