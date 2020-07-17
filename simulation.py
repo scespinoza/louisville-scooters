@@ -191,7 +191,7 @@ class ServiceProvider(Agent):
         self.total_budget = budget
         self.budget = budget
         self.method = name
-        
+
     def expend(self, value):
         self.budget -= value
     def restore_expend(self, value):
@@ -602,6 +602,8 @@ class UserLeavesSystem(Event):
     def execute(self, simulator):
         if simulator.history_saver:
             simulator.history_saver.store_trip(self.user.trip)
+        User.users.remove(self)
+
     def __str__(self):
         return 'User {} leaving the system.'.format(self.user.user_id)
 
@@ -619,6 +621,8 @@ class HistorySaver:
         self.history['recharge'].append(recharge)
 
     def save(self):
+        for user in User.users:
+            self.store_trip(user.trip)
         Scooter.store_history(self)
         print('Saving history to JSON')
         with open('visualization/data/' + self.name + '.json', 'w') as file:
