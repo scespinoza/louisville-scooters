@@ -17,10 +17,10 @@ def fix_duplicated_ids(edges):
     return edges
     
 def fix_isolated(edges, nodes):
-    outputs = edges[['u', 'v']].groupby('u').size().to_frame('outputs').reset_index()
-    inputs = edges[['u', 'v']].groupby('v').size().to_frame('inputs').reset_index()
-    in_outs = pd.merge(outputs, inputs, right_on='v', left_on='u').fillna(0)
-    isolated_nodes = in_outs[(in_outs['outputs'] <=1) |(in_outs['inputs'] <= 1)]['u'].values
+    outputs = edges[['u', 'v']].groupby('u').size()
+    inputs = edges[['u', 'v']].groupby('v').size()
+    in_outs = inputs + outputs
+    isolated_nodes = in_outs[in_outs <= 1].index.values
     isolated_edges = edges['u'].isin(isolated_nodes) | edges['v'].isin(isolated_nodes)
     if len(isolated_nodes) == 0:
         return edges, nodes
@@ -148,7 +148,7 @@ class MultiModalNetwork:
         transfer_nodes = self.layers['bike']['nodes'][self.layers['bike']['nodes']['osmid'].apply(lambda osmid: osmid in self.transfer_nodes)]
         transfer_nodes.plot(ax=ax, c='yellow', alpha=0.3, markersize=5)
     @classmethod
-    def from_polygon(cls, polygon, layers=['walk', 'bike'], save=True, speeds={'walk': 1., 'bike': 1.}, directed={'walk':False, 'bike':True}):
+    def from_polygon(cls, polygon, layers=['walk', 'bike'], save=True, speeds={'walk': 1., 'bike': 1.}, directed={'walk':True, 'bike':True}):
         layers_graph = {}
         for layer in layers:
             
