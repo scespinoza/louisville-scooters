@@ -184,10 +184,10 @@ class SimpleCritic(nn.Module):
 class HRP(nn.Module):
     def __init__(self, actor_lr=1e-6, critic_lr=1e-4):
         super(HRP, self).__init__()
-        self.an = ActorNetwork().to(device)
-        self.cn = CriticNetwork().to(device)
-        self.an_target = ActorNetwork().to(device)
-        self.cn_target = CriticNetwork().to(device)
+        self.an = SimpleActor().to(device)
+        self.cn = SimpleCritic().to(device)
+        self.an_target = SimpleActor().to(device)
+        self.cn_target = SimpleCritic().to(device)
         self.critic_criterion = nn.MSELoss()
         self.discount_rate = 0.99
         self.critic_lr = critic_lr
