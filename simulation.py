@@ -602,7 +602,7 @@ class UserLeavesSystem(Event):
     def execute(self, simulator):
         if simulator.history_saver:
             simulator.history_saver.store_trip(self.user.trip)
-        User.users.remove(self)
+        User.users.remove(self.user)
 
     def __str__(self):
         return 'User {} leaving the system.'.format(self.user.user_id)
