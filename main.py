@@ -45,14 +45,14 @@ if __name__ == '__main__':
             agent = ServiceProvider.load_agent(name=args.model)
             agent.method = args.pricing
             agent.model.eval()
-            simulator = ScooterSharingSimulator(graph, grid, days=1, initial_supply=60, pricing=True, service_provider=agent)
+            simulator = ScooterSharingSimulator(graph, grid, days=1, initial_supply=80, pricing=True, service_provider=agent)
         elif args.pricing == 'random':
             model = RandomPricing()
             agent = ServiceProvider(model=model, budget=args.budget)
             agent.method = args.pricing
-            simulator = ScooterSharingSimulator(graph, grid, days=1, initial_supply=60, pricing=True, service_provider=agent)
+            simulator = ScooterSharingSimulator(graph, grid, days=1, initial_supply=80, pricing=True, service_provider=agent)
         else:
-            simulator = ScooterSharingSimulator(graph, grid, days=1, initial_supply=60, pricing=False)
+            simulator = ScooterSharingSimulator(graph, grid, days=1, initial_supply=80, pricing=False)
         
         simulator.simulate(replicas, verbose=1)
     if args.train:
@@ -69,7 +69,7 @@ if __name__ == '__main__':
         grid.create_nodes_dict(graph.layers['walk']['nodes'])
         model = HRP(critic_lr=args.critic_lr, actor_lr=args.actor_lr)
         agent = ServiceProvider(model=model, noise_scale=args.noise, budget=args.budget, buffer_length=1000, batch_size=args.batch)
-        environment = ScooterSharingSimulator(graph, grid, days=1, initial_supply=60, pricing=True, service_provider=agent)
+        environment = ScooterSharingSimulator(graph, grid, days=1, initial_supply=80, pricing=True, service_provider=agent)
         environment.set_replicas_for_training(replicas)
         agent.train(environment, warmup_iterations=args.warmup, episodes=args.episodes)
         agent.save_agent(name=args.name)
