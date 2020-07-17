@@ -46,14 +46,14 @@ if __name__ == '__main__':
             agent = ServiceProvider.load_agent(name=args.model)
             agent.method = args.pricing
             agent.model.eval()
-            simulator = ScooterSharingSimulator(graph, grid, days=args.days, initial_supply=80, pricing=True, service_provider=agent)
+            simulator = ScooterSharingSimulator(graph, grid, days=args.days, initial_supply=100, pricing=True, service_provider=agent)
         elif args.pricing == 'random':
             model = RandomPricing()
             agent = ServiceProvider(model=model, budget=args.budget)
             agent.method = args.pricing
-            simulator = ScooterSharingSimulator(graph, grid, days=args.days, initial_supply=80, pricing=True, service_provider=agent)
+            simulator = ScooterSharingSimulator(graph, grid, days=args.days, initial_supply=100, pricing=True, service_provider=agent)
         else:
-            simulator = ScooterSharingSimulator(graph, grid, days=args.days, initial_supply=80, pricing=False)
+            simulator = ScooterSharingSimulator(graph, grid, days=args.days, initial_supply=100, pricing=False)
         
         simulator.simulate(replicas, verbose=1)
     if args.train:
