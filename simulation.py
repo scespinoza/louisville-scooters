@@ -191,8 +191,11 @@ class ServiceProvider(Agent):
         self.total_budget = budget
         self.budget = budget
         self.method = name
+        
     def expend(self, value):
         self.budget -= value
+    def restore_expend(self, value):
+        self.budget += value
 
     def restore_budget(self):
         self.budget = self.total_budget
