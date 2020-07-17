@@ -370,15 +370,15 @@ class UserRequest(Event):
                 if incentive > rb:
                     simulator.insert(UserLeavesSystem(simulator.time, self.user)) 
                     return None
-                simulator.service_provider.budget -= incentive
-                distance = simulator.graph.shortest_path_distance(self.user.origin,nearest_scooter.location)
-                walking_time = distance / self.user.velocity
-                pickup = PickUp(simulator.time + walking_time, self.user, nearest_scooter, incentive=True)
-                simulator.grid.update_stat(nearest_scooter.location, 'pricing', value=incentive)
-                simulator.service_provider.expend(incentive)
-                self.user.trip['pickup_node'] = nearest_scooter.location
-                self.user.trip['walk'] = simulator.graph.shortest_path_edges(self.user.origin, nearest_scooter.location)
-                simulator.insert(pickup)
+                else:
+                    distance = simulator.graph.shortest_path_distance(self.user.origin,nearest_scooter.location)
+                    walking_time = distance / self.user.velocity
+                    pickup = PickUp(simulator.time + walking_time, self.user, nearest_scooter, incentive=True)
+                    simulator.grid.update_stat(nearest_scooter.location, 'pricing', value=incentive)
+                    simulator.service_provider.expend(incentive)
+                    self.user.trip['pickup_node'] = nearest_scooter.location
+                    self.user.trip['walk'] = simulator.graph.shortest_path_edges(self.user.origin, nearest_scooter.location)
+                    simulator.insert(pickup)
             
         elif not len(available_scooters) == 0:
             # Available scooter within area
@@ -460,7 +460,7 @@ class PickUp(Event):
         else:
             if self.incentive:
                 incentive = self.scooter.price_incentive
-                simulator.service_provider.budget += incentive
+                simulator.service_provider.restore_expend(incentive)
             simulator.insert(UserLeavesSystem(simulator.time, self.user))
 
     def __str__(self):
@@ -729,6 +729,8 @@ class ScooterSharingSimulator:
             self.events.reset()
             self.insert_events(arrivals)"""
     def reset(self):
+        Scooter.count = 0
+        User.count = 0
         Scooter.init_supply(self.graph, n=self.initial_supply, random_state=self.current_replica)
         #UserRequest.init_user_requests(self)
         #RunPricing.init_pricing(self)
