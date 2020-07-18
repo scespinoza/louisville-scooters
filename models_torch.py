@@ -31,7 +31,7 @@ class SubActor(nn.Module):
         x = nn.ReLU()(x)
         x = nn.ReLU()(self.fc1(x))
         x = nn.ReLU()(self.fc2(x))
-        x = 3 * nn.Sigmoid()(self.fc3(x))
+        x = self.fc3(x)
         return x
 
 class ActorNetwork(nn.Module):
@@ -79,7 +79,7 @@ class SimpleActor(nn.Module):
         return torch.stack(a).view(-1, t, nzones)
     
 class LocalizedModule(nn.Module):
-    def __init__(self, neurons=128, state_size=6):
+    def __init__(self, neurons=64, state_size=6):
         super(LocalizedModule, self).__init__()
         # Input is state_size * neighbors + price (action)
         self.fc1 = nn.Linear((state_size + 1) * 5 , neurons)
@@ -94,7 +94,7 @@ class LocalizedModule(nn.Module):
         return x        
 
 class SubCritic(nn.Module):
-    def __init__(self, neurons=16, state_size=6):
+    def __init__(self, neurons=32, state_size=6):
         super(SubCritic, self).__init__()
         self.gru = nn.GRU((state_size + 1) * 5, neurons, batch_first=True)
         self.fc1 = nn.Linear(neurons, neurons)
