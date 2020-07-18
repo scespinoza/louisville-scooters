@@ -59,7 +59,7 @@ class SimpleSubActor(nn.Module):
     def forward(self, x):
         x = nn.ReLU()(self.fc1(x))
         x = nn.ReLU()(self.fc2(x))
-        x = self.scale * nn.Sigmoid()(self.fc3(x))
+        x = elf.fc3(x)
         return x
 
 class SimpleActor(nn.Module):
