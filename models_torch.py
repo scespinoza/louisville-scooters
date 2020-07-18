@@ -50,7 +50,7 @@ class ActorNetwork(nn.Module):
         return torch.stack(a).view(-1, t, nzones)
 
 class SimpleSubActor(nn.Module):
-    def __init__(self, neurons=128, input_size=16):
+    def __init__(self, neurons=512, input_size=16):
         super(SimpleSubActor, self).__init__()
         self.fc1 = nn.Linear(input_size,neurons)
         self.fc2 = nn.Linear(neurons, neurons)
@@ -63,7 +63,7 @@ class SimpleSubActor(nn.Module):
         return x
 
 class SimpleActor(nn.Module):
-    def __init__(self, state_size=6, gru_out=16, nzones=100):
+    def __init__(self, state_size=6, gru_out=64, nzones=100):
         super(SimpleActor, self).__init__()
         self.nzones = nzones
         self.gru = nn.GRU(state_size, gru_out, batch_first=True)
@@ -79,7 +79,7 @@ class SimpleActor(nn.Module):
         return torch.stack(a).view(-1, t, nzones)
     
 class LocalizedModule(nn.Module):
-    def __init__(self, neurons=64, state_size=6):
+    def __init__(self, neurons=1024, state_size=6):
         super(LocalizedModule, self).__init__()
         # Input is state_size * neighbors + price (action)
         self.fc1 = nn.Linear((state_size + 1) * 5 , neurons)
@@ -94,7 +94,7 @@ class LocalizedModule(nn.Module):
         return x        
 
 class SubCritic(nn.Module):
-    def __init__(self, neurons=32, state_size=6):
+    def __init__(self, neurons=512, state_size=6):
         super(SubCritic, self).__init__()
         self.gru = nn.GRU((state_size + 1) * 5, neurons, batch_first=True)
         self.fc1 = nn.Linear(neurons, neurons)
@@ -184,10 +184,10 @@ class SimpleCritic(nn.Module):
 class HRP(nn.Module):
     def __init__(self, actor_lr=1e-6, critic_lr=1e-4):
         super(HRP, self).__init__()
-        self.an = ActorNetwork().to(device)
-        self.cn = CriticNetwork().to(device)
-        self.an_target = ActorNetwork().to(device)
-        self.cn_target = CriticNetwork().to(device)
+        self.an = SimpleActor().to(device)
+        self.cn = SimpleCritic().to(device)
+        self.an_target = SimpleActor().to(device)
+        self.cn_target = SimpleCritic().to(device)
         self.critic_criterion = nn.MSELoss()
         self.discount_rate = 0.99
         self.critic_lr = critic_lr
