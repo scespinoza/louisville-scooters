@@ -189,7 +189,7 @@ class HRP(nn.Module):
         self.an_target = ActorNetwork().to(device)
         self.cn_target = CriticNetwork().to(device)
         self.critic_criterion = nn.MSELoss()
-        self.discount_rate = 0.9
+        self.discount_rate = 0.99
         self.critic_lr = critic_lr
         self.actor_lr = actor_lr
         self.tau = 0.2
