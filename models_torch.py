@@ -194,7 +194,7 @@ class HRP(nn.Module):
         self.actor_lr = actor_lr
         self.tau = 0.2
         self.critic_optimizer = torch.optim.Adam(self.cn.parameters(), lr=self.critic_lr)
-        self.actor_optimizer = torch.optim.Adam(self.an.parameters(), lr=self.actor_lr, weight_decay=1e-4)
+        self.actor_optimizer = torch.optim.Adam(self.an.parameters(), lr=self.actor_lr, weight_decay=1e-3)
         self.hard_update()
      
     def forward(self, x):
@@ -243,7 +243,7 @@ class HRP(nn.Module):
         grad = self.actor_gradient(batch)
         self.actor_optimizer.zero_grad()
         grad.backward()
-        torch.nn.utils.clip_grad_norm_(an.parameters(), 1.0)
+        torch.nn.utils.clip_grad_norm_(self.an.parameters(), 1.0)
         self.actor_optimizer.step()
         return grad.detach().cpu().numpy()
 
