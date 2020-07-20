@@ -337,7 +337,7 @@ class UserRequest(Event):
     total_requests = 0
 
     def __init__(self, user, time):
-        super(  , self).__init__(time=time)
+        super(  UserRequest, self).__init__(time=time)
         self.user = user
         self.user.trip['arrival_time'] = time
         self.__class__.total_requests += 1
