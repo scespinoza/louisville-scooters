@@ -623,6 +623,7 @@ class HistorySaver:
     def save(self):
         for user in User.users:
             self.store_trip(user.trip)
+            User.users.remove(user)
         Scooter.store_history(self)
         print('Saving history to JSON')
         with open('visualization/data/' + self.name + '.json', 'w') as file:
@@ -714,6 +715,9 @@ class ScooterSharingSimulator:
             print('Replica: ', replica)
             self.time = 0
             self.events.reset()
+            Scooter.count = 0
+            User.count = 0
+            User.users = list()
             Scooter.init_supply(self.graph, n=self.initial_supply, random_state=i)
             RunPricing.init_pricing(self)
             if self.pricing:
