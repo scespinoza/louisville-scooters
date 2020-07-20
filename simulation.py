@@ -263,8 +263,8 @@ class User:
         elif self.reachable_method == 'distance':
             sp = simulator.graph.shortest_paths['walk'].loc[self.origin]
             return list(sp[sp < self.max_walking_distance / self.velocity].index)
-    def cost_function(self, scooter, simulator):        
-        return self.alpha * simulator.graph.shortest_path_distance(self.origin, scooter.location, layer='walk') ** 2
+    def cost_function(self, scooter, network):        
+        return self.alpha * network.shortest_path_distance(self.origin, scooter.location, layer='walk') ** 2
 
 class Scooter:
     count = 0
@@ -362,7 +362,7 @@ class UserRequest(Event):
             available_scooters = [scooter for scooter in Scooter.available_scooters()
                             if scooter.location in nodes_within_neighbor and scooter.battery_level > 0]
 
-            user_utility = [scooter.get_price_incentive(simulator.grid) - self.user.cost_function(scooter, simulator)
+            user_utility = [scooter.get_price_incentive(simulator.grid) - self.user.cost_function(scooter, simulator.graph)
                             for scooter in available_scooters]
             rb = simulator.service_provider.budget
             if np.any(np.array(user_utility) > 0):

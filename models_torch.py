@@ -194,7 +194,7 @@ class HRP(nn.Module):
         self.actor_lr = actor_lr
         self.tau = 0.2
         self.critic_optimizer = torch.optim.Adam(self.cn.parameters(), lr=self.critic_lr)
-        self.actor_optimizer = torch.optim.Adam(self.an.parameters(), lr=self.actor_lr, weight_decay=1e-3)
+        self.actor_optimizer = torch.optim.Adam(self.an.parameters(), lr=self.actor_lr, weight_decay=1e-4)
         self.hard_update()
      
     def forward(self, x):
