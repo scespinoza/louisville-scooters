@@ -623,7 +623,6 @@ class HistorySaver:
     def save(self):
         for user in User.users:
             self.store_trip(user.trip)
-            User.users.remove(user)
         Scooter.store_history(self)
         print('Saving history to JSON')
         with open('visualization/data/' + self.name + '.json', 'w') as file:
