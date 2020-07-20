@@ -552,6 +552,7 @@ class RunPricing(Event):
         self.reward = simulator.grid.get_last_satisfied_requests()
         simulator.grid.set_price(action)
         simulator.insert(RunPricing(self.time + RunPricing.inter_status_time))
+        simulator.grid.reset_stats()
     def __str__(self):
         return 'Getting stats:\n Satisfied Demand: {:.0f} '.format(self.reward)      
 
