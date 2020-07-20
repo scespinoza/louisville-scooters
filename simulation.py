@@ -729,6 +729,7 @@ class ScooterSharingSimulator:
         self.replicas = replicas
         self.n_replicas = len(replicas)
         self.current_replica = 0
+        User.users = []
         """for replica in replicas:
             print('Replica: ', replica)
             self.trip_reader = TripReader(replica)
