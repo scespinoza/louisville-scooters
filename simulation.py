@@ -334,11 +334,10 @@ class Event(ABC):
 
 class UserRequest(Event):
 
-    requests_by_hour = 60 * 2
     total_requests = 0
 
     def __init__(self, user, time):
-        super(UserRequest, self).__init__(time=time)
+        super(  , self).__init__(time=time)
         self.user = user
         self.user.trip['arrival_time'] = time
         self.__class__.total_requests += 1
@@ -730,7 +729,7 @@ class ScooterSharingSimulator:
         self.replicas = replicas
         self.n_replicas = len(replicas)
         self.current_replica = 0
-        User.users = []
+        
         """for replica in replicas:
             print('Replica: ', replica)
             self.trip_reader = TripReader(replica)
@@ -740,6 +739,7 @@ class ScooterSharingSimulator:
     def reset(self):
         Scooter.count = 0
         User.count = 0
+        User.users = list()
         Scooter.init_supply(self.graph, n=self.initial_supply, random_state=self.current_replica)
         #UserRequest.init_user_requests(self)
         #RunPricing.init_pricing(self)
