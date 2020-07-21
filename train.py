@@ -18,8 +18,8 @@ def warmup_stage(sp, env, iterations):
             episode_rewards.append((day_sp.model.discount_rate**t)*reward)
         returns.append(sum(episode_rewards))
 
-def train(sp, env, iterations):
-    for episode in range(iterations):
+def train(sp, env, episodes):
+    for e in range(episodes):
         env.reset()
         episode_rewards = []
         for t in range(env.timesteps):
