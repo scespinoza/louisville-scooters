@@ -15,7 +15,7 @@ def warmup_stage(sp, env, iterations):
             day = t // 24
             day_sp = sp.sp_days[day]
             reward = day_sp.act(env)
-            episode_rewards.append((self.model.discount_rate**t)*reward)
+            episode_rewards.append((day_sp.model.discount_rate**t)*reward)
         returns.append(sum(episode_rewards))
 
 def train(sp, env, iterations):
@@ -26,7 +26,7 @@ def train(sp, env, iterations):
             day = t // 24
             day_sp = sp.sp_days[day]
             reward = day_sp.act(environment, episode=e)
-            episode_rewards.append((self.model.discount_rate**t)*reward)         
+            episode_rewards.append((day_sp.model.discount_rate**t)*reward)         
             batch_loss, distance = day_sp.train_minibatch()
             print('Episode {}/{}. Loss = {:.2f}. Reward = {:.2f}'.format(e, episodes, batch_loss.detach().cpu().numpy(), reward))
             day_sp.history['distance'].append(distance)

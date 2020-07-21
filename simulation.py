@@ -216,7 +216,7 @@ class ServiceProviderWeek:
     def restore_expend(self, value):
         self.sp_days[self.current_day].restore_expend(value)
     def restore_budget(self):
-        for _, sp in seld.sp_days.items():
+        for _, sp in self.sp_days.items():
             sp.restore_budget()
     def save(self, dir):
         with open(dir + '.pickle', 'rb') as file:
