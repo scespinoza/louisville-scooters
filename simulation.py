@@ -232,7 +232,7 @@ class ServiceProviderWeek:
             pickle.dump(self, file)
     def get_prices(self, state, t=0):
         self.current_day = t//24
-        return self.sp_days[current_day].get_prices(state)
+        return self.sp_days[self.current_day].get_prices(state)
 
     def eval(self):
         for _, sp in self.sp_days.items():
