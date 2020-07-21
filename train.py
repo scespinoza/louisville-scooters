@@ -41,7 +41,7 @@ def weekly_trainer(sp, env, warmup, episodes):
     sp.history = {
         'rewards': returns
     }
-    print('Finishing Training: {:.2f}s'.format(time.time() - training_start))
+    print('Finishing Warmup: {:.2f}s'.format(time.time() - warmup_start))
     training_start = time.time()
     train(sp, env, episodes)
     sp.save('weights/weekly_model')
