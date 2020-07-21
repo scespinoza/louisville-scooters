@@ -234,6 +234,10 @@ class ServiceProviderWeek:
         self.current_day = t//24
         return self.sp_days[current_day].get_prices(state)
 
+    def eval(self):
+        for _, sp in self.sp_days.items():
+            sp.model.eval()
+
     @property
     def budget(self):
         return self.sp_days[self.current_day].budget

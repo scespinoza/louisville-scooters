@@ -5,7 +5,7 @@ import seaborn as sns
 import geopandas as gpd
 
 from multimodal_network import MultiModalNetwork
-from simulation import ScooterSharingSimulator, HistorySaver, ServiceProviderWeek, Grid
+from simulation import ScooterSharingSimulator, HistorySaver, ServiceProvider, ServiceProviderWeek, Grid
 from models_torch import HRP, RandomPricing
 
 
@@ -46,7 +46,7 @@ if __name__ == '__main__':
         if args.pricing == 'HRP':
             agent = ServiceProviderWeek.load(name=args.model)
             agent.method = args.pricing
-            agent.model.eval()
+            agent.eval()
             simulator = ScooterSharingSimulator(graph, grid, days=args.days, initial_supply=args.supply, pricing=True, service_provider=agent)
         elif args.pricing == 'random':
             model = RandomPricing()
