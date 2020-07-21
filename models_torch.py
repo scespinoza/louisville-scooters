@@ -20,7 +20,7 @@ def init_uniform(m):
         m.bias.data.fill_(0.0)
 
 class SubActor(nn.Module):
-    def __init__(self, neurons=32, state_size=6, max_action=5, min_action=0):
+    def __init__(self, neurons=32, state_size=6, max_action=3, min_action=0):
         super(SubActor, self).__init__()
         self.max_action = max_action
         self.min_action = min_action
@@ -184,7 +184,7 @@ class SimpleCritic(nn.Module):
 
 
 class HRP(nn.Module):
-    def __init__(self, actor_lr=1e-6, critic_lr=1e-4, action_bounds=(0, 5)):
+    def __init__(self, actor_lr=1e-6, critic_lr=1e-4, action_bounds=(0, 3)):
         super(HRP, self).__init__()
         self.an = ActorNetwork(min_action=action_bounds[0], max_action=action_bounds[1]).to(device)
         self.cn = CriticNetwork().to(device)
@@ -195,8 +195,9 @@ class HRP(nn.Module):
         self.critic_lr = critic_lr
         self.actor_lr = actor_lr
         self.tau = 0.2
+        
         self.critic_optimizer = torch.optim.Adam(self.cn.parameters(), lr=self.critic_lr)
-        self.actor_optimizer = torch.optim.Adam(self.an.parameters(), lr=self.actor_lr, weight_decay=1e-4)
+        self.actor_optimizer = torch.optim.Adam(self.an.parameters(), lr=self.actor_lr)
         self.hard_update()
      
     def forward(self, x):
@@ -256,7 +257,7 @@ class HRP(nn.Module):
         return batch_loss, q_val
 
 class RandomPricing:
-    def __init__(self, min_action=0, max_action=5):
+    def __init__(self, min_action=0, max_action=3):
         self.min_p = min_action
         self.max_p = max_action
     def an_target(self, state):
