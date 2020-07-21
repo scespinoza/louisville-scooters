@@ -1,5 +1,9 @@
 
 import time
+import argparse
+import geopandas as gpd
+from simulation import ServiceProviderWeek, ScooterSharingSimulator, Grid
+from multimodal_network import MultiModalNetwork
 
 def warmup(sp, env, iterations):
     returns = []
@@ -62,6 +66,9 @@ if __name__ == '__main__':
         parser.add_argument('--name', type=str, help='name of agent')
         parser.add_argument('--actor_lr', type=float, default=1e-4)
         parser.add_argument('--critic_lr', type=float, default=1e-6)
+
+
+        args = parser.parse_args()
         replicas = ['data/replicas/stkde_nhpp_{}.csv'.format(i) for i in range(args.replicas)]
         
         study_area_filename = 'shapes/study_area/study_area.shp'
