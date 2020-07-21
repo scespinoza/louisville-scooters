@@ -33,6 +33,7 @@ def train(sp, env, episodes):
             print('Episode {}/{}. Loss = {:.2f}. Reward = {:.2f}'.format(e, episodes, batch_loss.detach().cpu().numpy(), reward))
             day_sp.history['distance'].append(distance)
             day_sp.history['batch_loss'].append(batch_loss.detach().cpu().numpy())
+            day_sp.history['rewards'].append(reward)
         sp.history['rewards'].append(np.sum(episode_rewards))
     
 
