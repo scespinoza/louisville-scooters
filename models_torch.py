@@ -260,7 +260,7 @@ class RandomPricing:
     def __init__(self, min_action=0, max_action=3):
         self.min_p = min_action
         self.max_p = max_action
-    def an_target(self, state):
+    def an_target(self, state, t=0):
         batch, t, n_zones, state_size = state.size()
         return torch.FloatTensor(batch, t, n_zones).uniform_(self.min_p, self.max_p)
 
