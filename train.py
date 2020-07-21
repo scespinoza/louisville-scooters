@@ -11,7 +11,7 @@ def warmup_stage(sp, env, iterations):
         env.reset()
         episode_rewards = []
         print('Warmup Episode {}/{}'.format(i+1, iterations))
-        for t in env.timesteps:
+        for t in range(env.timesteps):
             day = t // 24
             day_sp = sp.sp_days[day]
             reward = day_sp.act(env)
