@@ -205,7 +205,7 @@ class ServiceProviderWeek:
     def __init__(self, days=7, total_budget=1000, **kwargs):
         self.days = days
         self.daily_budgets = self.distribute_budget(total_budget)
-        self.sp_days = {i: ServiceProvider(budget=self.dayli_budgets[i], **kwargs) 
+        self.sp_days = {i: ServiceProvider(budget=self.daily_budgets[i], **kwargs) 
                             for i in range(days)}
         self.current_day = 0
     def distribute_budget(self, budget, method='uniform'):
