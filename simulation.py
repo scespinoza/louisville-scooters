@@ -210,7 +210,7 @@ class ServiceProviderWeek:
         self.current_day = 0
     def distribute_budget(self, budget, method='uniform'):
         if method == 'uniform':
-            return [budget/days for _ in range(self.days)]
+            return [budget/self.days for _ in range(self.days)]
     def expend(self, value):
         self.sp_days[self.current_day].expend(value)
     def restore_expend(self, value):
