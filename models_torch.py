@@ -20,8 +20,10 @@ def init_uniform(m):
         m.bias.data.fill_(0.0)
 
 class SubActor(nn.Module):
-    def __init__(self, neurons=32, state_size=6):
+    def __init__(self, neurons=32, state_size=6, max_action=5, min_action=0):
         super(SubActor, self).__init__()
+        self.max_action = max_action
+        self.min_action = min_action
         self.gru = nn.GRU(state_size, neurons, batch_first=True)
         self.fc1 = nn.Linear(neurons, neurons)
         self.fc2 = nn.Linear(neurons, neurons)
@@ -31,7 +33,7 @@ class SubActor(nn.Module):
         x = nn.ReLU()(x)
         x = nn.ReLU()(self.fc1(x))
         x = nn.ReLU()(self.fc2(x))
-        x = self.fc3(x)
+        x = self.max_action * nn.Sigmoid()(self.fc3(x))
         return x
 
 class ActorNetwork(nn.Module):
@@ -182,11 +184,11 @@ class SimpleCritic(nn.Module):
 
 
 class HRP(nn.Module):
-    def __init__(self, actor_lr=1e-6, critic_lr=1e-4):
+    def __init__(self, actor_lr=1e-6, critic_lr=1e-4, action_bounds=(0, 5)):
         super(HRP, self).__init__()
-        self.an = ActorNetwork().to(device)
+        self.an = ActorNetwork(min_action=action_bounds[0], max_action=action_bounds[1]).to(device)
         self.cn = CriticNetwork().to(device)
-        self.an_target = ActorNetwork().to(device)
+        self.an_target = ActorNetwork(min_action=action_bounds[0], max_action=action_bounds[1]).to(device)
         self.cn_target = CriticNetwork().to(device)
         self.critic_criterion = nn.MSELoss()
         self.discount_rate = 0.99
@@ -254,9 +256,9 @@ class HRP(nn.Module):
         return batch_loss, q_val
 
 class RandomPricing:
-    def __init__(self, min_p=0, max_p=3):
-        self.min_p = 0
-        self.max_p = 3
+    def __init__(self, min_action=0, max_action=5):
+        self.min_p = min_action
+        self.max_p = max_action
     def an_target(self, state):
         batch, t, n_zones, state_size = state.size()
         return torch.FloatTensor(batch, t, n_zones).uniform_(self.min_p, self.max_p)
