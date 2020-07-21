@@ -224,6 +224,10 @@ class ServiceProviderWeek:
     def get_prices(self, state, t=0):
         self.current_day = t//24
         return self.sp_days[current_day].get_prices(state)
+
+    @classmethod
+    def budget(self):
+        return sum([sp.budget for _, sp in self.sp_days.items()])
         
     
 
