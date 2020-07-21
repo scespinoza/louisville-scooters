@@ -200,22 +200,32 @@ class ServiceProvider(Agent):
     def restore_budget(self):
         self.budget = self.total_budget
 
-    def plot_history(self):
-        fig, ax = plt.subplots(1, 2, figsize=(14, 6))
-        ax[0].plot(self.history['rewards'], color='green', label='Observed Rewards')
-        ax[0].set_xlabel('Episode')
-        ax[0].set_xticks(range(0, len(self.history['rewards']) + 1, 10))
-        ax[0].set_ylabel('Reward (N° Satisfied Requests)')
-        ax[0].set_title('Rewards')
-        ax[0].axvline(2, linestyle='--', label='Finish Warmup Stage')
-        ax[0].legend()
+class ServiceProviderWeek:
 
-        ax[1].plot(self.history['dqn_loss'], color='orange')
-        ax[1].set_xlabel('Episode')
-        ax[1].set_xticks(range(0, len(self.history['dqn_loss']) + 1, 10))
-        ax[1].set_ylabel('Loss')
-        ax[1].set_title('DQN Training Loss')
-        return fig
+    def __init__(self, days=7, total_budget=1000, **kwargs):
+        self.days = days
+        self.daily_budgets = self.distribute_budget(total_budget)
+        self.sp_days = {i: ServiceProvider(budget=self.dayli_budgets[i], **kwargs) 
+                            for i in range(days)}
+        self.current_day = 0
+    def distribute_budget(self, budget, method='uniform'):
+        if method == 'uniform':
+            return [budget/days for _ in range(self.days)]
+    def expend(self, value):
+        self.sp_days[self.current_day].expend(value)
+    def restore_expend(self, value):
+        self.sp_days[self.current_day].restore_expend(value)
+    def restore_budget(self):
+        for _, sp in seld.sp_days.items():
+            sp.restore_budget()
+    def save(self, dir):
+        with open(dir + '.pickle', 'rb') as file:
+        pickle.dump(self, file)
+    def get_prices(self, state, t=0):
+        self.current_day = t//24
+        return self.sp_days[current_day].get_prices(state)
+        
+    
 
         
 class User:
@@ -547,7 +557,7 @@ class RunPricing(Event):
 
     def execute(self, simulator):
         state = simulator.get_state()
-        action = simulator.service_provider.get_prices(state)
+        action = simulator.service_provider.get_prices(state, simulator.timestep)
         self.reward = simulator.grid.get_last_satisfied_requests()
         simulator.grid.set_price(action)
         simulator.insert(RunPricing(self.time + RunPricing.inter_status_time))
@@ -689,8 +699,8 @@ class ScooterSharingSimulator:
             
             event = self.events.remove_first()
             self.time = event.time         
-            
             result = event.execute(self)
+            self.timestep = self.time // self.time_window
             if (verbose == 2) or (verbose == 1 and isinstance(event, RunPricing)):
                 print("\nTime: {}".format(self.clock()))
                 print(event)

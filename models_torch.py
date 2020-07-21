@@ -329,7 +329,7 @@ class Agent:
                 print('Warmup Iteration {}/{}, timestep {}'.format(i + 1, iterations, t + 1))
                 reward = self.act(environment)
                 print('Reward: {:.2f}'.format(reward))
-                episode_rewards.append(self.model.discount_rate*reward)
+                episode_rewards.append((self.model.discount_rate**t)*reward)
             self.history['rewards'].append(np.sum(episode_rewards))
 
     def train(self, environment, episodes=100, warmup_iterations=1):
@@ -348,7 +348,7 @@ class Agent:
             t_bar = trange(environment.timesteps, desc='Episode {}/{}'.format(e, episodes), leave=True)
             for t in t_bar:
                 reward = self.act(environment, episode=e)
-                episode_rewards.append(self.model.discount_rate*reward)         
+                episode_rewards.append((self.model.discount_rate**t)*reward)         
                 batch_loss, distance = self.train_minibatch()
                 t_bar.set_description('Episode {}/{}. Loss = {:.2f}. Reward = {:.2f}'.format(e, episodes, batch_loss.detach().cpu().numpy(), reward))
                 self.history['distance'].append(distance)
@@ -375,8 +375,4 @@ class Agent:
             agent = pickle.load(file)
             agent.model.to(device)
         return agent
-
-
-
- 
 
