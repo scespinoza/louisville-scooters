@@ -220,7 +220,7 @@ class ServiceProviderWeek:
             sp.restore_budget()
     def save(self, dir):
         with open(dir + '.pickle', 'rb') as file:
-        pickle.dump(self, file)
+            pickle.dump(self, file)
     def get_prices(self, state, t=0):
         self.current_day = t//24
         return self.sp_days[current_day].get_prices(state)
