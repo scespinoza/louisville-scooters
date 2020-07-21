@@ -80,7 +80,7 @@ if __name__ == '__main__':
         
         grid = Grid.from_gdf(grid_gdf, (10,10))
         grid.create_nodes_dict(graph.layers['walk']['nodes'])
-        agent = ServiceProviderWeek(model=model, noise_scale=args.noise, budget=args.budget, buffer_length=1000, batch_size=args.batch)
+        agent = ServiceProviderWeek(budget=args.budget, noise_scale=args.noise, buffer_length=1000, batch_size=args.batch)
         environment = ScooterSharingSimulator(graph, grid, days=args.days, initial_supply=args.supply, pricing=True, service_provider=agent)
         environment.set_replicas_for_training(replicas)
         
