@@ -236,7 +236,7 @@ class ServiceProviderWeek:
 
     @property
     def budget(self):
-        return sum([sp.budget for _, sp in self.sp_days.items()])
+        return self.sp_days[self.current_day].budget
         
     
 
