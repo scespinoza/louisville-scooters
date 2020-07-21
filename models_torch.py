@@ -305,7 +305,7 @@ class Agent:
         self.model.an.train()
         return a
 
-    def get_prices(self, state):
+    def get_prices(self, state, t=0):
         state = torch.from_numpy(state.astype(np.float32)).to(device)
         return self.model.an_target(state).detach().cpu().numpy()[:, -1, :]
 
