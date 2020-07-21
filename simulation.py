@@ -201,16 +201,25 @@ class ServiceProvider(Agent):
         self.budget = self.total_budget
 
 class ServiceProviderWeek:
+    budget_poportion = {0: 0.105504,
+                        1: 0.106461,
+                        2: 0.113510,
+                        3: 0.124507,
+                        4: 0.172311,
+                        5: 0.232005,
+                        6: 0.145701}
 
     def __init__(self, days=7, total_budget=1000, **kwargs):
         self.days = days
-        self.daily_budgets = self.distribute_budget(total_budget)
+        self.daily_budgets = self.distribute_budget(total_budget, method='demand')
         self.sp_days = {i: ServiceProvider(budget=self.daily_budgets[i], **kwargs) 
                             for i in range(days)}
         self.current_day = 0
     def distribute_budget(self, budget, method='uniform'):
         if method == 'uniform':
             return [budget/self.days for _ in range(self.days)]
+        elif method == 'demand':
+            return [budget*ServiceProviderWeek.budget_poportion[i] for i in range(self.days)]
     def expend(self, value):
         self.sp_days[self.current_day].expend(value)
     def restore_expend(self, value):

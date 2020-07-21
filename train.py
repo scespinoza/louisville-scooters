@@ -1,6 +1,7 @@
 
 import time
 import argparse
+import numpy as np
 import geopandas as gpd
 from simulation import ServiceProviderWeek, ScooterSharingSimulator, Grid
 from multimodal_network import MultiModalNetwork
