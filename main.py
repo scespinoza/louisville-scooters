@@ -44,7 +44,7 @@ if __name__ == '__main__':
         grid = Grid.from_gdf(grid_gdf, (10,10))
         grid.create_nodes_dict(graph.layers['walk']['nodes'])
         if args.pricing == 'HRP':
-            agent = ServiceProvider.load_agent(name=args.model)
+            agent = ServiceProviderWeek.load(name=args.model)
             agent.method = args.pricing
             agent.model.eval()
             simulator = ScooterSharingSimulator(graph, grid, days=args.days, initial_supply=args.supply, pricing=True, service_provider=agent)
