@@ -5,7 +5,7 @@ import geopandas as gpd
 from simulation import ServiceProviderWeek, ScooterSharingSimulator, Grid
 from multimodal_network import MultiModalNetwork
 
-def warmup(sp, env, iterations):
+def warmup_stage(sp, env, iterations):
     returns = []
     for i in range(iterations):
         env.reset()
@@ -37,7 +37,7 @@ def train(sp, env, iterations):
 def weekly_trainer(sp, env, warmup, episodes):
     warmup_start = time.time()
     print('Warmup Stage')
-    returns = warmup(sp, env, warmup)
+    returns = warmup_stage(sp, env, warmup)
     sp.history = {
         'rewards': returns
     }
