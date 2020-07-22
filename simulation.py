@@ -309,6 +309,7 @@ class Scooter:
         self.location = location
         self.battery_level = 100
         self.price_incentive = 10
+        self.recharge_scheduled = False
         self.recharge_history = []
         
 
@@ -514,7 +515,7 @@ class Dropoff(Event):
         destination = simulator.graph.g['bike'].vs.find(osmid=self.user.destination)
         simulator.grid.update_stat(destination['osmid'], 'arrival')
         simulator.insert(UserLeavesSystem(simulator.time, self.user))
-        if self.scooter.battery_level <= 15:
+        if self.scooter.battery_level <= 15 and not self.scooter.recharge_scheduled:
             print('Charge Scooter {}'.format(self.scooter.scooter_id))
             current_day = self.time // (24 * 3600)
             day_seconds = self.time % (24 * 3600)
@@ -526,7 +527,7 @@ class Dropoff(Event):
             else:
                 recharge_time = recharge_start_hours + (3 * 3600) * np.random.uniform()
 
-
+            self.scooter.recharge_echeduled = True
             recharge_event = ChargeScooter(self.scooter, time=recharge_time)
             simulator.insert(recharge_event)
 
@@ -540,6 +541,7 @@ class ChargeScooter(Event):
 
     def execute(self, simulator):
         self.scooter.available = False
+        self.scooter.recharge_scheduled = False
         current_day = self.time // (24 * 3600)
         release_time = ((current_day + 1) * 24 + 7) * 3600 # 7am of next day
         self.scooter.recharge_history.append({'recharge_time': self.time, 
@@ -565,7 +567,7 @@ class ReleaseScooter(Event):
         self.scooter.available = True
         self.scooter.recharge_history[-1]['release_location'] = self.scooter.location
         self.scooter.recharge_history[-1]['battery_on_release'] = self.scooter.battery_level
-        print('release scooter {}'.format(self.scooter.id))
+        print('release scooter {}'.format(self.scooter.scooter_id))
     def __str__(self):
         return "Releasing scooter {} at {}".format(self.scooter.scooter_id, self.new_location)
 
