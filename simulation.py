@@ -514,7 +514,7 @@ class Dropoff(Event):
         destination = simulator.graph.g['bike'].vs.find(osmid=self.user.destination)
         simulator.grid.update_stat(destination['osmid'], 'arrival')
         simulator.insert(UserLeavesSystem(simulator.time, self.user))
-        if self.scooter.battery_range <= 15:
+        if self.scooter.battery_level <= 15:
             print('Charge Scooter {}'.format(self.scooter.scooter_id))
             current_day = self.time // (24 * 3600)
             day_seconds = self.time % (24 * 3600)
