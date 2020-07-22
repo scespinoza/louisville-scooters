@@ -307,7 +307,7 @@ class Scooter:
         self.available = True
         self.scooter_id = self.__class__.count
         self.location = location
-        self.battery_level = 100
+        self.battery_level = np.random.uniform(50, 100)
         self.price_incentive = 10
         self.recharge_scheduled = False
         self.recharge_history = []
