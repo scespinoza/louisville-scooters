@@ -541,9 +541,9 @@ class ChargeScooter(Event):
     def execute(self, simulator):
         self.scooter.available = False
         current_day = self.time // (24 * 3600)
-        release_time = current_day * 24 * 3600 + ((24 + 7) * 3600) # 7am of next day
+        release_time = ((current_day + 1) * 24 + 7) * 3600 # 7am of next day
         self.scooter.recharge_history.append({'recharge_time': self.time, 
-                                              'release_time': relase_time, 
+                                              'release_time': release_time, 
                                               'recharge_location': self.scooter.location,
                                               'release_location': None})
         release_event = ReleaseScooter(self.scooter, release_time)
