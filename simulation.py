@@ -299,7 +299,7 @@ class User:
 class Scooter:
     count = 0
     scooters = list()
-    battery_range = 20 # km
+    battery_range = 32.18 # km
     speed = 2.16  # m/s
     def __init__(self, location):
         self.__class__.count += 1
