@@ -301,13 +301,13 @@ class Scooter:
     scooters = list()
     battery_range = 32.18 # km
     speed = 2.16  # m/s
-    def __init__(self, location):
+    def __init__(self, location, battery_level=100):
         self.__class__.count += 1
         self.__class__.scooters.append(self)
         self.available = True
         self.scooter_id = self.__class__.count
         self.location = location
-        self.battery_level = np.random.uniform(50, 100)
+        self.battery_level = battery_level
         self.price_incentive = 10
         self.recharge_scheduled = False
         self.recharge_history = []
@@ -333,8 +333,9 @@ class Scooter:
             locations = list(network.get_nearest_osmids(points, transfer=True).astype(str))
         else:
             locations = choices(list(network.transfer_nodes), k=n)
-                
-        Scooter.scooters = [cls(loc) for loc in locations]
+        np.random.seed(random_state)
+        batteries = np.random.uniform(20,100)
+        Scooter.scooters = [cls(loc, battery) for loc, battery in zip(locations, batteries)]
         with open('visualization/data/scooter_locations_{}.json'.format(random_state), 'w') as file:
             json.dump(locations, file)
 
