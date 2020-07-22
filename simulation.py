@@ -515,6 +515,7 @@ class Dropoff(Event):
         simulator.grid.update_stat(destination['osmid'], 'arrival')
         simulator.insert(UserLeavesSystem(simulator.time, self.user))
         if self.scooter.battery_range <= 15:
+            print('Charge Scooter {}'.format(self.scooter.scooter_id))
             current_day = self.time // (24 * 3600)
             day_seconds = self.time % (24 * 3600)
             day_hour = day_seconds // 3600
@@ -540,7 +541,7 @@ class ChargeScooter(Event):
     def execute(self, simulator):
         self.scooter.available = False
         current_day = self.time // (24 * 3600)
-        release_time = current_day + ((24 + 7) * 3600) # 7am of next day
+        release_time = current_day * 24 * 3600 + ((24 + 7) * 3600) # 7am of next day
         self.scooter.recharge_history.append({'recharge_time': self.time, 
                                               'release_time': relase_time, 
                                               'recharge_location': self.scooter.location,
