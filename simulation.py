@@ -565,7 +565,7 @@ class ReleaseScooter(Event):
         self.scooter.available = True
         self.scooter.recharge_history[-1]['release_location'] = self.scooter.location
         self.scooter.recharge_history[-1]['battery_on_release'] = self.scooter.battery_level
-    
+        print('release scooter {}'.format(self.scooter.id))
     def __str__(self):
         return "Releasing scooter {} at {}".format(self.scooter.scooter_id, self.new_location)
 
