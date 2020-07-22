@@ -527,7 +527,7 @@ class Dropoff(Event):
             else:
                 recharge_time = recharge_start_hours + (3 * 3600) * np.random.uniform()
 
-            self.scooter.recharge_echeduled = True
+            self.scooter.recharge_scheduled = True
             recharge_event = ChargeScooter(self.scooter, time=recharge_time)
             simulator.insert(recharge_event)
 
