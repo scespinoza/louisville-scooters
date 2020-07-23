@@ -385,6 +385,7 @@ class UserRequest(Event):
 
     def execute(self, simulator):
         time = simulator.time
+        print('User arriving at {:.2f}'.format(time))
         origin = simulator.graph.find_node(osmid=self.user.origin, layer='walk')
         simulator.grid.update_stat(self.user.origin, 'request')
 
