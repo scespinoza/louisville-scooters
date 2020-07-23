@@ -60,7 +60,7 @@ if __name__ == '__main__':
         parser.add_argument('--pricing', type=str, default=None)
         parser.add_argument('--warmup', type=int, default=5)
         parser.add_argument('--episodes', type=int, default=15)
-        parser.add_argument('--noise', type=float, default=2)
+        parser.add_argument('--noise', type=float, default=1)
         parser.add_argument('--replicas', type=int, default=20)
         parser.add_argument('--batch', type=int, default=64)
         parser.add_argument('--budget', type=int, default=100)
