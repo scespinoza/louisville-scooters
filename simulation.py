@@ -335,7 +335,9 @@ class Scooter:
             locations = choices(list(network.transfer_nodes), k=n)
         np.random.seed(random_state)
         batteries = np.random.uniform(20,100, size=n)
-        Scooter.scooters = [cls(loc, battery_level = battery) for loc, battery in zip(locations, batteries)]
+        for loc, battery in zip(locations, batteries):
+            print(loc, battery)
+            cls(loc, battery_level = battery)
         with open('visualization/data/scooter_locations_{}.json'.format(random_state), 'w') as file:
             json.dump(locations, file)
 
