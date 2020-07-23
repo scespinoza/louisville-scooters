@@ -385,7 +385,7 @@ class UserRequest(Event):
 
     def execute(self, simulator):
         time = simulator.time
-        print('User arriving at {:.2f}'.format(time))
+        
         origin = simulator.graph.find_node(osmid=self.user.origin, layer='walk')
         simulator.grid.update_stat(self.user.origin, 'request')
 
@@ -393,6 +393,8 @@ class UserRequest(Event):
         available_scooters = [scooter for scooter in Scooter.available_scooters() 
                                 if scooter.location in reachable_nodes and scooter.battery_level > 0]
         available_locations =  [s.location for s in available_scooters]
+
+        print(available_scooters)
         if len(available_scooters) == 0 and simulator.pricing:
             # No available scooters and pricing.
             if simulator.verbose == 2:
