@@ -339,7 +339,11 @@ class Scooter:
             print(loc, battery)
             cls(loc, battery_level = battery)
         with open('visualization/data/scooter_locations_{}.json'.format(random_state), 'w') as file:
-            json.dump(locations, file)
+            export_scooters = [{'id': scooter.scooter_id,
+                                'location': scooter.location,
+                                'battery_level': scooter.battery_level}
+                                for scooter in Scooter.scooters]
+            json.dump(export_scooters, file)
 
     def get_price_incentive(self, grid):
         self.price_incentive = grid.get_scooter_price(self)
