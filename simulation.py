@@ -336,7 +336,6 @@ class Scooter:
         np.random.seed(random_state)
         batteries = np.random.uniform(20,100, size=n)
         for loc, battery in zip(locations, batteries):
-            print(loc, battery)
             cls(loc, battery_level = battery)
         with open('visualization/data/scooter_locations_{}.json'.format(random_state), 'w') as file:
             export_scooters = [{'id': scooter.scooter_id,
@@ -394,7 +393,6 @@ class UserRequest(Event):
                                 if scooter.location in reachable_nodes and scooter.battery_level > 0]
         available_locations =  [s.location for s in available_scooters]
 
-        print(available_scooters)
         if len(available_scooters) == 0 and simulator.pricing:
             # No available scooters and pricing.
             if simulator.verbose == 2:
