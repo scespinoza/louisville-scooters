@@ -212,6 +212,7 @@ class ServiceProviderWeek:
     def __init__(self, days=7, total_budget=1000, **kwargs):
         self.days = days
         self.daily_budgets = self.distribute_budget(total_budget, method='demand')
+        print(daily_budgets, sum(daily_budgets))
         self.sp_days = {i: ServiceProvider(budget=self.daily_budgets[i], **kwargs) 
                             for i in range(days)}
         self.current_day = 0
@@ -232,6 +233,8 @@ class ServiceProviderWeek:
             pickle.dump(self, file)
     def get_prices(self, state, t=0):
         self.current_day = t//24
+        print('day: ', self.current_day)
+        print('bg', self.sp_day[self.current_day])
         return self.sp_days[self.current_day].get_prices(state)
 
     def eval(self):
