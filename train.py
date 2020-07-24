@@ -27,6 +27,7 @@ def train(sp, env, episodes):
         for t in range(env.timesteps):
             day = t // 24
             day_sp = sp.sp_days[day]
+            day_sp.current_day = day
             reward = day_sp.act(environment, episode=e)
             episode_rewards.append((day_sp.model.discount_rate**t)*reward)         
             batch_loss, distance = day_sp.train_minibatch()
