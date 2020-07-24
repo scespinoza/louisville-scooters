@@ -222,6 +222,7 @@ class ServiceProviderWeek:
         elif method == 'demand':
             return [budget*ServiceProviderWeek.budget_poportion[i] for i in range(self.days)]
     def expend(self, value):
+        print('Expending on {}'.format(self.current_day))
         self.sp_days[self.current_day].expend(value)
     def restore_expend(self, value):
         self.sp_days[self.current_day].restore_expend(value)
