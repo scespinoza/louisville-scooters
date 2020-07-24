@@ -15,6 +15,7 @@ def warmup_stage(sp, env, iterations):
         for t in range(env.timesteps):
             day = t // 24
             day_sp = sp.sp_days[day]
+            print(day_sp.budget)
             reward = day_sp.act(env)
             episode_rewards.append((day_sp.model.discount_rate**t)*reward)
         returns.append(sum(episode_rewards))
