@@ -72,6 +72,7 @@ if __name__ == '__main__':
         parser.add_argument('--name', type=str, help='name of agent')
         parser.add_argument('--actor_lr', type=float, default=1e-4)
         parser.add_argument('--critic_lr', type=float, default=1e-6)
+        parser.add_argument('--max_action', type=float, default=5)
 
 
         args = parser.parse_args()
@@ -86,7 +87,7 @@ if __name__ == '__main__':
         
         grid = Grid.from_gdf(grid_gdf, (10,10))
         grid.create_nodes_dict(graph.layers['walk']['nodes'])
-        agent = ServiceProviderWeek(total_budget=args.budget, noise_scale=args.noise, buffer_length=1000, batch_size=args.batch)
+        agent = ServiceProviderWeek(total_budget=args.budget, noise_scale=args.noise, buffer_length=1000, batch_size=args.batch, max_action=args.max_action)
         environment = ScooterSharingSimulator(graph, grid, days=args.days, initial_supply=args.supply, pricing=True, service_provider=agent)
         environment.set_replicas_for_training(replicas)
         

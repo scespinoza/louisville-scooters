@@ -182,9 +182,9 @@ class Grid:
 
 class ServiceProvider(Agent):
     
-    def __init__(self, budget=1000, model=HRP(), buffer_length=100, name='HRP', noise_scale=2, batch_size=64):
+    def __init__(self, budget=1000, model=HRP, buffer_length=100, name='HRP', noise_scale=2, batch_size=64, **kwargs):
         super(ServiceProvider, self).__init__(name=name, 
-                                              model=model, 
+                                              model=model(**kwargs), 
                                               buffer_length=buffer_length,
                                               noise_scale=noise_scale, 
                                               batch_size=batch_size)
@@ -587,22 +587,23 @@ class RunPricing(Event):
 
     inter_status_time = 3600 # 1 hour
 
-    def __init__(self, time):
+    def __init__(self, time, service_provider):
         super(RunPricing, self).__init__(time=time)
+        self.service_provider = service_provider
 
     def execute(self, simulator):
         state = simulator.get_state()
-        action = simulator.service_provider.get_prices(state, simulator.timestep)
+        action = service_provider.get_prices(state, simulator.timestep)
         self.reward = simulator.grid.get_last_satisfied_requests()
         simulator.grid.set_price(action)
-        simulator.insert(RunPricing(self.time + RunPricing.inter_status_time))
+        simulator.insert(RunPricing(self.time + RunPricing.inter_status_time, self.service_provider))
         simulator.grid.reset_stats()
     def __str__(self):
         return 'Getting stats:\n Satisfied Demand: {:.0f} '.format(self.reward)      
 
     @classmethod
     def init_pricing(cls, simulator):
-        simulator.insert(cls(cls.inter_status_time))
+        simulator.insert(cls(cls.inter_status_time, simulator.service_provider))
 
 class ListQueue:
 
