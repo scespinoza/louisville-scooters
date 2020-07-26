@@ -184,7 +184,7 @@ class SimpleCritic(nn.Module):
 
 
 class HRP(nn.Module):
-    def __init__(self, actor_lr=1e-6, critic_lr=1e-4, min_action=0, max_action=3):
+    def __init__(self, actor_lr=1e-4, critic_lr=1e-4, min_action=0, max_action=3):
         super(HRP, self).__init__()
         self.an = ActorNetwork(min_action=min_action, max_action=max_action).to(device)
         self.cn = CriticNetwork().to(device)
