@@ -37,7 +37,7 @@ class SubActor(nn.Module):
         return x
 
 class ActorNetwork(nn.Module):
-    def __init__(self,min_action, max_action, n_subactors=100, neurons=32, state_size=6):
+    def __init__(self,min_action, max_action, n_subactors=100, neurons=64, state_size=6):
         super(ActorNetwork, self).__init__()
         self.n_subactors = n_subactors
         for i in range(n_subactors):

@@ -27,9 +27,9 @@ def w(x, teta, T_1=24, T_2=168):
 if __name__ == '__main__':
     
     print 'Loading data..'
-    dataname = 'shapes/arrivals/arrivals.shp'
+    dataname = '../shapes/arrivals/arrivals.shp'
     data = gpd.read_file(dataname)
-    region = gpd.read_file('shapes/grid/grid_1km.shp')
+    region = gpd.read_file('../shapes/grid/grid_stkde.shp')
     region.drop(['bottom', 'top', 'left', 'right'], axis=1, inplace=True)
     region = region.to_crs(data.crs)
     joined_data = gpd.sjoin(data, region, how='left')
@@ -93,7 +93,7 @@ if __name__ == '__main__':
         sol = alpso(opt_prob)
         results[int(c)] = sol[1][1:]
 
-    save_pickle(results, 'data/rhos_dict_louisville.pickle')
+    save_pickle(results, '../data/rhos_dict_louisville.pickle')
 
     '''
     print 'Solving problem'

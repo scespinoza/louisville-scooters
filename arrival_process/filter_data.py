@@ -30,17 +30,17 @@ def create_arrivals_gdf(data, crs='EPSG:4326'):
     return gpd.GeoDataFrame(data[['date', 'geometry']], crs=crs)
 
 if __name__ == '__main__':
-    data = pd.read_csv('DocklessTripOpenData_10.csv')
+    data = pd.read_csv('../data/DocklessTripOpenData_10.csv')
     print('Creating Timeseries...')
     date_str = data[['StartDate', 'StartTime']].apply(lambda x: str(x[0]) + ' ' + str(x[1]).replace('24:', '00:'), axis=1)
     data['date'] = pd.to_datetime(date_str)
-    study_area = gpd.read_file('shapes/study_area/study_area.shp').to_crs('EPSG:4326')
+    study_area = gpd.read_file('../shapes/utils/Dockless Vehicle Service Area/Dockless_Vehicle_Service_Area.shp').to_crs('EPSG:4326')
     study_area_polygon = study_area.loc[0, 'geometry']
     filtered_data = filter_dataset(data, study_area_polygon)
-    filtered_data.to_csv('data/data_2019.csv')
+    filtered_data.to_csv('../data/data_2019.csv')
     print('Creating Arrivals Shapefile')
     arrivals_gdf = create_arrivals_gdf(filtered_data)
-    arrivals_gdf.to_file('shapes/arrivals/arrivals.shp')
+    arrivals_gdf.to_file('../shapes/arrivals/arrivals.shp')
 
 
 
