@@ -1,0 +1,183 @@
+
+
+
+
+   ---------------------------------------------------------------------------
+     START OF THE SEQUENTIAL LEAST SQUARES PROGRAMMING ALGORIT  
+   ---------------------------------------------------------------------------
+
+     PARAMETERS:
+        ACC =   0.1000D-05
+        MAXITER = 50
+        IPRINT =   1
+IOUT =   6
+
+
+
+
+     ITER =    1     OBJ =  0.87610289E+00
+      0.2488E+00
+      0.8957E+00
+      0.9942E+00
+      0.9952E-01
+      0.9952E-01
+
+
+     ITER =    2     OBJ =  0.44759138E+00
+      0.1256E+00
+      0.4522E+00
+      0.9957E+00
+      0.5024E-01
+      0.3166E+00
+
+
+     ITER =    3     OBJ =             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+
+
+     ITER =    4     OBJ =             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+
+
+     ITER =    5     OBJ =             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+
+
+     ITER =    6     OBJ =             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+
+
+     ITER =    7     OBJ =             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+
+
+     ITER =    8     OBJ =             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+
+
+     ITER =    9     OBJ =             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+
+
+     ITER =   10     OBJ =             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+
+
+     ITER =   11     OBJ =             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+
+
+     ITER =   12     OBJ =             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+
+
+     ITER =   13     OBJ =             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+
+
+     ITER =   14     OBJ =             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+
+
+     ITER =   15     OBJ =             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+
+
+     ITER =   16     OBJ =             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+
+
+     ITER =   17     OBJ =             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+
+
+     ITER =   18     OBJ =             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+
+
+     ITER =   19     OBJ =             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+
+
+     ITER =   20     OBJ =             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+
+
+     ITER =   21     OBJ =             NaN
+             NaN
+             NaN
+             NaN
+             NaN
+             NaN

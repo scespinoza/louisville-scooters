@@ -3,6 +3,7 @@ import time
 import argparse
 import numpy as np
 import geopandas as gpd
+from collections import defaultdict
 from simulation import ServiceProviderWeek, ScooterSharingSimulator, Grid
 from multimodal_network import MultiModalNetwork
 
@@ -27,11 +28,11 @@ def train(sp, env, episodes):
         episode_rewards = []
         for t in range(env.timesteps):
             day = t // 24
+            hour = t % 24
             day_sp = sp.sp_days[day]
             sp.current_day = day
             print('Current Day: {}'.format(sp.current_day))
-            reward = day_sp.act(environment, episode=e)
-            episode_rewards.append((day_sp.model.discount_rate**t)*reward)         
+            reward = day_sp.act(environment, episode=e)        
             batch_loss, distance = day_sp.train_minibatch()
             print('Episode {}/{}. Loss = {:.2f}. Reward = {:.2f}'.format(e, episodes, batch_loss.detach().cpu().numpy(), reward))
             day_sp.history['distance'].append(distance)
@@ -45,7 +46,7 @@ def weekly_trainer(sp, env, warmup, episodes):
     print('Warmup Stage')
     returns = warmup_stage(sp, env, warmup)
     sp.history = {
-        'rewards': returns
+        'rewards': defaultdict
     }
     print('Finishing Warmup: {:.2f}s'.format(time.time() - warmup_start))
     training_start = time.time()

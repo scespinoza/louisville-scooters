@@ -13,14 +13,14 @@ def get_ending_locations(df, crs='EPSG:4326'):
                                 crs=crs)
 def filter_dataset(dataset, study_area, year=2019):
     print('Spatial Filter')
+    temporal_filter = (dataset['date'].dt.year == year) & (dataset['date'].dt.month >= 4) & (dataset['date'].dt.month <= 10)
+    dataset = dataset[temporal_filter]
     starting_locations = get_starting_locations(dataset)
     ending_locations = get_ending_locations(dataset)
     starting_filter = starting_locations.within(study_area)
     ending_filter = ending_locations.within(study_area)
     spatial_filter = starting_filter & ending_filter
-    print('Temporal Filter')
-    temporal_filter = dataset['date'].dt.year == year
-    return dataset[spatial_filter & temporal_filter]
+    return dataset[spatial_filter]
 
 def create_arrivals_gdf(data, crs='EPSG:4326'):
     data['geometry'] = get_starting_locations(data).copy()

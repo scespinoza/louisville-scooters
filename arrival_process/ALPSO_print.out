@@ -4,7 +4,7 @@
 
 Parameters:
 -------------------------------------------------------------------------------------------------
-Swarmsize           :      200    MaxOuterIters     :      200    Seed:       1590711844.98043489
+Swarmsize           :      200    MaxOuterIters     :      200    Seed:       1595817472.06240296
 Cognitive Parameter :    2.000    MaxInnerIters     :        6    Scaling            :          1
 Social Parameter    :    1.000    MinInnerIters     :        6    Stopping Criteria  :          1
 Initial Weight      :    0.990    DynInnerIters     :        0    Number of Failures :         15
@@ -25,121 +25,13 @@ NUMBER OF ITERATIONS: 1
 NUMBER OF OBJECTIVE FUNCTION EVALUATIONS: 1400
 
 OBJECTIVE FUNCTION VALUE:
-	F = 0.816185232259086
+	F = 4.777841156060643e-05
 
 LAGRANGIAN MULTIPLIERS VALUES:
 
 PENALTY FACTOR:
 
 BEST POSITION:
-	P(0) = 0.2754557609359406		P(1) = 0.5314993927699893		P(2) = 0.9981341176279841	
-	P(3) = 0.1085687868672922		P(4) = 0.5214867510908162	
-================================================================================
-
-================================================================================
-
-NUMBER OF ITERATIONS: 2
-
-NUMBER OF OBJECTIVE FUNCTION EVALUATIONS: 2600
-
-OBJECTIVE FUNCTION VALUE:
-	F = 0.3078530357477584
-
-LAGRANGIAN MULTIPLIERS VALUES:
-
-PENALTY FACTOR:
-
-BEST POSITION:
-	P(0) = 0.2960444289696673		P(1) = 0.123420288956194		P(2) = 0.9974194334806588	
-	P(3) = 0.01807492285495116		P(4) = 0.9953910964081143	
-================================================================================
-
-================================================================================
-
-NUMBER OF ITERATIONS: 3
-
-NUMBER OF OBJECTIVE FUNCTION EVALUATIONS: 3800
-
-OBJECTIVE FUNCTION VALUE:
-	F = 0.2880943471755891
-
-LAGRANGIAN MULTIPLIERS VALUES:
-
-PENALTY FACTOR:
-
-BEST POSITION:
-	P(0) = 0.3094219781822467		P(1) = 0.1581716140751844		P(2) = 0.9975385746839727	
-	P(3) = 0.01861393592133553		P(4) = 1	
-================================================================================
-
-================================================================================
-
-NUMBER OF ITERATIONS: 4
-
-NUMBER OF OBJECTIVE FUNCTION EVALUATIONS: 5000
-
-OBJECTIVE FUNCTION VALUE:
-	F = 0.2878616310829697
-
-LAGRANGIAN MULTIPLIERS VALUES:
-
-PENALTY FACTOR:
-
-BEST POSITION:
-	P(0) = 0.3132590946224113		P(1) = 0.1449357525596009		P(2) = 0.9975204601518488	
-	P(3) = 0.01698107210192451		P(4) = 1	
-================================================================================
-
-================================================================================
-
-NUMBER OF ITERATIONS: 5
-
-NUMBER OF OBJECTIVE FUNCTION EVALUATIONS: 6200
-
-OBJECTIVE FUNCTION VALUE:
-	F = 0.2878251084832956
-
-LAGRANGIAN MULTIPLIERS VALUES:
-
-PENALTY FACTOR:
-
-BEST POSITION:
-	P(0) = 0.3121014865543684		P(1) = 0.1449243653334765		P(2) = 0.9975286276149002	
-	P(3) = 0.01713109108990718		P(4) = 1	
-================================================================================
-
-================================================================================
-
-NUMBER OF ITERATIONS: 6
-
-NUMBER OF OBJECTIVE FUNCTION EVALUATIONS: 7400
-
-OBJECTIVE FUNCTION VALUE:
-	F = 0.2878229305671425
-
-LAGRANGIAN MULTIPLIERS VALUES:
-
-PENALTY FACTOR:
-
-BEST POSITION:
-	P(0) = 0.3116924027557521		P(1) = 0.1543119167075268		P(2) = 0.9975315752244474	
-	P(3) = 0.01722146938876185		P(4) = 1	
-================================================================================
-
-================================================================================
-
-NUMBER OF ITERATIONS: 7
-
-NUMBER OF OBJECTIVE FUNCTION EVALUATIONS: 8600
-
-OBJECTIVE FUNCTION VALUE:
-	F = 0.287820252760439
-
-LAGRANGIAN MULTIPLIERS VALUES:
-
-PENALTY FACTOR:
-
-BEST POSITION:
-	P(0) = 0.3115799778315336		P(1) = 0.1518628901836339		P(2) = 0.9975298047913113	
-	P(3) = 0.01725586064630918		P(4) = 1	
+	P(0) = 0		P(1) = 0.2539305207257398		P(2) = 0.7464703904288724	
+	P(3) = 0.9678421769067738		P(4) = 0.03434146488089473	
 ================================================================================
