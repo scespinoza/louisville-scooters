@@ -72,33 +72,38 @@ class Grid:
 
     def update_stat(self, osmid, event, value=None):
         idx = self.get_area(osmid)
-        if event == 'request':            
-            self.stats['demand'][idx] += 1
-        if event == 'pickup':
-            self.stats['satisfied_requests'][idx] += 1
-        if event == 'arrival':
-            self.stats['arrival'][idx] += 1
-        if event == 'pricing':
-            assert value != None, "Must specify an expense value"
-            self.stats['expense'][idx] += value
+        if idx==None:
+            return None
+        else:
+            if event == 'request':            
+                self.stats['demand'][idx] += 1
+            if event == 'pickup':
+                self.stats['satisfied_requests'][idx] += 1
+            if event == 'arrival':
+                self.stats['arrival'][idx] += 1
+            if event == 'pricing':
+                assert value != None, "Must specify an expense value"
+                self.stats['expense'][idx] += value
 
     def get_area(self, osmid):
-        node_in_area = {k: osmid in v for k, v in self.nodes_in_boxes.items()}
-        return max(node_in_area, key=node_in_area.get)
+        try:
+            return self.nodes_in_boxes[osmid]
+        except:
+            return None
 
     def get_area_polygon(self, osmid):
         return self.boxes.iloc[self.get_area(osmid)]
 
     def nodes_within_area(self, osmid):
         area = self.get_area(osmid)
-        return self.nodes_in_boxes[area]
+        return list(self.nodes_in_boxes[nodes_in_boxes == area].index)
     
     def nodes_within_neighbors(self, osmid):
         area = self.get_area(osmid)
         neighbors = self.compute_neighboring_index(area)
         neighbor_nodes = []
         for neighbor_area in neighbors:
-            neighbor_nodes += self.nodes_in_boxes[neighbor_area]
+            neighbor_nodes += self.nodes_within_area(neighbor_area)
         return neighbor_nodes
 
     def compute_neighboring_index(self, area):
@@ -155,7 +160,9 @@ class Grid:
             
     
     def create_nodes_dict(self, nodes_gdf):
-        self.nodes_in_boxes = {i: list(nodes_gdf[nodes_gdf.within(box)]['osmid'].astype(str)) for i, box in self.boxes.iteritems()}
+        nodes_area = gpd.sjoin(nodes_gdf, self.boxes.to_frame().reset_index(), op='within')
+        nodes_area['osmid'] = nodes_area['osmid'].astype(str)
+        self.nodes_in_boxes = nodes_area[['osmid', 'index']].set_index('osmid')['index']
                 
     @classmethod
     def from_graph(cls, g, n=10):
@@ -178,6 +185,7 @@ class Grid:
 
     @classmethod
     def from_gdf(cls, gdf, shape):
+        gdf = gdf.set_index('id').sort_index()
         return cls(gdf['geometry'], shape)
 
 class ServiceProvider(Agent):
