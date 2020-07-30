@@ -42,7 +42,7 @@ if __name__ == '__main__':
         grid_gdf = gpd.read_file('shapes/grid/grid_500m.shp').to_crs('epsg:4326').sort_values('id')
         
         grid = Grid.from_gdf(grid_gdf, (10,10))
-        grid.create_nodes_dict(graph.layers['walk']['nodes'])
+        grid.create_nodes_dict(graph.layers['walk']['nodes'].to_crs('epsg:4326'))
         if args.pricing == 'HRP':
             agent = ServiceProviderWeek.load(name=args.model)
             agent.method = args.pricing
