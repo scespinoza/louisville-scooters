@@ -96,7 +96,7 @@ class Grid:
 
     def nodes_within_area(self, osmid):
         area = self.get_area(osmid)
-        return list(self.nodes_in_boxes[nodes_in_boxes == area].index)
+        return list(self.nodes_in_boxes[self.nodes_in_boxes == area].index)
     
     def nodes_within_neighbors(self, osmid):
         area = self.get_area(osmid)
