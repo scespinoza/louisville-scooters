@@ -37,17 +37,13 @@ class KDE:
         self.adjust_kde(data, bw)
 
     def adjust_kde(self, data, bw, seed=0):
-        self.rand_gauss = np.random.RandomState(seed*2)
-        self.rand_position = np.random.RandomState(seed*2+1)
-        sampling = []
-        for j, key in enumerate(kde_list):
-            if n_samples[j]>0:
-                L = self.bw_dict[key]['L']
-                z = self.rand_gauss.standard_normal((n_samples[j], 2))
-                pos = self.rand_position.choice(list(range(len(self.X_i[key]))), n_samples[j], replace=True)
-                x_i = [self.X_i[key][i] for i in pos]
-                sampling.append([np.dot(L, z[i]) + x_i[i] for i in range(n_samples[j])])
-        return np.concatenate(sampling)
+        self.X_i = {key: np.array(item) for key, item in data.items()}
+        for key, item in data.items():
+            if bw is None:
+                kde = sm.nonparametric.KDEMultivariate(item, ['c', 'c'])
+                bw = kde.bw
+            H, L, det, inv = KDE.variance_matrix(bw)
+            self.bw_dict[key] = {'H':H, 'L':L, 'det':det, 'inv':inv}
 
     def sample(self, n_samples, kde_list, seed=0):
         self.rand_gauss = np.random.RandomState(seed*2)
