@@ -156,13 +156,11 @@ class Grid:
 
     def get_last_satisfied_requests(self):
         return self.stats['satisfied_requests'].sum()
-        
-            
     
     def create_nodes_dict(self, nodes_gdf):
         nodes_area = gpd.sjoin(nodes_gdf, self.boxes.to_frame().reset_index(), op='within')
         nodes_area['osmid'] = nodes_area['osmid'].astype(str)
-        self.nodes_in_boxes = nodes_area[['osmid', 'index']].set_index('osmid')['index']
+        self.nodes_in_boxes = nodes_area[['osmid', 'id']].set_index('osmid')['id']
                 
     @classmethod
     def from_graph(cls, g, n=10):
