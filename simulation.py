@@ -183,6 +183,7 @@ class Grid:
 
     @classmethod
     def from_gdf(cls, gdf, shape):
+        gdf['id'] = gdf['id'] - 1
         gdf = gdf.set_index('id').sort_index()
         return cls(gdf['geometry'], shape)
 
