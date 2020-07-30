@@ -36,7 +36,7 @@ class KDE:
         self.bw_dict = {}
         self.adjust_kde(data, bw)
 
-    def adjust_kde(self, data, bw):
+    def adjust_kde(self, data, bw, seed=0):
         self.rand_gauss = np.random.RandomState(seed*2)
         self.rand_position = np.random.RandomState(seed*2+1)
         sampling = []
