@@ -173,10 +173,10 @@ class MultiModalNetwork:
                 edges, nodes = fix_isolated(edges, nodes)
                 print(nodes.shape)
                 if save:
-                    nodes[['y', 'x', 'osmid']].to_file('shapes/{}/nodes.shp'.format(layer))
-                    edges[['u', 'v', 'osmid', 'length']].to_file('shapes/{}/edges.shp'.format(layer))
+                    nodes[['y', 'x', 'osmid', 'geometry']].to_file('shapes/{}/nodes.shp'.format(layer))
+                    edges[['u', 'v', 'osmid', 'length', 'geometry']].to_file('shapes/{}/edges.shp'.format(layer))
             
-            layers_graph[layer] = {'nodes': nodes[['y', 'x', 'osmid']], 'edges': edges[['u', 'v', 'osmid', 'length']]}
+            layers_graph[layer] = {'nodes': nodes[['y', 'x', 'osmid', 'geometry']], 'edges': edges[['u', 'v', 'osmid', 'length', 'geometry']]}
 
         return cls(layers_graph, speeds=speeds, directed=directed)
 
