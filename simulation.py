@@ -46,6 +46,8 @@ class TripReader:
         self.data['date'] = pd.to_datetime(self.data['date'])
 
     def construct_events(self, simulator):
+        self.data = self.data[(self.data['arrival'] <= (simulator.simulation_time + simulator.time)) & \
+                        self.data['arrival'] >= simulator.time]
         events = [UserRequest(User((origin, dest)), time=time*3600) 
                   for _, origin,dest,time in self.data[['origin', 'destination', 'arrival']].itertuples()]
         return events
@@ -683,11 +685,12 @@ class HistorySaver:
 
 class ScooterSharingSimulator:
 
-    def __init__(self, graph, grid, initial_supply=200, days=7, history_saver=None, pricing=False,
+    def __init__(self, graph, grid, initial_supply=200, days=7, from_day=0, history_saver=None, pricing=False,
                 service_provider=ServiceProvider()):
         self.pricing = pricing
         self.events = ListQueue()
-        self.time = 0
+        self.from_day = from_day
+        self.time = from_day * 24 * 3600
         self.current_timestep = 0
         self.simulation_time = days * 24 * 3600
         self.graph = graph
@@ -765,7 +768,7 @@ class ScooterSharingSimulator:
         
         for i, replica in enumerate(replicas):
             print('Replica: ', replica)
-            self.time = 0
+            self.time = self.from_day * 24 * 3600
             self.events.reset()
             Scooter.count = 0
             User.count = 0
@@ -795,6 +798,8 @@ class ScooterSharingSimulator:
     def reset(self):
         Scooter.count = 0
         User.count = 0
+        self.time = self.from_day * 24 * 3600
+        self.current_timestep = 0
         User.users = list()
         Scooter.init_supply(self.graph, n=self.initial_supply, random_state=self.current_replica)
         #UserRequest.init_user_requests(self)
@@ -805,8 +810,6 @@ class ScooterSharingSimulator:
         print('Replica: ', replica)
         self.trip_reader = TripReader(replica)
         arrivals = self.trip_reader.construct_events(self)
-        self.time = 0
-        self.current_timestep = 0
         self.events.reset()
         self.insert_events(arrivals)
 
