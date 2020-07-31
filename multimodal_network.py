@@ -13,7 +13,8 @@ from shapely.geometry import Point
 
 def fix_duplicated_ids(edges):
     print('Fixing duplicates')
-    edges['osmid'] = edges[['u', 'v', 'osmid']].apply(lambda x: str(x[0]) + '-' + str(x[1]) + '-' + str(x[2]), axis=1)
+    edges['osmid'] = edges[['u', 'v']].apply(lambda x: str(x[0]) + '-' + str(x[1]), axis=1)
+    edges = edges.sort_values(['osmid','length']).drop_duplicates('osmid', keep='first')
     return edges
     
 def fix_isolated(edges, nodes):
