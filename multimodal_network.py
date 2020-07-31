@@ -169,6 +169,7 @@ class MultiModalNetwork:
                 nodes, edges = ox.graph_to_gdfs(ox.graph_from_polygon(polygon, network_type=layer, simplify=True))
                 print(nodes.shape)
                 edges = fix_duplicated_ids(edges)
+                print(edges.info())
                 edges, nodes = fix_isolated(edges, nodes)
                 print(nodes.shape)
                 if save:
