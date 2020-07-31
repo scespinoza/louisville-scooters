@@ -63,7 +63,8 @@ class MultiModalNetwork:
         self.directed = directed
         self.shortest_paths = {}
         print('speeds')
-        self.assign_velocities()
+        if not ('time' in self.layers['walk']['edges'].columns) or not ('time' in self.layers['bike']['edges'].columns):
+            self.assign_velocities()
         print('graphs')
         self.create_graph()
         try:
