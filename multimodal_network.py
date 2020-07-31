@@ -55,13 +55,16 @@ class MultiModalNetwork:
         
         assert set(layers.keys()) == set(speeds.keys())
         self.layers = layers
+        print('transfer')
         self.transfer_nodes = set.intersection(*(set(layers[layer]['nodes'].osmid.astype(str)) for layer in layers))
         for layer in layers.keys():
             self.layers[layer]['nodes']['transfer'] = self.layers[layer]['nodes']['osmid'].apply(lambda osmid: str(osmid) in self.transfer_nodes)
         self.speeds = speeds
         self.directed = directed
         self.shortest_paths = {}
+        print('speeds')
         self.assign_velocities()
+        print('graphs')
         self.create_graph()
         try:
             with open('data/shortest_paths_dict.pickle', 'rb') as file:
