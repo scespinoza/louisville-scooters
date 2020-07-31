@@ -187,7 +187,7 @@ if __name__ == '__main__':
     from multimodal_network import MultiModalNetwork
     replicas_dir = 'shapes/replicas'
     model_name = 'louisville-trips'
-    study_area_filename = 'shapes/utils/Dockless Vehicle Service Area/Dockless_Vehicle_Service_Area.shp'
+    study_area_filename = 'shapes/study_area/study_area.shp'
     study_area = gpd.read_file(study_area_filename).to_crs('EPSG:4326')
     study_area_polygon = study_area.iloc[0]['geometry']
     network = MultiModalNetwork.from_polygon(study_area_polygon, speeds={'walk': 1.4, 'bike':2.16})

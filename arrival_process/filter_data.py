@@ -34,7 +34,7 @@ if __name__ == '__main__':
     print('Creating Timeseries...')
     date_str = data[['StartDate', 'StartTime']].apply(lambda x: str(x[0]) + ' ' + str(x[1]).replace('24:', '00:'), axis=1)
     data['date'] = pd.to_datetime(date_str)
-    study_area = gpd.read_file('../shapes/utils/Dockless Vehicle Service Area/Dockless_Vehicle_Service_Area.shp').to_crs('EPSG:4326')
+    study_area = gpd.read_file('../shapes/study_area/study_area.shp').to_crs('EPSG:4326')
     study_area_polygon = study_area.loc[0, 'geometry']
     filtered_data = filter_dataset(data, study_area_polygon)
     filtered_data.to_csv('../data/data_2019.csv')

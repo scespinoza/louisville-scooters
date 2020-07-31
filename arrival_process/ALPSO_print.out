@@ -4,7 +4,7 @@
 
 Parameters:
 -------------------------------------------------------------------------------------------------
-Swarmsize           :      200    MaxOuterIters     :      200    Seed:       1595817472.06240296
+Swarmsize           :      200    MaxOuterIters     :      200    Seed:       1596231223.08040905
 Cognitive Parameter :    2.000    MaxInnerIters     :        6    Scaling            :          1
 Social Parameter    :    1.000    MinInnerIters     :        6    Stopping Criteria  :          1
 Initial Weight      :    0.990    DynInnerIters     :        0    Number of Failures :         15
@@ -25,13 +25,121 @@ NUMBER OF ITERATIONS: 1
 NUMBER OF OBJECTIVE FUNCTION EVALUATIONS: 1400
 
 OBJECTIVE FUNCTION VALUE:
-	F = 4.777841156060643e-05
+	F = 1.108441757608822
 
 LAGRANGIAN MULTIPLIERS VALUES:
 
 PENALTY FACTOR:
 
 BEST POSITION:
-	P(0) = 0		P(1) = 0.2539305207257398		P(2) = 0.7464703904288724	
-	P(3) = 0.9678421769067738		P(4) = 0.03434146488089473	
+	P(0) = 0.1508385421962198		P(1) = 0.3462181494781793		P(2) = 1	
+	P(3) = 0.0301843020634488		P(4) = 0.8124426559350684	
+================================================================================
+
+================================================================================
+
+NUMBER OF ITERATIONS: 2
+
+NUMBER OF OBJECTIVE FUNCTION EVALUATIONS: 2600
+
+OBJECTIVE FUNCTION VALUE:
+	F = 0.3302165556835314
+
+LAGRANGIAN MULTIPLIERS VALUES:
+
+PENALTY FACTOR:
+
+BEST POSITION:
+	P(0) = 0.2641298827120718		P(1) = 0.2380774538242227		P(2) = 0.9974629176241485	
+	P(3) = 0.04040126040821634		P(4) = 0.9380561822170416	
+================================================================================
+
+================================================================================
+
+NUMBER OF ITERATIONS: 3
+
+NUMBER OF OBJECTIVE FUNCTION EVALUATIONS: 3800
+
+OBJECTIVE FUNCTION VALUE:
+	F = 0.2886514340377459
+
+LAGRANGIAN MULTIPLIERS VALUES:
+
+PENALTY FACTOR:
+
+BEST POSITION:
+	P(0) = 0.2821447026415032		P(1) = 0.09755777231548168		P(2) = 0.9976151456082727	
+	P(3) = 0.01717779709010991		P(4) = 0.9990939576199587	
+================================================================================
+
+================================================================================
+
+NUMBER OF ITERATIONS: 4
+
+NUMBER OF OBJECTIVE FUNCTION EVALUATIONS: 5000
+
+OBJECTIVE FUNCTION VALUE:
+	F = 0.2870197431884526
+
+LAGRANGIAN MULTIPLIERS VALUES:
+
+PENALTY FACTOR:
+
+BEST POSITION:
+	P(0) = 0.2859421875198521		P(1) = 0		P(2) = 0.9975105317850912	
+	P(3) = 0.01810121931116898		P(4) = 1	
+================================================================================
+
+================================================================================
+
+NUMBER OF ITERATIONS: 5
+
+NUMBER OF OBJECTIVE FUNCTION EVALUATIONS: 6200
+
+OBJECTIVE FUNCTION VALUE:
+	F = 0.2869950506830507
+
+LAGRANGIAN MULTIPLIERS VALUES:
+
+PENALTY FACTOR:
+
+BEST POSITION:
+	P(0) = 0.2870931699814674		P(1) = 0.001378585523341636		P(2) = 0.9974969520599879	
+	P(3) = 0.01772823373863053		P(4) = 0.9999814298830936	
+================================================================================
+
+================================================================================
+
+NUMBER OF ITERATIONS: 6
+
+NUMBER OF OBJECTIVE FUNCTION EVALUATIONS: 7400
+
+OBJECTIVE FUNCTION VALUE:
+	F = 0.2869923245326493
+
+LAGRANGIAN MULTIPLIERS VALUES:
+
+PENALTY FACTOR:
+
+BEST POSITION:
+	P(0) = 0.2864961095307761		P(1) = 0.0007957659036838538		P(2) = 0.9975017467193752	
+	P(3) = 0.01779694179504487		P(4) = 1	
+================================================================================
+
+================================================================================
+
+NUMBER OF ITERATIONS: 7
+
+NUMBER OF OBJECTIVE FUNCTION EVALUATIONS: 8600
+
+OBJECTIVE FUNCTION VALUE:
+	F = 0.2869917971912634
+
+LAGRANGIAN MULTIPLIERS VALUES:
+
+PENALTY FACTOR:
+
+BEST POSITION:
+	P(0) = 0.2866310578320976		P(1) = 8.019088636335159e-05		P(2) = 0.9975004871279309	
+	P(3) = 0.01774474069366216		P(4) = 0.9999923148208556	
 ================================================================================
