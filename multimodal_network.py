@@ -165,7 +165,7 @@ class MultiModalNetwork:
             except:
             
                 print('Files not found. Downloading...')
-                nodes, edges = ox.graph_to_gdfs(ox.graph_from_polygon(polygon, network_type=layer, simplify=False))
+                nodes, edges = ox.graph_to_gdfs(ox.graph_from_polygon(polygon, network_type=layer, simplify=True))
                 print(nodes.shape)
                 edges = fix_duplicated_ids(edges)
                 edges, nodes = fix_isolated(edges, nodes)
