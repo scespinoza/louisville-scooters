@@ -120,7 +120,6 @@ class MultiModalNetwork:
             layer_graph.es['osmid'] = list(layer_gdfs['edges']['osmid'].astype(str))
             layer_graph.es['length'] = list(layer_gdfs['edges']['length'].astype(float))
             layer_graph.es['oneway'] = list(layer_gdfs['edges']['oneway'])
-            layer_graph.es['highway'] = list(layer_gdfs['edges']['highway'])
             layer_graph.es['time'] = list(layer_gdfs['edges']['time'])
             self.g[layer_name] = layer_graph
 
