@@ -123,6 +123,7 @@ class MultiModalNetwork:
         print('Generating shortest path dict for {} layer.'.format(layer))
         start = time.time()
         shortest_paths_layer = self.g[layer].shortest_paths(weights=weights)
+        print('done igraph')
         shortest_paths_df = pd.DataFrame(shortest_paths_layer, 
                                         index=self.layers[layer]['nodes'].osmid.astype(str), 
                                         columns=self.layers[layer]['nodes'].osmid.astype(str))
