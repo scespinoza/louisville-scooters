@@ -182,7 +182,7 @@ class MultiModalNetwork:
 
 
 if __name__ == '__main__':
-    study_area_filename = 'shapes/utils/Dockless Vehicle Service Area/Dockless_Vehicle_Service_Area.shp'
+    study_area_filename = 'shapes/study_area/study_area_buffer.shp'
     study_area = gpd.read_file(study_area_filename).to_crs('EPSG:4326')
     study_area_polygon = study_area.iloc[0]['geometry']
     network = MultiModalNetwork.from_polygon(study_area_polygon, speeds={'walk': 1.4, 'bike':2.16}, directed={'walk': False, 'bike': True})
