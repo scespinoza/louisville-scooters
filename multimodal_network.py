@@ -171,7 +171,7 @@ class MultiModalNetwork:
                 print(edges.info())
                 edges, nodes = fix_isolated(edges, nodes)
                 print(nodes.shape)
-                nodes['within_area'] = nodes.within(polygon)
+                nodes['area'] = nodes.within(polygon)
                 if save:
                     nodes[['y', 'x', 'osmid', 'area', 'geometry']].to_file('shapes/{}/nodes.shp'.format(layer))
                     edges[['u', 'v', 'osmid', 'length', 'oneway', 'geometry']].to_file('shapes/{}/edges.shp'.format(layer))
