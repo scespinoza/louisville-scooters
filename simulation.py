@@ -49,10 +49,10 @@ class TripReader:
         start_time = simulator.time / 3600
         end_time = (simulator.time + simulator.simulation_time) / 3600
         print(start_time, end_time)
-        self.data = self.data[(self.data['arrival'] <= end_time) & \
+        events_data = self.data[(self.data['arrival'] <= end_time) & \
                         self.data['arrival'] >= start_time]
         events = [UserRequest(User((origin, dest)), time=time*3600) 
-                  for _, origin,dest,time in self.data[['origin', 'destination', 'arrival']].itertuples()]
+                  for _, origin,dest,time in events_data[['origin', 'destination', 'arrival']].itertuples()]
         return events
 
 class Grid:
