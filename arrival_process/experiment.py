@@ -312,7 +312,7 @@ class DataProcessor:
         scv = np.sqrt(cv)
         #ac = acf(table.mean_rate.values, nlags = 1)[1]
         ac = gdf['date'].diff().dt.seconds.autocorr(lag=1)
-        rate = 0.375 * np.array(list(enumerate(table.mean_rate.values)))
+        rate = np.array(list(enumerate(0.375*table.mean_rate.values)))
         return rate, scv, ac
 
 class Sampler:

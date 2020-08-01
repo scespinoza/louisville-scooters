@@ -83,7 +83,7 @@ class MultiModalNetwork:
     
     def get_nearest_osmids(self, points, layer='walk', transfer=False):
         if transfer:
-            nodes = self.layers[layer]['nodes'][self.layers[layer]['nodes']['transfer']].copy().reset_index(drop=True)
+            nodes = self.layers[layer]['nodes'][self.layers[layer]['nodes']['transfer'] &self.layers[layer]['nodes']['within_area']].copy().reset_index(drop=True)
         else:
             nodes = self.layers[layer]['nodes'].copy().reset_index(drop=True)
         left_radians = np.array(points.apply(lambda geom: (geom.x * np.pi / 180, geom.y * np.pi / 180)).to_list())
@@ -171,8 +171,9 @@ class MultiModalNetwork:
                 print(edges.info())
                 edges, nodes = fix_isolated(edges, nodes)
                 print(nodes.shape)
+                nodes['within_area'] = nodes.within(polygon)
                 if save:
-                    nodes[['y', 'x', 'osmid', 'geometry']].to_file('shapes/{}/nodes.shp'.format(layer))
+                    nodes[['y', 'x', 'osmid', 'within_area', 'geometry']].to_file('shapes/{}/nodes.shp'.format(layer))
                     edges[['u', 'v', 'osmid', 'length', 'oneway', 'geometry']].to_file('shapes/{}/edges.shp'.format(layer))
             
             layers_graph[layer] = {'nodes': nodes[['y', 'x', 'osmid', 'geometry']], 'edges': edges[['u', 'v', 'osmid', 'length', 'oneway', 'geometry']]}
