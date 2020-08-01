@@ -46,6 +46,7 @@ class TripReader:
         self.data['date'] = pd.to_datetime(self.data['date'])
 
     def construct_events(self, simulator):
+        print(simulator.time)
         self.data = self.data[(self.data['arrival'] <= (simulator.simulation_time + simulator.time)) & \
                         self.data['arrival'] >= simulator.time]
         events = [UserRequest(User((origin, dest)), time=time*3600) 
