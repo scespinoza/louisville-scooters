@@ -49,7 +49,7 @@ class TripReader:
         start_time = simulator.time / 3600
         end_time = (simulator.time + simulator.simulation_time) / 3600
         print(start_time, end_time)
-        print(self.data['arrivals'].min(), self.data['arrivals'].max())
+        print(self.data['arrival'].min(), self.data['arrival'].max())
         events_data = self.data[(self.data['arrival'] <= end_time) & self.data['arrival'] >= start_time]
         print(events_data.shape)
         events = [UserRequest(User((origin, dest)), time=time*3600) 
