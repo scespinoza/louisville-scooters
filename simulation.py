@@ -280,7 +280,7 @@ class User:
         self.max_walking_distance = 500 # km
 
         self.velocity = 1.5 # m/s
-        self.alpha = 9.0083e-7
+        self.alpha = 1.888e-6
         self.trip = {
                 'id': self.user_id,
                 'origin': self.origin,
