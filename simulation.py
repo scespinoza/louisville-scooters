@@ -218,7 +218,7 @@ class ServiceProviderWeek:
     def __init__(self, service_providers, **kwargs):
         self.service_providers = {}
         for i, sp in enumerate(service_providers):
-            with open(sp) as file:
+            with open(sp, 'rb') as file:
                 self.service_providers[i] = pickle.load(file)
         self.current_day=0
 
