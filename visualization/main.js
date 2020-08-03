@@ -120,8 +120,9 @@ function loadReplicaData() {
     Promise.all([
         loadData(replicaFilename, scootersFilename)
     ]).then(function(){
+        
         loadingBackground.transition().duration(3000).style('opacity',0).on('end', d3.select(this).remove());
-        title.transition().duration(3000).style('opacity',0).on('end', d3.select(this).remove());
+        
     });
 }
     
@@ -132,11 +133,11 @@ function getSelectedReplicaScootersFilename (){
     return "scooter_locations_" + replica_n + '.json'
 }
 function getSelectedReplicaFilename() {
-    var pricing = $('#pricing-checkbox').is(":checked");
+    var pricing = $('#pricing-selector').val();
     var replica_n = $('#replica-selector').val();
     var filename = "stkde_nhpp_" + replica_n;
-    if (pricing) {
-        filename += '_pricing'
+    if (pricing != "") {
+        filename += '_HRP_' + pricing;
     }
     filename += '.json'
     return filename
@@ -437,8 +438,11 @@ function locateScooters(filename = 'scooter_locations.json') {
         d3.json('data/' + filename).then(function (scootersCollection){
             console.log('Locating Scooters')
             g.selectAll('circle.static-scooter').remove()
-            var scooterLocations = bikeNodesCollection.features.filter(node => scootersCollection.includes(String(node.properties.osmid)));
-            console.log(scooterLocations)
+            var scooterOSMIDS = [];
+            scootersCollection.forEach(function (scooter) {
+                scooterOSMIDS.push(scooter.location);
+            });
+            var scooterLocations = bikeNodesCollection.features.filter(node => scooterOSMIDS.includes(String(node.properties.osmid)));
             var scooterCircles = g.selectAll('circle')
                 .data(scooterLocations)
                 .enter()
@@ -449,9 +453,10 @@ function locateScooters(filename = 'scooter_locations.json') {
                 .attr("class", "static-scooter")
                 .attr("id", function(d) {
                     var replica = parseInt($("#replica-selector").val()) * 100;
-                    d.id = replica + scootersCollection.indexOf(String(d.properties.osmid)) + 1;
-                    d.battery = 1
-                    return "scooter-" + (scootersCollection.indexOf(String(d.properties.osmid)) + 1 + replica);
+                    var i = scooterOSMIDS.indexOf(String(d.properties.osmid))
+                    d.id = scootersCollection[i].id;
+                    d.battery = scootersCollection[i].battery;
+                    return "scooter-" + d.id;
                 })
                 .attr("transform", function (d) {
                     var p = applyLatLngToLayer(d.geometry.coordinates);

@@ -86,11 +86,26 @@
                 <option value="7">Replica 8</option>
                 <option value="8">Replica 9</option>
                 <option value="9">Replica 10</option>
+                <option value="10">Replica 11</option>
+                <option value="11">Replica 12</option>
+                <option value="12">Replica 13</option>
+                <option value="13">Replica 14</option>
+                <option value="14">Replica 15</option>
+                <option value="15">Replica 16</option>
+                <option value="16">Replica 17</option>
+                <option value="17">Replica 18</option>
+                <option value="18">Replica 19</option>
+                <option value="19">Replica 20</option>
             </select>
         </label>
             <label class='control-panel-text'>
                 PRICING
-                <input type="checkbox" name="Pricing" id="pricing-checkbox", onChange="loadReplicaData()">
+                <select name="Pricing" id="pricing-selector", onchange="loadReplicaData()">
+                    <option value="">None</option>
+                    <option value="1.0">1</option>
+                    <option value="2.0">2</option>
+                    <option value="3.0">3</option>
+                </select>
                 
             </label>
             
