@@ -300,7 +300,6 @@ class User:
             return list(sp[sp < self.max_walking_distance / self.velocity].index)
     def cost_function(self, scooter, network):        
         x = network.shortest_path_distance(self.origin, scooter.location, layer='walk')
-        print(x)
         return self.alpha * (x ** 2)
 
 class Scooter:
@@ -411,7 +410,6 @@ class UserRequest(Event):
             user_utility = [scooter.get_price_incentive(simulator.grid) - self.user.cost_function(scooter, simulator.graph)
                             for scooter in available_scooters]
             rb = simulator.service_provider.budget
-            print(user_utility)
             if np.any(np.array(user_utility) > 0):
                 max_utility = np.argmax(user_utility)
                 nearest_scooter = available_scooters[max_utility]
