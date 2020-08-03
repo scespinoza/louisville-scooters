@@ -195,7 +195,7 @@ class Grid:
 
 class ServiceProvider(Agent):
     
-    def __init__(self, budget=1000, model=HRP, buffer_length=100, name='HRP', noise_scale=2, batch_size=64, max_action=1,  **kwargs):
+    def __init__(self, budget=1000, model=HRP, buffer_length=100, name='HRP', noise_scale=2, batch_size=64, **kwargs):
         super(ServiceProvider, self).__init__(name=name, 
                                               model=model(**kwargs), 
                                               buffer_length=buffer_length,
@@ -204,7 +204,7 @@ class ServiceProvider(Agent):
         self.total_budget = budget
         self.budget = budget
         self.method = name
-        self.max_action = max_action
+        self.max_action = self.model.max_action
 
     def expend(self, value):
         self.budget -= value

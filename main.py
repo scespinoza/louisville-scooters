@@ -56,7 +56,8 @@ if __name__ == '__main__':
             agent.method = args.pricing
             simulator = ScooterSharingSimulator(graph, grid, days=args.days, initial_supply=args.supply, pricing=True, service_provider=agent)
         else:
-            simulator = ScooterSharingSimulator(graph, grid, days=args.days, initial_supply=args.supply, pricing=False)
+            service_provider = ServiceProvider(max_action=args.max_action)
+            simulator = ScooterSharingSimulator(graph, grid, days=args.days, initial_supply=args.supply, pricing=False, service_provider=service_provider)
         
         simulator.simulate(replicas, verbose=1)
     if args.train:
