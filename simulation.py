@@ -236,8 +236,6 @@ class ServiceProviderWeek:
             pickle.dump(self, file)
     def get_prices(self, state, t=0):
         self.current_day = t//24
-        print('day: ', self.current_day)
-        print('bg', self.service_providers[self.current_day])
         return self.service_providers[self.current_day].get_prices(state)
 
     def eval(self):
@@ -735,11 +733,10 @@ class ScooterSharingSimulator:
             print('Start Simulator. {} hours'.format(total_time))
         self.verbose = verbose
         while len(self.events) > 0 and self.time < self.simulation_time:
-            
+            self.timestep = self.time // self.time_window
             event = self.events.remove_first()
             self.time = event.time         
             result = event.execute(self)
-            self.timestep = self.time // self.time_window
             if (verbose == 2) or (verbose == 1 and isinstance(event, RunPricing)):
                 print("\nTime: {}".format(self.clock()))
                 print(event)
@@ -762,6 +759,7 @@ class ScooterSharingSimulator:
         for i, replica in enumerate(replicas):
             print('Replica: ', replica)
             self.time = self.from_day * 24 * 3600
+            self.timeste = 0
             self.events.reset()
             Scooter.count = 0
             User.count = 0
