@@ -245,7 +245,7 @@ class ServiceProviderWeek:
 
     @property
     def budget(self):
-        return self.sp_days[self.current_day].budget
+        return self.service_providers[self.current_day].budget
     @classmethod
     def load(self, name):
         with open('weights/' + name + '.pickle', 'rb') as file:
