@@ -265,7 +265,7 @@ class User:
         self.origin = str(trip[0])
         self.destination = str(trip[1])
         self.reachable_method = 'distance'
-        self.max_walking_distance = 500 # km
+        self.max_walking_distance = 250 # km
 
         self.velocity = 1.5 # m/s
         self.alpha = 5.875e-07
