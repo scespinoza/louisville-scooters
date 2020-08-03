@@ -215,7 +215,8 @@ class ServiceProvider(Agent):
 
 class ServiceProviderWeek:
 
-    def __init__(self, service_providers, **kwargs):
+    def __init__(self, service_providers, max_action, **kwargs):
+        self.max_action = max_action
         self.service_providers = {}
         for i, sp in enumerate(service_providers):
             with open(sp, 'rb') as file:
@@ -770,7 +771,8 @@ class ScooterSharingSimulator:
             if self.pricing:
                 self.service_provider.restore_budget()
             self.trip_reader = TripReader(replica)
-            self.history_saver = HistorySaver(name=replica.split('.')[0].split('/')[-1] + self.pricing * '_{}'.format(self.service_provider.method))
+            self.history_saver = HistorySaver(name=replica.split('.')[0].split('/')[-1] + self.pricing * '_{}_{}'.format(self.service_provider.method,
+                                                                                                                        self.service_provider.max_action))
             arrivals = self.trip_reader.construct_events(self)
             self.insert_events(arrivals)
             self.do_all_events(verbose=verbose)
