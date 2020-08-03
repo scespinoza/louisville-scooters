@@ -34,7 +34,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if args.simulate:
         replicas = ['data/replicas/stkde_nhpp_{}.csv'.format(i) for i in range(args.replicas)]
-        service_providers = ['weights/{}_{}.pickle'.format(day, int(args.max_action)) for day in DAYS]
+        service_providers = ['weights/{}_{}.pickle'.format(day, args.max_action) for day in DAYS]
 
         study_area_filename = 'shapes/study_area/study_area.shp'
         study_area = gpd.read_file(study_area_filename).to_crs('epsg:4326')
