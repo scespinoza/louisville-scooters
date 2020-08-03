@@ -533,19 +533,26 @@ function animateAllTrips() {
    
     q = d3.queue();
     trips = tripsCollection.trips;
-    
+    recharges = tripsCollection.recharge;
     //trips = [tripsCollection.trips[2]];
     var t = startTimer();
 
     trips.forEach(function(trip) {
         q.defer(animateTrip, trip, trip.arrival_time);
-    })
+    });
+    recharges.forEach(function(scooter) {
+        scooter.recharge_history.forEach(function(recharge) {
+            q.defer(animateRecharge, [scooter.id, recharge], recharge.recharge_time)
+        });
+    });
 
     q.await(function () {
         t.stop();
     })
     
 }
+
+
 
 function dhm(t){
     var days = [
@@ -606,6 +613,25 @@ function animateUnsatisfiedRequest(osmid, delay) {
             });
 
     
+}
+
+function animateRecharge(rechargeData, delay, callback) {
+    d3.timeout(function(elapsed) {
+        id = reachargeData[0]
+        rechargeData = rechargeData[1]
+        d3.select("scooter-" + i)
+            .style('stroke', 'brown')
+            .transition()
+            .duration((rechargeData.release_time - rechargeData.recharge_time) * 1000/simRatio)
+            .style('fill', function(d){
+                d.battery = rechargeData.battery_on_release / 100
+                return d3.color(d3.interpolateRdYlGn(d.battery / 100)).hex();
+            })
+            .on("end", function(){
+                d3.select(this).style('stroke', 'rgba(25, 253, 4, 0.644)')
+            })
+        callback(null)
+    }, delay * 1000/simRatio)
 }
 
 
