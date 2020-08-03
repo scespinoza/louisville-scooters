@@ -265,7 +265,7 @@ class User:
         self.origin = str(trip[0])
         self.destination = str(trip[1])
         self.reachable_method = 'distance'
-        self.max_walking_distance = 250 # km
+        self.max_walking_distance = 250 # m
 
         self.velocity = 1.5 # m/s
         self.alpha = 5.875e-07
@@ -409,6 +409,7 @@ class UserRequest(Event):
             user_utility = [scooter.get_price_incentive(simulator.grid) - self.user.cost_function(scooter, simulator.graph)
                             for scooter in available_scooters]
             rb = simulator.service_provider.budget
+            print(user_utility)
             if np.any(np.array(user_utility) > 0):
                 max_utility = np.argmax(user_utility)
                 nearest_scooter = available_scooters[max_utility]
