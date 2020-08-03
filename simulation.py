@@ -302,7 +302,9 @@ class User:
         x = network.shortest_path_distance(self.origin, scooter.location, layer='walk') - self.max_walking_distance
         if x < 0:
             x = 0
-        return self.alpha * (x ** 2)
+        c = self.alpha * (x ** 2)
+        print(x)
+        return c
 
 class Scooter:
     count = 0
