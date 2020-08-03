@@ -400,7 +400,6 @@ class UserRequest(Event):
         available_scooters = [scooter for scooter in Scooter.available_scooters() 
                                 if scooter.location in reachable_nodes and scooter.battery_level > 0]
         available_locations =  [s.location for s in available_scooters]
-        print(len(available_scooters))
         if len(available_scooters) == 0 and simulator.pricing:
             # No available scooters and pricing.
             if simulator.verbose == 2:
@@ -411,7 +410,11 @@ class UserRequest(Event):
 
             user_utility = [scooter.get_price_incentive(simulator.grid) - self.user.cost_function(scooter, simulator.graph)
                             for scooter in available_scooters]
+            cost = [self.user.cost_function(scooter, simulator.graph)
+                                for scooter in available_scooters]
+            print(cost)
             rb = simulator.service_provider.budget
+
             if np.any(np.array(user_utility) > 0):
                 max_utility = np.argmax(user_utility)
                 nearest_scooter = available_scooters[max_utility]
