@@ -167,11 +167,8 @@ class MultiModalNetwork:
                 print('Files not found. Downloading...')
                 nodes, edges = ox.graph_to_gdfs(ox.graph_from_polygon(polygon, network_type=layer, simplify=True))
                 study_area = gpd.read_file('shapes/study_area/study_area.shp').to_crs('epsg:4326').loc[0, 'geometry']
-                print(nodes.shape)
                 edges = fix_duplicated_ids(edges)
-                print(edges.info())
-                edges, nodes = fix_isolated(edges, nodes)
-                print(nodes.shape)
+                #edges, nodes = fix_isolated(edges, nodes)
                 nodes['area'] = nodes.within(study_area)
                 if save:
                     nodes[['y', 'x', 'osmid', 'area', 'geometry']].to_file('shapes/{}/nodes.shp'.format(layer))
