@@ -400,7 +400,7 @@ class UserRequest(Event):
         available_scooters = [scooter for scooter in Scooter.available_scooters() 
                                 if scooter.location in reachable_nodes and scooter.battery_level > 0]
         available_locations =  [s.location for s in available_scooters]
-
+        print(len(available_scooters))
         if len(available_scooters) == 0 and simulator.pricing:
             # No available scooters and pricing.
             if simulator.verbose == 2:
