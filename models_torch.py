@@ -195,7 +195,7 @@ class HRP(nn.Module):
         self.critic_lr = critic_lr
         self.actor_lr = actor_lr
         self.tau = 0.2
-        
+        self.max_action = max_action
         self.critic_optimizer = torch.optim.Adam(self.cn.parameters(), lr=self.critic_lr)
         self.actor_optimizer = torch.optim.Adam(self.an.parameters(), lr=self.actor_lr)
         self.hard_update()
@@ -258,11 +258,11 @@ class HRP(nn.Module):
 
 class RandomPricing:
     def __init__(self, min_action=0, max_action=3):
-        self.min_p = min_action
-        self.max_p = max_action
+        self.min_action = min_action
+        self.max_action = max_action
     def an_target(self, state, t=0):
         batch, t, n_zones, state_size = state.size()
-        return torch.FloatTensor(batch, t, n_zones).uniform_(self.min_p, self.max_p)
+        return torch.FloatTensor(batch, t, n_zones).uniform_(self.min_action, self.max_action)
 
 
 class Agent:
@@ -315,6 +315,7 @@ class Agent:
         scale = self.noise_scale * (0.99 ** episode)
         noise = np.random.normal(size=action.shape, scale=scale)
         action = (action + noise).astype(np.float32)
+        action[action >= self.model.max_action] = self.model.max_action
         next_state, reward = environment.perform_action(action[:, -1].reshape(10, 10))
         terminal = float(environment.terminal_state)
         self.store_transition((state, action, reward, next_state, terminal))
