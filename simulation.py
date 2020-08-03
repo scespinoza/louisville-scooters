@@ -204,7 +204,7 @@ class ServiceProvider(Agent):
         self.total_budget = budget
         self.budget = budget
         self.method = name
-        self.max_action
+        self.max_action = max_action
 
     def expend(self, value):
         self.budget -= value
