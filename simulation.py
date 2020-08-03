@@ -594,7 +594,7 @@ class RunPricing(Event):
 
     def execute(self, simulator):
         state = simulator.get_state()
-        action = service_provider.get_prices(state, simulator.timestep)
+        action = self.service_provider.get_prices(state, simulator.timestep)
         self.reward = simulator.grid.get_last_satisfied_requests()
         simulator.grid.set_price(action)
         simulator.insert(RunPricing(self.time + RunPricing.inter_status_time, self.service_provider))
