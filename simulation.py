@@ -303,7 +303,6 @@ class User:
         if x < 0:
             x = 0
         c = self.alpha * (x ** 2)
-        print(x)
         return c
 
 class Scooter:
@@ -414,7 +413,6 @@ class UserRequest(Event):
                             for scooter in available_scooters]
             cost = [self.user.cost_function(scooter, simulator.graph)
                                 for scooter in available_scooters]
-            print(cost)
             rb = simulator.service_provider.budget
 
             if np.any(np.array(user_utility) > 0):
