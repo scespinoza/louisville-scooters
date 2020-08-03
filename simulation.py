@@ -267,7 +267,7 @@ class User:
         self.reachable_method = 'distance'
         self.max_walking_distance = 250 # m
 
-        self.velocity = 1.5 # m/s
+        self.velocity = 1.4 # m/s
         self.alpha = 5.875e-07
         self.trip = {
                 'id': self.user_id,
