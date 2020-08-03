@@ -214,33 +214,21 @@ class ServiceProvider(Agent):
         self.budget = self.total_budget
 
 class ServiceProviderWeek:
-    budget_poportion = {0: 0.105504,
-                        1: 0.106461,
-                        2: 0.113510,
-                        3: 0.124507,
-                        4: 0.172311,
-                        5: 0.232005,
-                        6: 0.145701}
 
-    def __init__(self, days=7, total_budget=1000, **kwargs):
-        self.days = days
-        self.daily_budgets = self.distribute_budget(total_budget, method='demand')
-        print(self.daily_budgets, sum(self.daily_budgets))
-        self.sp_days = {i: ServiceProvider(budget=self.daily_budgets[i], **kwargs) 
-                            for i in range(days)}
-        self.current_day = 0
-    def distribute_budget(self, budget, method='uniform'):
-        if method == 'uniform':
-            return [budget/self.days for _ in range(self.days)]
-        elif method == 'demand':
-            return [budget*ServiceProviderWeek.budget_poportion[i] for i in range(self.days)]
+    def __init__(self, service_providers, **kwargs):
+        self.service_providers = {}
+        for i, sp in enumerate(service_providers):
+            with open(sp) as file:
+                self.service_providers[i] = pickle.load(file)
+        self.current_day=0
+
     def expend(self, value):
         print('Expending on {}'.format(self.current_day))
-        self.sp_days[self.current_day].expend(value)
+        self.service_providers[self.current_day].expend(value)
     def restore_expend(self, value):
-        self.sp_days[self.current_day].restore_expend(value)
+        self.service_providers[self.current_day].restore_expend(value)
     def restore_budget(self):
-        for _, sp in self.sp_days.items():
+        for _, sp in self.service_providers.items():
             sp.restore_budget()
     def save(self, dir):
         with open(dir + '.pickle', 'wb') as file:
@@ -248,11 +236,11 @@ class ServiceProviderWeek:
     def get_prices(self, state, t=0):
         self.current_day = t//24
         print('day: ', self.current_day)
-        print('bg', self.sp_day[self.current_day])
-        return self.sp_days[self.current_day].get_prices(state)
+        print('bg', self.service_providers[self.current_day])
+        return self.service_providers[self.current_day].get_prices(state)
 
     def eval(self):
-        for _, sp in self.sp_days.items():
+        for _, sp in self.service_providers.items():
             sp.model.eval()
 
     @property

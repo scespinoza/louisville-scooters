@@ -8,7 +8,7 @@ from multimodal_network import MultiModalNetwork
 from simulation import ScooterSharingSimulator, HistorySaver, ServiceProvider, ServiceProviderWeek, Grid
 from models_torch import HRP, RandomPricing
 
-
+DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -34,7 +34,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if args.simulate:
         replicas = ['data/replicas/stkde_nhpp_{}.csv'.format(i) for i in range(args.replicas)]
-        
+        service_providers = ['weights/{}_{}.pickle'.format(day, args.max_action) for day in DAYS]
+
         study_area_filename = 'shapes/study_area/study_area.shp'
         study_area = gpd.read_file(study_area_filename).to_crs('epsg:4326')
         
@@ -45,12 +46,12 @@ if __name__ == '__main__':
         grid = Grid.from_gdf(grid_gdf, (10,10))
         grid.create_nodes_dict(graph.layers['walk']['nodes'].to_crs('epsg:4326'))
         if args.pricing == 'HRP':
-            agent = ServiceProviderWeek.load(name=args.model)
+            agent = ServiceProviderWeek(service_providers)
             agent.method = args.pricing
             agent.eval()
             simulator = ScooterSharingSimulator(graph, grid, days=args.days, initial_supply=args.supply, pricing=True, service_provider=agent)
         elif args.pricing == 'random':
-            model = RandomPricing()
+            model = RandomPricing(max_axtion=args.max_action)
             agent = ServiceProvider(model=model, budget=args.budget)
             agent.method = args.pricing
             simulator = ScooterSharingSimulator(graph, grid, days=args.days, initial_supply=args.supply, pricing=True, service_provider=agent)
