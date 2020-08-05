@@ -105,7 +105,6 @@ class Grid:
         return list(self.nodes_in_boxes[self.nodes_in_boxes == area].index)
     
     def nodes_within_neighbors(self, osmid):
-        print(osmid)
         area = self.get_area(osmid)
         neighbors = self.compute_neighboring_index(area)
         neighbor_nodes = []
