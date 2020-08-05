@@ -28,6 +28,7 @@ class SubActor(nn.Module):
         self.fc1 = nn.Linear(neurons, neurons)
         self.fc2 = nn.Linear(neurons, neurons)
         self.fc3 = nn.Linear(neurons, 1)
+        self.apply(init_uniform)
     def forward(self, x):
         x, h = self.gru(x)
         x = nn.ReLU()(x)
@@ -102,6 +103,7 @@ class SubCritic(nn.Module):
         self.fc1 = nn.Linear(neurons, neurons)
         self.fc2 = nn.Linear(neurons, neurons)
         self.fc3 = nn.Linear(neurons, 1)
+        self.apply(init_uniform)
 
     def forward(self, x):
         x, h = self.gru(x)
