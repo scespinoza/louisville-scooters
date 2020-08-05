@@ -164,7 +164,9 @@ class Grid:
         return self.stats['satisfied_requests'].sum()
     
     def create_nodes_dict(self, nodes_gdf):
-        nodes_area = gpd.sjoin(nodes_gdf, self.boxes.to_frame().reset_index(), op='within')
+        boxes_gdf = self.boxes.to_frame().reset_index().copy()
+        boxes_gdf.crs = 'epsg:4326'
+        nodes_area = gpd.sjoin(nodes_gdf, boxes_gdf, op='within')
         nodes_area['osmid'] = nodes_area['osmid'].astype(str)
         self.nodes_in_boxes = nodes_area[['osmid', 'id']].set_index('osmid')['id']
                 
