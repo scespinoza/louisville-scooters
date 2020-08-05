@@ -312,7 +312,7 @@ class Agent:
     def act(self, environment, episode=0):
         state  = environment.get_state()
         action = self.get_action(torch.from_numpy(state).to(device))
-        noise = np.random.normal(size=action.shape, scale=self.noise_scale)
+        noise = self.noise_scale * np.random.normal(size=action.shape)
         action = (action + noise).astype(np.float32)
         action[action >= self.model.max_action] = self.model.max_action
         next_state, reward = environment.perform_action(action[:, -1].reshape(10, 10))
