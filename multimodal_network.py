@@ -83,9 +83,9 @@ class MultiModalNetwork:
     
     def get_nearest_osmids(self, points, layer='walk', transfer=False):
         if transfer:
-            nodes = self.layers[layer]['nodes'][self.layers[layer]['nodes']['transfer'] &self.layers[layer]['nodes']['area']].copy().reset_index(drop=True)
+            nodes = self.layers[layer]['nodes'][self.layers[layer]['nodes']['transfer'] & self.layers[layer]['nodes']['area']].copy().reset_index(drop=True)
         else:
-            nodes = self.layers[layer]['nodes'].copy().reset_index(drop=True)
+            nodes = self.layers[layer]['nodes'][self.layers[layer]['nodes']['area']==1].copy().reset_index(drop=True)
         left_radians = np.array(points.apply(lambda geom: (geom.x * np.pi / 180, geom.y * np.pi / 180)).to_list())
         right_radians = np.array(nodes['geometry'].apply(lambda geom: (geom.x * np.pi / 180, geom.y * np.pi / 180)).to_list())
         closest, dist = get_nearest(left_radians, right_radians)
