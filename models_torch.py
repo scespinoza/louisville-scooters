@@ -13,6 +13,7 @@ from tqdm import trange
 
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
+torch.manual_seed(42)
 
 def init_uniform(m):
     if type(m) == nn.Linear:
