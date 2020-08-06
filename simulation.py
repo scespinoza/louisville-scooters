@@ -301,11 +301,9 @@ class User:
             sp = simulator.graph.shortest_paths['walk'].loc[self.origin]
             return list(sp[sp < self.max_walking_distance / self.velocity].index)
     def cost_function(self, scooter, network):   
-        print(self.origin)
+        
         x = network.shortest_path_distance(self.origin, scooter.location, layer='walk')
-        print(x)
         x -= self.max_walking_distance
-        print(x)
         if x < 0:
             x = 0
         c = self.alpha * (x ** 2)

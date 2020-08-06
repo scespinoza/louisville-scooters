@@ -95,19 +95,19 @@ class MultiModalNetwork:
     def shortest_path_edges(self, u, v, layer='walk', output='epath'):
         origin = self.g[layer].vs.find(osmid=u)
         dest = self.g[layer].vs.find(osmid=v)
-        sp = self.g[layer].get_shortest_paths(origin, to=dest, weights='length', mode=igraph.OUT, output=output)[0]
+        sp = self.g[layer].get_shortest_paths(origin, to=dest, weights='time', mode=igraph.OUT, output=output)[0]
         return self.g[layer].es[sp]['osmid']
-    def shortest_path_time(self, u, v, layer='walk'):
-        return self.shortest_paths[layer].loc[str(u), str(v)]
 
     def get_nearest_node(self, source, dest, layer='walk'):
         this_sp = self.shortest_paths[layer].loc[str(source), dest]
         return this_sp.idxmin(), this_sp.min()
 
     def shortest_path_time(self, source, dest, layer='walk'):
-        return self.shortest_paths[layer].loc[str(source), str(dest)]
+        return self.shortest_paths[layer].loc[str(source), str(dest)] / self.speeds[layer]
+
     def shortest_path_distance(self, source, dest, layer='walk'):
-        return self.shortest_path_time(source, dest, layer=layer) * self.speeds[layer]
+        return self.shortest_path_time(source, dest, layer=layer)
+
     def create_graph(self):
         self.g = {}
         for layer_name, layer_gdfs in self.layers.items():
