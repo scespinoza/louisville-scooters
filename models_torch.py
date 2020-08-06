@@ -275,7 +275,7 @@ class Agent:
         self.model = model
         self.experience_buffer = deque(maxlen=buffer_length)
         self.noise_scale = noise_scale
-        self.noise_decay = 0.99
+        self.noise_decay = 0.999
         self.batch_size = batch_size
         self.history = {
             'rewards': [],
@@ -316,8 +316,7 @@ class Agent:
     def act(self, environment, episode=0):
         state  = environment.get_state()
         action = self.get_action(torch.from_numpy(state).to(device))
-        noise = self.noise_scale * np.random.normal(size=action.shape)
-        self.noise_scale *= self.noise_decay
+        noise = self.noise_scale * (self.noise_scale ** t) * np.random.normal(size=action.shape)
         action = (action + noise).astype(np.float32)
         action[action >= self.model.max_action] = self.model.max_action
         next_state, reward = environment.perform_action(action[:, -1].reshape(10, 10))
