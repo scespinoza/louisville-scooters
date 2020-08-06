@@ -35,8 +35,8 @@ class SubActor(nn.Module):
         x = nn.ReLU()(x)
         x = nn.ReLU()(self.fc1(x))
         x = nn.ReLU()(self.fc2(x))
-        x = self.max_action * nn.Sigmoid()(self.fc3(x))
         print(x)
+        x = self.max_action * nn.Sigmoid()(self.fc3(x))
         return x
 
 class ActorNetwork(nn.Module):
@@ -317,7 +317,6 @@ class Agent:
         state  = environment.get_state()
         action = self.get_action(torch.from_numpy(state).to(device))
         noise = self.noise_scale * np.random.normal(size=action.shape)
-        print(action)
         action = (action + noise).astype(np.float32)
         action[action >= self.model.max_action] = self.model.max_action
         next_state, reward = environment.perform_action(action[:, -1].reshape(10, 10))
