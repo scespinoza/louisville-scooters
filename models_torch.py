@@ -17,7 +17,7 @@ torch.manual_seed(42)
 
 def init_uniform(m):
     if type(m) == nn.Linear:
-        torch.nn.init.uniform_(m.weight, a=-3e-4, b=3e-4)
+        torch.nn.init.uniform_(m.weight, a=-1e-4, b=1e-4)
         m.bias.data.fill_(0.0)
 
 class SubActor(nn.Module):
@@ -316,6 +316,7 @@ class Agent:
         state  = environment.get_state()
         action = self.get_action(torch.from_numpy(state).to(device))
         noise = self.noise_scale * np.random.normal(size=action.shape)
+        print(action)
         action = (action + noise).astype(np.float32)
         action[action >= self.model.max_action] = self.model.max_action
         next_state, reward = environment.perform_action(action[:, -1].reshape(10, 10))
