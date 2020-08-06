@@ -106,7 +106,7 @@ class MultiModalNetwork:
         return self.shortest_paths[layer].loc[str(source), str(dest)] / self.speeds[layer]
 
     def shortest_path_distance(self, source, dest, layer='walk'):
-        return self.shortest_path_time(source, dest, layer=layer)
+        return self.shortest_paths[layer].loc[str(source), str(dest)]
 
     def create_graph(self):
         self.g = {}
