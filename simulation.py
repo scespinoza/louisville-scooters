@@ -300,11 +300,15 @@ class User:
         elif self.reachable_method == 'distance':
             sp = simulator.graph.shortest_paths['walk'].loc[self.origin]
             return list(sp[sp < self.max_walking_distance / self.velocity].index)
-    def cost_function(self, scooter, network):        
-        x = network.shortest_path_distance(self.origin, scooter.location, layer='walk') - self.max_walking_distance
+    def cost_function(self, scooter, network):   
+        x = network.shortest_path_distance(self.origin, scooter.location, layer='walk')
+        print(x)
+        x -= self.max_walking_distance
+        print(x)
         if x < 0:
             x = 0
         c = self.alpha * (x ** 2)
+        print(c)
         return c
 
 class Scooter:
