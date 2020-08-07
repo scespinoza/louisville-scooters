@@ -197,7 +197,7 @@ class HRP(nn.Module):
         self.discount_rate = 0.99
         self.critic_lr = critic_lr
         self.actor_lr = actor_lr
-        self.tau = 0.005
+        self.tau = 0.2
         self.max_action = max_action
         self.critic_optimizer = torch.optim.Adam(self.cn.parameters(), lr=self.critic_lr)
         self.actor_optimizer = torch.optim.Adam(self.an.parameters(), lr=self.actor_lr)
