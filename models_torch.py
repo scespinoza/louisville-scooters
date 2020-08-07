@@ -35,7 +35,7 @@ class SubActor(nn.Module):
         x = nn.ReLU()(x)
         x = nn.ReLU()(self.fc1(x))
         x = nn.ReLU()(self.fc2(x))
-        x = self.max_action * (nn.Tanh()(self.fc3(x)))
+        x = self.max_action * (nn.Sigmoid()(self.fc3(x)))
         return x
 
 class ActorNetwork(nn.Module):

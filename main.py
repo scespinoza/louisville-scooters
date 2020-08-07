@@ -27,7 +27,7 @@ if __name__ == '__main__':
     parser.add_argument('--model', type=str, default='100ep_250bg_sigm')
     parser.add_argument('--verbose', type=int, help='verbosity value')
     parser.add_argument('--name', type=str, help='name of agent')
-    parser.add_argument('--actor_lr', type=float, default=1e-3)
+    parser.add_argument('--actor_lr', type=float, default=1e-4)
     parser.add_argument('--critic_lr', type=float, default=1e-4)
     parser.add_argument('--max_action', type=float, default=5)
     parser.add_argument('--from_day', type=int, default=0)
