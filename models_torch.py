@@ -197,7 +197,7 @@ class HRP(nn.Module):
         self.discount_rate = 0.99
         self.critic_lr = critic_lr
         self.actor_lr = actor_lr
-        self.tau = 0.2
+        self.tau = 0.005
         self.max_action = max_action
         self.critic_optimizer = torch.optim.Adam(self.cn.parameters(), lr=self.critic_lr)
         self.actor_optimizer = torch.optim.Adam(self.an.parameters(), lr=self.actor_lr)
@@ -318,7 +318,7 @@ class Agent:
         action = self.get_action(torch.from_numpy(state).to(device))
         noise = (self.noise_scale ** episode) * np.random.normal(size=action.shape)
         action = (action + noise).astype(np.float32)
-        action[action >= self.model.max_action] = self.model.max_action
+        #action[action >= self.model.max_action] = self.model.max_action
         next_state, reward = environment.perform_action(action[:, -1].reshape(10, 10))
         terminal = float(environment.terminal_state)
         self.store_transition((state, action, reward, next_state, terminal))
