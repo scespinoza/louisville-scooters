@@ -320,6 +320,7 @@ class Agent:
         print(self.noise_scale)
         print(noise)
         action = (action + noise).astype(np.float32)
+        print(action)
         action[action >= self.model.max_action] = self.model.max_action
         next_state, reward = environment.perform_action(action[:, -1].reshape(10, 10))
         terminal = float(environment.terminal_state)
