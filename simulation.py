@@ -606,7 +606,9 @@ class RunPricing(Event):
         simulator.grid.set_price(action)
         simulator.insert(RunPricing(self.time + RunPricing.inter_status_time, self.service_provider))
         simulator.grid.reset_stats()
-        gpd.GeoDataFrame(simulator.grid.prices, geometry=simulator.grid.boxes).to_file('output/prices_{}_{}.shp'.format(simulator.timestep, simulator.history_saver.name))
+        prices_gdf = gpd.GeoDataFrame(simulator.grid.prices, geometry=simulator.grid.boxes)
+        print(prices_gdf.head())
+        prices_gdf.to_file('output/prices_{}_{}.shp'.format(simulator.timestep, simulator.history_saver.name))
     def __str__(self):
         return 'Getting stats:\n Satisfied Demand: {:.0f} '.format(self.reward)      
 
