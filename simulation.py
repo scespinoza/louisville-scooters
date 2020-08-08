@@ -430,7 +430,7 @@ class UserRequest(Event):
                     simulator.grid.update_stat(nearest_scooter.location, 'pricing', value=incentive)
                     simulator.service_provider.expend(incentive)
                     self.user.trip['pickup_node'] = nearest_scooter.location
-                    #self.user.trip['walk'] = simulator.graph.shortest_path_edges(self.user.origin, nearest_scooter.location)
+                    self.user.trip['walk'] = simulator.graph.shortest_path_edges(self.user.origin, nearest_scooter.location)
                     simulator.insert(pickup)
             
         elif not len(available_scooters) == 0:
@@ -441,7 +441,7 @@ class UserRequest(Event):
             pickup = PickUp(simulator.time + time, self.user, nearest_scooter)
             self.user.trip['walk_duration'] = time
             self.user.trip['pickup_node'] = nearest_location
-            #self.user.trip['walk'] = simulator.graph.shortest_path_edges(self.user.origin, nearest_location)
+            self.user.trip['walk'] = simulator.graph.shortest_path_edges(self.user.origin, nearest_location)
 
             simulator.insert(pickup)
 
@@ -502,7 +502,7 @@ class PickUp(Event):
             self.user.trip['pickup_time'] = simulator.time
             self.user.trip['scooter']['id'] = self.scooter.scooter_id
             self.user.trip['scooter']['battery_level_pickup'] = self.scooter.battery_level          
-            #self.user.trip['ride'] += simulator.graph.shortest_path_edges(self.scooter.location, self.user.destination, layer='bike')
+            self.user.trip['ride'] += simulator.graph.shortest_path_edges(self.scooter.location, self.user.destination, layer='bike')
             self.user.trip['ride_duration'] = trip_time
             trip_duration = simulator.graph.shortest_path_time(self.scooter.location, self.user.destination, layer='bike')
             self.scooter.battery_level -= battery_consumption
