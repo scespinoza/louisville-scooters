@@ -319,7 +319,7 @@ class Agent:
         action = self.get_action(torch.from_numpy(state).to(device))
         noise = (self.noise_scale * (0.99 ** (episode))) * np.random.normal(size=action.shape)
         if warmup:
-            action = noise
+            action = noise.astype(np.float32)
         else:
             action = (action + noise).astype(np.float32)
         action = np.clip(action, 0, self.model.max_action)
