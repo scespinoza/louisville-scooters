@@ -330,19 +330,18 @@ class Scooter:
         return [scooter for scooter in cls.scooters if scooter.available]
 
     @classmethod
-    def init_supply(cls, network, n=200, strategy='demand', random_state=0):
+    def init_supply(cls, simulator, network, n=200, strategy='demand', random_state=0):
         """with open('data/poisson_params.pickle', 'br') as file:
             tract_counts = {tract: sum(list(probs.values())) 
                             for tract, probs in pickle.load(file).items()}"""
         Scooter.scooters = []
         if strategy == 'demand':
-            demand = pd.read_csv('data/starting_locations.csv')
-            bounds = gpd.read_file('shapes/study_area/study_area.shp').to_crs('EPSG:4326').loc[0, 'geometry']
-            demand['geometry'] = [Point(x, y) for _, x, y in demand[['StartLongitude', 'StartLatitude']].itertuples()]
-            demand = gpd.GeoDataFrame(demand, crs='EPSG:4326')
-            demand = demand[demand.within(bounds)]
-            Scooter.demand = demand
-            points = demand['geometry'].sample(n=n, weights=demand['Count'], random_state=random_state)
+            cls.demand = pd.read_csv('data/starting_locations.csv')
+            cls.bounds = gpd.read_file('shapes/study_area/study_area.shp').to_crs('EPSG:4326').loc[0, 'geometry']
+            cls.demand['geometry'] = [Point(x, y) for _, x, y in cls.demand[['StartLongitude', 'StartLatitude']].itertuples()]
+            cls.demand = gpd.GeoDataFrame(cls.demand, crs='EPSG:4326')
+            cls.demand = cls.demand[cls.demand.within(cls.bounds)]
+            points = cls.demand['geometry'].sample(n=n, weights=cls.demand['Count'], random_state=random_state)
             locations = list(network.get_nearest_osmids(points, transfer=True).astype(str))
         else:
             locations = choices(list(network.transfer_nodes), k=n)
@@ -356,10 +355,19 @@ class Scooter:
                                 'battery_level': scooter.battery_level}
                                 for scooter in Scooter.scooters]
             json.dump(export_scooters, file)
+        
+        for day in range(1, 7):
+            simulator.insert(Redistribute(time=day*24*3600))
 
     def get_price_incentive(self, grid):
         self.price_incentive = grid.get_scooter_price(self)
         return self.price_incentive
+    @classmethod
+    def redistribute(cls, network, random_state=0):
+        points = cls.demand['geometry'].sample(n=len(Scooter.scooters), weights=cls.demand['Count'], random_state=random_state)
+        locations = list(network.get_nearest_osmids(points, transfer=True).astype(str))
+        for scooter, location in zip(Scooter.scooters, locations):
+            scooter.location = location
 
     @classmethod
     def store_history(cls, history_saver):
@@ -459,17 +467,13 @@ class UserRequest(Event):
     def inter_requests_time(cls, area, day, hour):
         return Random.exponential(36000 / cls.requests_by_day_hour[area][day, hour])
 
-    @classmethod
-    def init_user_requests(cls, simulator):
-        with open('data/poisson_params.pickle', 'rb') as file:
-            cls.requests_by_day_hour = pickle.load(file)
-        for area in cls.requests_by_day_hour.keys():
-            # for each area take the first occurence of (day, hour)
-            # to initialize user requests
-            day, hour = list(cls.requests_by_day_hour[area].keys())[0]
-            time = (24 * 3600) * day + 3600 * hour
-            time += simulator.time
-            simulator.insert(cls(time, day, hour, area, simulator))
+class Redistribute(Event):
+    def __init__(self, time):
+        super(Redistribute, self).__init__(time=time)
+    def execute(self, simulator):
+        if simulator.independent_days:
+            print('Redistributing scooters.')
+            Scooter.redistribute(simulator.graph, simulator.current_replica)
 
 class PickUp(Event):
 
@@ -707,6 +711,7 @@ class ScooterSharingSimulator:
         self.timesteps = self.simulation_time // self.time_window
         self.service_provider = service_provider
         self.initial_supply = initial_supply
+        self.independent_days = True
     @property
     def terminal_state(self):
         return self.current_timestep == self.timesteps - 1
@@ -750,9 +755,6 @@ class ScooterSharingSimulator:
         self.verbose = verbose
         while len(self.events) > 0 and self.time < self.simulation_time:
             self.timestep = self.time // self.time_window
-            if self.timestep % 24 == 0:
-                Scooter.count = 0
-                Scooter.init_supply(self.graph, n=self.initial_supply, random_state=self.current_replica)
             event = self.events.remove_first()
             self.time = event.time         
             result = event.execute(self)
@@ -784,7 +786,7 @@ class ScooterSharingSimulator:
             Scooter.count = 0
             User.count = 0
             User.users = list()
-            Scooter.init_supply(self.graph, n=self.initial_supply, random_state=i)
+            Scooter.init_supply(self, self.graph, n=self.initial_supply, random_state=i)
             RunPricing.init_pricing(self)
             if self.pricing:
                 self.service_provider.restore_budget()
@@ -813,7 +815,7 @@ class ScooterSharingSimulator:
         self.time = self.from_day * 24 * 3600
         self.current_timestep = 0
         User.users = list()
-        Scooter.init_supply(self.graph, n=self.initial_supply, random_state=self.current_replica)
+        Scooter.init_supply(self, self.graph, n=self.initial_supply, random_state=self.current_replica)
         #UserRequest.init_user_requests(self)
         #RunPricing.init_pricing(self)
         self.service_provider.restore_budget()

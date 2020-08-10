@@ -313,11 +313,15 @@ class Agent:
         state = torch.from_numpy(state.astype(np.float32)).to(device)
         return self.model.an_target(state).detach().cpu().numpy()[:, -1, :]
 
-    def act(self, environment, episode=0):
+    def act(self, environment, episode=0, warmup=False):
         state  = environment.get_state()
+        
         action = self.get_action(torch.from_numpy(state).to(device))
-        noise = (self.noise_scale * (0.999 ** (episode))) * np.random.normal(size=action.shape)
-        action = (action + noise).astype(np.float32)
+        noise = (self.noise_scale * (0.99 ** (episode))) * np.random.normal(size=action.shape)
+        if warmup:
+            action = noise
+        else:
+            action = (action + noise).astype(np.float32)
         action = np.clip(action, 0, self.model.max_action)
         next_state, reward = environment.perform_action(action[:, -1].reshape(10, 10))
         terminal = float(environment.terminal_state)
@@ -331,7 +335,7 @@ class Agent:
             for t in range(environment.timesteps):
                 print('\n')
                 print('Warmup Iteration {}/{}, timestep {}'.format(i + 1, iterations, t + 1))
-                reward = self.act(environment)
+                reward = self.act(environment, warmup=True)
                 print('Reward: {:.2f}'.format(reward))
                 episode_rewards.append((self.model.discount_rate**t)*reward)
             print('Episode Rewards: ', np.sum(episode_rewards))
