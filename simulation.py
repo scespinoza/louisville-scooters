@@ -220,8 +220,10 @@ class ServiceProviderWeek:
         self.service_providers = {}
         for i, sp in enumerate(service_providers):
             with open(sp, 'rb') as file:
+                print(sp)
                 self.service_providers[i] = pickle.load(file)
         self.current_day=0
+        self.restore_budget()
 
     def expend(self, value):
         print('Expending on {}'.format(self.current_day))
@@ -264,7 +266,7 @@ class User:
         self.origin = str(trip[0])
         self.destination = str(trip[1])
         self.reachable_method = 'distance'
-        self.max_walking_distance = 500 # m
+        self.max_walking_distance = 250 # m
 
         self.velocity = 1.4 # m/s
         self.alpha = 5.875e-07
@@ -332,6 +334,7 @@ class Scooter:
         """with open('data/poisson_params.pickle', 'br') as file:
             tract_counts = {tract: sum(list(probs.values())) 
                             for tract, probs in pickle.load(file).items()}"""
+        Scooter.scooters = []
         if strategy == 'demand':
             demand = pd.read_csv('data/starting_locations.csv')
             bounds = gpd.read_file('shapes/study_area/study_area.shp').to_crs('EPSG:4326').loc[0, 'geometry']
@@ -484,7 +487,7 @@ class PickUp(Event):
         battery_consumption = (100 * ((trip_time * Scooter.speed / 1000) / Scooter.battery_range))
         origin = simulator.graph.g['bike'].vs.find(osmid=self.scooter.location)
 
-        if self.scooter.available and battery_consumption <= self.scooter.battery_level:
+        if self.scooter.available:
             if self.incentive:
                 incentive = self.scooter.price_incentive
                 print('Pricing')
@@ -506,6 +509,8 @@ class PickUp(Event):
             self.user.trip['ride_duration'] = trip_time
             trip_duration = simulator.graph.shortest_path_time(self.scooter.location, self.user.destination, layer='bike')
             self.scooter.battery_level -= battery_consumption
+            if self.scooter.battery_level < 0:
+                self.scooter.battery_level = 0
             self.user.trip['scooter']['battery_level_dropoff'] = self.scooter.battery_level
             dropoff = Dropoff(self.user, self.scooter, simulator.time + trip_duration)
             simulator.insert(dropoff)
@@ -745,6 +750,9 @@ class ScooterSharingSimulator:
         self.verbose = verbose
         while len(self.events) > 0 and self.time < self.simulation_time:
             self.timestep = self.time // self.time_window
+            if self.timestep % 24 == 0:
+                Scooter.count = 0
+                Scooter.init_supply(self.graph, n=self.initial_supply, random_state=self.current_replica)
             event = self.events.remove_first()
             self.time = event.time         
             result = event.execute(self)
@@ -770,6 +778,7 @@ class ScooterSharingSimulator:
         for i, replica in enumerate(replicas):
             print('Replica: ', replica)
             self.time = self.from_day * 24 * 3600
+            self.current_replica = i
             self.timeste = 0
             self.events.reset()
             Scooter.count = 0

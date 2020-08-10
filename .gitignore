@@ -5,3 +5,4 @@ data/*
 shapes/*
 cleaned_data/*
 visualization/data
+output/*

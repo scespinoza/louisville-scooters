@@ -334,6 +334,7 @@ class Agent:
                 reward = self.act(environment)
                 print('Reward: {:.2f}'.format(reward))
                 episode_rewards.append((self.model.discount_rate**t)*reward)
+            print('Episode Rewards: ', np.sum(episode_rewards))
             self.history['rewards'].append(np.sum(episode_rewards))
 
     def train(self, environment, episodes=100, warmup_iterations=1):
@@ -357,6 +358,7 @@ class Agent:
                 t_bar.set_description('Episode {}/{}. Loss = {:.2f}. Reward = {:.2f}'.format(e, episodes, batch_loss.detach().cpu().numpy(), reward))
                 self.history['distance'].append(distance)
                 self.history['batch_loss'].append(batch_loss.detach().cpu().numpy())
+            print('Episode Rewards: ', np.sum(episode_rewards))
             self.history['rewards'].append(np.sum(episode_rewards))
             self.history['dqn_loss'].append(self.get_q_loss())
         print('Finishing Training: {:.2f}s'.format(time.time() - training_start))

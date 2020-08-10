@@ -29,19 +29,26 @@
 
 .user {
     fill: rgb(255, 196, 0);
-    stroke: rgba(238, 255, 0, 0.6);
+    stroke: rgba(238, 255, 0, 0.7);
     stroke-width: 5px;
 }
 
 .scooter {
     fill: rgb(0, 4, 255);
-    stroke: rgba(0, 255, 234, 0.6);
+    stroke: rgba(0, 255, 234, 0.7);
     stroke-width: 5px;
 }
 
 .static-scooter {
-    stroke: rgba(25, 253, 4, 0.644);
-    stroke-width: 3px;
+    stroke: rgb(45, 252, 26);
+    stroke-width: 2px;
+    opacity: 0.3;
+    cursor: pointer;
+}
+
+.discharged-scooter {
+    stroke: rgb(252, 26, 139);
+    stroke-width: 2px;
     opacity: 0.3;
     cursor: pointer;
 }

@@ -112,6 +112,7 @@ class MultiModalNetwork:
         self.g = {}
         for layer_name, layer_gdfs in self.layers.items():
             print('Creating {} graph...'.format(layer_name))
+            print(self.directed[layer_name])
             layer_graph = igraph.Graph(directed=self.directed[layer_name])
             layer_graph.add_vertices(list(layer_gdfs['nodes'].osmid.astype(str)))
             layer_graph.vs['coords'] = list(layer_gdfs['nodes']['geometry'])
@@ -183,7 +184,7 @@ if __name__ == '__main__':
     study_area_filename = 'shapes/study_area/study_area_buffer.shp'
     study_area = gpd.read_file(study_area_filename).to_crs('EPSG:4326')
     study_area_polygon = study_area.iloc[0]['geometry']
-    network = MultiModalNetwork.from_polygon(study_area_polygon, speeds={'walk': 1.4, 'bike':2.16}, directed={'walk': False, 'bike': True})
+    network = MultiModalNetwork.from_polygon(study_area_polygon, speeds={'walk': 1.4, 'bike':2.16}, directed={'walk': True, 'bike': True})
     fig, ax = plt.subplots(figsize=(13, 13))
     network.plot(ax=ax)
     plt.show()

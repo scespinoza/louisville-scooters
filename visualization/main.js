@@ -116,12 +116,12 @@ function loadReplicaData() {
     g.selectAll('circle').transition().duration(2000).style('opacity', 0).on("end", function(){d3.select(this).remove()});
     var scootersFilename = getSelectedReplicaScootersFilename();
     var replicaFilename = getSelectedReplicaFilename();
-
+    console.log(replicaFilename)
     Promise.all([
         loadData(replicaFilename, scootersFilename)
     ]).then(function(){
         
-        loadingBackground.transition().duration(3000).style('opacity',0).on('end', d3.select(this).remove());
+        loadingBackground.transition().duration(3000).style('opacity',0).on('end', function(){d3.select(this).remove()});
         
     });
 }
@@ -227,15 +227,6 @@ function loadMap() {
     
     d3Path = d3.geoPath().projection(transform);
 
-    d3.json('data/bounds.geojson').then(function(collection) {
-        g.selectAll('path')
-            .data(collection.features)
-            .enter()
-            .append('path')
-            .attr('class', 'boundary')
-            .style("stroke-dasharray", ("3, 3")) 
-            .attr('d', d3Path);
-    })
 
     d3.json('data/grid.geojson').then(function(collection) {
         g.selectAll('path')
@@ -281,7 +272,7 @@ function loadLegend() {
             .append('circle')
             .attr("cx", function (d) { return d.x + 10; })
             .attr("cy", function (d) { return (d.y * 25) + 30; })
-            .attr("r", 3)
+            .attr("r", 2)
             .attr("class", function (d){return d.class})
 
     legendG.selectAll('text')
@@ -393,7 +384,7 @@ function reset() {
                 .style("top", topLeft[1] + "px");
 
     svg.selectAll('path.street').attr('d', d3Path);
-    svg.selectAll('path.boundary').attr('d', d3Path);
+    //svg.selectAll('path.boundary').attr('d', d3Path);
     g.selectAll('path.grid').attr('d', d3Path);
 
     g.attr('transform', 'translate(' + -topLeft[0] + ', ' + -topLeft[1] + ')');
@@ -447,7 +438,7 @@ function locateScooters(filename = 'scooter_locations.json') {
                 .data(scooterLocations)
                 .enter()
                 .append("circle")
-                .attr("r", 4)
+                .attr("r", 2)
                 .style("fill", d3.color(d3.interpolateRdYlGn(1)).hex())
                 .style('opacity', 0)
                 .attr("class", "static-scooter")
@@ -455,7 +446,8 @@ function locateScooters(filename = 'scooter_locations.json') {
                     var replica = parseInt($("#replica-selector").val()) * 100;
                     var i = scooterOSMIDS.indexOf(String(d.properties.osmid))
                     d.id = scootersCollection[i].id;
-                    d.battery = scootersCollection[i].battery;
+                    console.log(scootersCollection[i])
+                    d.battery = scootersCollection[i].battery_level;
                     return "scooter-" + d.id;
                 })
                 .attr("transform", function (d) {
@@ -466,7 +458,7 @@ function locateScooters(filename = 'scooter_locations.json') {
                                         .attr("class", "tooltip")
                                         .attr("id", "scooter-info-" + d.id)
                                         .style("opacity", 0);
-                    var info = 'Scooter ' + d.id + '</br>' + 'Battery: ' + parseInt(d.battery * 100) + '%';
+                    var info = 'Scooter ' + d.id + '</br>' + 'Battery: ' + parseInt(d.battery) + '%';
 
                     div.transition()
                         .style("opacity", 1);
@@ -640,7 +632,7 @@ function animateTrip(trip, delay, callback)  {
     
     d3.timeout(function (elapsed) {
         totalRequests++;
-        
+        console.log(trip['origin'])
         if (trip.walk.length == 0 && trip.ride.length == 0) {
             // user request scooter and there is none available
             animateUnsatisfiedRequest(trip.origin, 0);
@@ -652,7 +644,8 @@ function animateTrip(trip, delay, callback)  {
             trip.ride.forEach(function(osmid) {
                 shortestPathRide.push(bikeEdgesCollection.features.find(edge => String(edge.properties.osmid) == osmid));
             });
-            animateRide(shortestPathRide, 0, 0, trip.scooter.id);
+            console.log(trip)
+            animateRide(shortestPathRide, 0, 0, trip.scooter.id, pricing=null,battery_level_dropoff = trip.scooter.battery_level_dropoff);
         }
         else if (trip.walk.length > 0 && trip.ride.length == 0) {
             // user walks towards an available scooter but when arrives
@@ -683,7 +676,7 @@ function animateTrip(trip, delay, callback)  {
             scooter = trip.scooter;
             ride_delay = trip.pickup_time - trip.arrival_time;
             animateWalk(shortestPathWalk, 0, 0);
-            animateRide(shortestPathRide, 0, ride_delay, scooter.id, trip.pricing);
+            animateRide(shortestPathRide, 0, ride_delay, scooter.id, pricing=trip.pricing, battery_level_dropoff = trip.scooter.battery_level_dropoff);
         }
         updateStats();
         callback(null);
@@ -723,7 +716,7 @@ function animateWalk(path, ipath, delay)  {
 
                     })
                     .on("start", function() {
-                        d3.select(this).attr("r", 3);
+                        d3.select(this).attr("r", 2);
                     })
                     .on("end", function () {
                         d3.select(this).remove()                        
@@ -736,8 +729,8 @@ function animateWalk(path, ipath, delay)  {
 }
 
 
-function animateRide(path, ipath, delay, scooter, pricing = null) {
-    
+function animateRide(path, ipath, delay, scooter, pricing = null, battery_level_dropoff = null) {
+    console.log(battery_level_dropoff)
     var currentEdge = path[ipath];
 
     if ((pricing != null) & (ipath == 0)) {
@@ -779,14 +772,27 @@ function animateRide(path, ipath, delay, scooter, pricing = null) {
                     .on("end", function () {                     
                         d3.select("path#edge-" + currentEdge.properties.osmid).remove()
                         if (ipath < path.length - 1) {
-                            animateRide(path, ipath + 1, 0, scooter);
+                            animateRide(path, ipath + 1, 0, scooter, pricing=null, battery_level_dropoff = battery_level_dropoff);
                         } else {
+                            console.log(battery_level_dropoff)
+                            if (battery_level_dropoff > 15){
                             var thisScooter = d3.select("circle#scooter-" + scooter)
                                                     .attr("class", "static-scooter")
                                                     .style("fill", function (d) {
-                                                        d.battery = scooter.battery_level_dropoff / 100
-                                                        return d3.color(d3.interpolateRdYlGn(scooter.battery_level_dropoff / 100)).hex();
-                                                    })
+                                                        d.battery = battery_level_dropoff / 100
+                                                        return d3.color(d3.interpolateRdYlGn(battery_level_dropoff / 100)).hex();
+                                                    });
+                            } else {
+                            var thisScooter = d3.select("circle#scooter-" + scooter)
+                                                    .attr("class", "discharged-scooter")
+                                                    .style("fill", function (d) {
+                                                        d.battery = battery_level_dropoff / 100
+                                                        return d3.color(d3.interpolateRdYlGn(battery_level_dropoff / 100)).hex();
+                                                    });
+                                                }
+
+                            
+                            
                             thisScooter.datum().geometry.coordinates = currentEdge.geometry.coordinates.slice(-1)[0].slice(-1)[0];
                                 
                         }

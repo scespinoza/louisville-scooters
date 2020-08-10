@@ -45,17 +45,22 @@ if __name__ == '__main__':
         
         grid = Grid.from_gdf(grid_gdf, (10,10))
         grid.create_nodes_dict(graph.layers['walk']['nodes'].to_crs('epsg:4326'))
+        print(service_providers)
+        print(args.pricing)
         if args.pricing == 'HRP':
+            print('HRP')
             agent = ServiceProviderWeek(service_providers, max_action=args.max_action)
             agent.method = args.pricing
             agent.eval()
             simulator = ScooterSharingSimulator(graph, grid, days=args.days, initial_supply=args.supply, pricing=True, service_provider=agent)
         elif args.pricing == 'random':
+            print('random')
             model = RandomPricing
             agent = ServiceProvider(model=model, budget=args.budget, max_action=args.max_action)
             agent.method = args.pricing
             simulator = ScooterSharingSimulator(graph, grid, days=args.days, initial_supply=args.supply, pricing=True, service_provider=agent)
         else:
+            print('no pricing')
             service_provider = ServiceProvider(max_action=args.max_action)
             simulator = ScooterSharingSimulator(graph, grid, days=args.days, initial_supply=args.supply, pricing=False, service_provider=service_provider)
         
