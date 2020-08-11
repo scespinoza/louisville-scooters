@@ -316,7 +316,7 @@ class Agent:
         state  = environment.get_state()
         
         action = self.get_action(torch.from_numpy(state).to(device))
-        noise = (self.noise_scale * (0.95 ** (episode))) * np.random.normal(size=action.shape)
+        noise = (self.noise_scale * (0.99 ** (episode))) * np.random.normal(size=action.shape)
         if warmup:
             action = noise.astype(np.float32)
         else:
