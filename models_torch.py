@@ -375,7 +375,10 @@ class Agent:
                                     'terminal': torch.from_numpy(np.array(terminal).astype(np.float32)).to(device)})[0].detach().cpu().numpy()
     def save_agent(self, name='test-model'):
         # pass model to cpu to asure loading
-        self.model.to(torch.device('cpu'))
+        self.model.an.to(torch.device('cpu'))
+        self.model.cn.to(torch.device('cpu'))
+        self.model.an_target.to(torch.device('cpu'))
+        self.model.cn_target.to(torch.device('cpu'))
         with open('weights/' + name + '.pickle', 'wb') as file:
             pickle.dump(self, file)
     @classmethod
