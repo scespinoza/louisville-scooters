@@ -249,7 +249,6 @@ class HRP(nn.Module):
         grad = self.actor_gradient(batch)
         self.actor_optimizer.zero_grad()
         grad.backward()
-        torch.nn.utils.clip_grad_norm_(self.an.parameters(), 1.0)
         self.actor_optimizer.step()
         return grad.detach().cpu().numpy()
 
